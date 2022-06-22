@@ -2,9 +2,9 @@ package com.daniil.shevtsov.timetravel.core.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.daniil.shevtsov.timetravel.feature.drawer.presentation.drawerViewState
 import com.daniil.shevtsov.timetravel.feature.main.data.MainImperativeShell
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
-import com.daniil.shevtsov.timetravel.feature.main.presentation.drawerViewState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,7 +13,8 @@ class ScreenHostViewModel @Inject constructor(
     private val imperativeShell: MainImperativeShell,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(createInitialState())
+    private val _state =
+        MutableStateFlow(createInitialState())
     val state = _state.asStateFlow()
 
     private val viewActionFlow = MutableSharedFlow<ScreenViewAction>()

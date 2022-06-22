@@ -1,15 +1,14 @@
 package com.daniil.shevtsov.timetravel.feature.main.view
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
-import com.daniil.shevtsov.timetravel.feature.debug.presentation.debugViewState
-import com.daniil.shevtsov.timetravel.feature.main.presentation.*
-import com.google.accompanist.insets.statusBarsHeight
+import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
+import com.daniil.shevtsov.timetravel.feature.main.presentation.mainViewState
 
 @Preview(
     widthDp = 320,
@@ -19,12 +18,7 @@ import com.google.accompanist.insets.statusBarsHeight
 fun MainPreview() {
     MainScreen(
         state = mainViewState(
-            drawerState = DrawerViewState(
-                tabSelectorState = emptyList(),
-                drawerContent = DrawerContentViewState.Debug(
-                    state = debugViewState()
-                )
-            ),
+            kek = "kek",
         ),
         onViewAction = {},
     )
@@ -33,18 +27,48 @@ fun MainPreview() {
 @Composable
 fun MainScreen(
     state: MainViewState,
+    modifier: Modifier = Modifier,
+    onViewAction: (MainViewAction) -> Unit,
+) {
+    when (state) {
+        is MainViewState.Loading -> LoadingContent()
+        is MainViewState.Success -> SuccessContent(
+            state = state,
+            onViewAction = onViewAction,
+            modifier = modifier,
+        )
+    }
+
+}
+
+@Composable
+fun SuccessContent(
+    state: MainViewState.Success,
     onViewAction: (MainViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.Top,
-        modifier = modifier.background(AppTheme.colors.background).fillMaxHeight(),
-    ) {
-        Spacer(
-            modifier
-                .statusBarsHeight()
-                .fillMaxWidth()
-        )
-        Text("HELLO")
-    }
+    ContentBody(
+        state = state,
+        onViewAction = onViewAction,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun LoadingContent() {
+    Text("Loading")
+}
+
+
+@Composable
+fun ContentBody(
+    state: MainViewState.Success,
+    modifier: Modifier = Modifier,
+    onViewAction: (MainViewAction) -> Unit = {},
+) {
+    val scope = rememberCoroutineScope()
+
+    Column(modifier = modifier) { Text("HELLO") }
+
+
 }

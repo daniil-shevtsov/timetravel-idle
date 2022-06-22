@@ -4,7 +4,6 @@ import com.daniil.shevtsov.timetravel.core.BalanceConfig
 import com.daniil.shevtsov.timetravel.core.domain.balanceConfig
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
-import com.daniil.shevtsov.timetravel.feature.main.presentation.SectionState
 
 data class GameState(
     val balanceConfig: BalanceConfig,

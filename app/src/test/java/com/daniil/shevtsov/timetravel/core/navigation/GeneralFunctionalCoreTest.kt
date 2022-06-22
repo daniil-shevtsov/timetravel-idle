@@ -1,6 +1,6 @@
 package com.daniil.shevtsov.timetravel.core.navigation
 
-//TODO: Uncomment when have another screen
+//TODO: Uncomment when gave several screens
 internal class GeneralFunctionalCoreTest {
 //    @Test
 //    fun `should replace current screen when opening another`() {

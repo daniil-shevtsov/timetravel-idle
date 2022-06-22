@@ -10,7 +10,6 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.daniil.shevtsov.timetravel.R
 import com.daniil.shevtsov.timetravel.application.TimeTravelGameApplication
 import com.daniil.shevtsov.timetravel.databinding.FragmentMainBinding
-import com.daniil.shevtsov.timetravel.feature.main.view.ScreenHostComposable
 import com.google.accompanist.insets.ProvideWindowInsets
 import javax.inject.Inject
 

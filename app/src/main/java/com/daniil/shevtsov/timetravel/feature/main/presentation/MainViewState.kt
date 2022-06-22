@@ -4,5 +4,7 @@ package com.daniil.shevtsov.timetravel.feature.main.presentation
 sealed class MainViewState {
     object Loading : MainViewState()
 
-    object Success : MainViewState()
+    data class Success(
+        val kek: String,
+    ) : MainViewState()
 }
