@@ -10,9 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.daniil.shevtsov.timetravel.core.ui.Pallete
-import com.daniil.shevtsov.timetravel.core.ui.cavitary
-import com.daniil.shevtsov.timetravel.core.ui.protrusive
+import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 
 @Composable
 fun MyProgressBar(
@@ -25,10 +23,6 @@ fun MyProgressBar(
             modifier = modifier
                 .fillMaxWidth()
                 .height(height)
-                .cavitary(
-                    lightColor = Pallete.LightRed,
-                    darkColor = Pallete.DarkRed
-                )
                 .background(Color.White),
         )
         Box(
@@ -36,11 +30,7 @@ fun MyProgressBar(
                 .fillMaxWidth(fraction = progressPercentage)
                 .height(height)
                 .padding(4.dp)
-                .protrusive(
-                    lightColor = Pallete.LightRed,
-                    darkColor = Pallete.DarkRed
-                )
-                .background(Pallete.Red),
+                .background(AppTheme.colors.background),
         )
     }
 }

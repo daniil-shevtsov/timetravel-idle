@@ -11,7 +11,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.daniil.shevtsov.timetravel.core.ui.Pallete
+import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 
 @Preview
 @Composable
@@ -37,7 +37,7 @@ fun TitleWithProgress(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Pallete.Red)
+            .background(AppTheme.colors.background)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
