@@ -10,9 +10,19 @@ fun mainFunctionalCore(
 ): GameState {
     val newState = when (viewAction) {
         is MainViewAction.Init -> state
-        is MainViewAction.SelectChoice -> state
+        is MainViewAction.SelectChoice -> selectChoice(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
+}
+
+fun selectChoice(
+    state: GameState,
+    viewAction: MainViewAction.SelectChoice
+): GameState {
+    return state
 }
 
 fun handleDrawerTabSwitched(

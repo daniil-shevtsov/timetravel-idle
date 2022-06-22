@@ -26,7 +26,7 @@ class TimeTravelGameApplication : Application() {
                     drawerTabs = createInitialDrawerTabs(),
                     currentScreen = Screen.Main,
                     screenStack = listOf(Screen.Main),
-                    plot = createInitialPlot(),
+                    plot = createInitialPlots().first(),
                     plots = createInitialPlots(),
                 )
             )

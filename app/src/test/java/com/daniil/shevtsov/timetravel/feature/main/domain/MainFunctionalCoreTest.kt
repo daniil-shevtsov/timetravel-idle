@@ -18,7 +18,7 @@ class MainFunctionalCoreTest {
 
     @Test
     fun `should show initial plot`() {
-        val initialPlot = "Hello"
+        val initialPlot = plot(text = "Hello")
 
         val state = mainFunctionalCore(
             state = gameState(plot = initialPlot),

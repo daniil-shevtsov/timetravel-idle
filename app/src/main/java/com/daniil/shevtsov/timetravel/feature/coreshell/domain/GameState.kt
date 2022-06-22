@@ -5,13 +5,14 @@ import com.daniil.shevtsov.timetravel.core.domain.balanceConfig
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
+import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 
 data class GameState(
     val balanceConfig: BalanceConfig,
     val drawerTabs: List<DrawerTab>,
     val currentScreen: Screen,
     val screenStack: List<Screen>,
-    val plot: String,
+    val plot: Plot,
     val plots: List<Plot>,
 )
 
@@ -20,9 +21,9 @@ fun gameState(
     currentScreen: Screen = Screen.Main,
     screenStack: List<Screen> = emptyList(),
     drawerTabs: List<DrawerTab> = emptyList(),
-    plot: String = "",
+    plot: Plot = plot(),
     plots: List<Plot> = emptyList(),
-    ) = GameState(
+) = GameState(
     balanceConfig = balanceConfig,
     drawerTabs = drawerTabs,
     currentScreen = currentScreen,
