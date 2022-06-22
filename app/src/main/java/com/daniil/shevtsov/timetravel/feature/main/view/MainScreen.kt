@@ -1,11 +1,14 @@
 package com.daniil.shevtsov.timetravel.feature.main.view
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
@@ -61,9 +64,29 @@ fun Content(
     modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit = {},
 ) {
-    val scope = rememberCoroutineScope()
-
-    Column(modifier = modifier) { Text("HELLO") }
+    Column(modifier = modifier.fillMaxSize()) {
+        Text(
+            text = state.plot.text,
+            textAlign = TextAlign.Center,
+            style = AppTheme.typography.title,
+            modifier = Modifier.weight(1f)
+                .fillMaxWidth(),
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingSmall)
+        ) {
+            state.plot.choices.forEach { choice ->
+                Text(
+                    text = choice.text,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { onViewAction(MainViewAction.SelectChoice(id = choice.id)) }
+                        .background(AppTheme.colors.background)
+                        .padding(AppTheme.dimensions.paddingSmall)
+                )
+            }
+        }
+    }
 
 
 }
