@@ -1,12 +1,8 @@
-package com.daniil.shevtsov.idle.core.navigation
+package com.daniil.shevtsov.timetravel.core.navigation
 
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
-import com.daniil.shevtsov.timetravel.core.navigation.Screen
-import com.daniil.shevtsov.timetravel.core.navigation.ScreenContentViewState
-import com.daniil.shevtsov.timetravel.core.navigation.ScreenHostViewState
-import com.daniil.shevtsov.timetravel.core.navigation.screenPresentationFunctionalCore
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import org.junit.jupiter.api.Test
 
