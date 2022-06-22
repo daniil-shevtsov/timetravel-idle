@@ -9,7 +9,8 @@ fun mainFunctionalCore(
     viewAction: MainViewAction,
 ): GameState {
     val newState = when (viewAction) {
-        MainViewAction.Init -> state
+        is MainViewAction.Init -> state
+        is MainViewAction.SelectChoice -> state
     }
     return newState
 }

@@ -9,6 +9,7 @@ import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
+import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
 import org.koin.core.Koin
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,6 +27,7 @@ class TimeTravelGameApplication : Application() {
                     currentScreen = Screen.Main,
                     screenStack = listOf(Screen.Main),
                     plot = createInitialPlot(),
+                    plots = createInitialPlots(),
                 )
             )
     }
