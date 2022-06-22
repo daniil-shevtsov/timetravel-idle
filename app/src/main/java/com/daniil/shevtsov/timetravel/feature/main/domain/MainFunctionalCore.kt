@@ -22,7 +22,13 @@ fun selectChoice(
     state: GameState,
     viewAction: MainViewAction.SelectChoice
 ): GameState {
-    return state
+    val selectedChoice =
+        state.plot.choices.find { choice -> choice.id == viewAction.id } ?: return state
+    val newPlot =
+        state.plots.find { plot -> plot.id == selectedChoice.destinationPlotId } ?: return state
+    return state.copy(
+        plot = newPlot
+    )
 }
 
 fun handleDrawerTabSwitched(

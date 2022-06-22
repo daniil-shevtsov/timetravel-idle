@@ -7,10 +7,7 @@ import assertk.assertions.prop
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
-import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
-import com.daniil.shevtsov.timetravel.feature.plot.domain.PlotId
-import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
-import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
+import com.daniil.shevtsov.timetravel.feature.plot.domain.*
 import org.junit.jupiter.api.Test
 
 
@@ -36,7 +33,7 @@ class MainFunctionalCoreTest {
         val kekPlot = plot(id = PlotId(3L), text = "You have chosen kek")
 
         val lolChoice = choice(id = ChoiceId(1L), destinationPlotId = lolPlot.id)
-        val kekChoice = choice(id = ChoiceId(1L), destinationPlotId = kekPlot.id)
+        val kekChoice = choice(id = ChoiceId(2L), destinationPlotId = kekPlot.id)
 
         val initialPlot = plot(
             id = PlotId(1L),
@@ -48,6 +45,7 @@ class MainFunctionalCoreTest {
         )
 
         val initialState = gameState(
+            plot = initialPlot,
             plots = listOf(
                 initialPlot,
                 lolPlot,
@@ -66,13 +64,16 @@ class MainFunctionalCoreTest {
 
         assertThat(lolState)
             .extractingPlot()
+            .extractingText()
             .isEqualTo(lolPlot.text)
 
         assertThat(kekState)
             .extractingPlot()
+            .extractingText()
             .isEqualTo(kekPlot.text)
     }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
+    private fun Assert<Plot>.extractingText() = prop(Plot::text)
 
 }
