@@ -4,7 +4,6 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 
-
 fun mainFunctionalCore(
     state: GameState,
     viewAction: MainViewAction,

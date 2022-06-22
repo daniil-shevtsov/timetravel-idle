@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class ScreenPresentationTest {
     @Test
     fun `should form main view state when main screen selected`() {
-        val state = gameState(currentScreen = Screen.Main)
+        val state = gameState(currentScreen = Screen.Main, plot = "Hello")
 
         val viewState = screenPresentationFunctionalCore(state = state)
 

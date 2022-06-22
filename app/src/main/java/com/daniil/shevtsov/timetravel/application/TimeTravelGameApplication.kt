@@ -25,6 +25,7 @@ class TimeTravelGameApplication : Application() {
                     drawerTabs = createInitialDrawerTabs(),
                     currentScreen = Screen.Main,
                     screenStack = listOf(Screen.Main),
+                    plot = createInitialPlot(),
                 )
             )
     }
@@ -59,5 +60,7 @@ class TimeTravelGameApplication : Application() {
     private fun createInitialDrawerTabs() = listOf(
         DrawerTab(id = DrawerTabId.Debug, title = "Debug", isSelected = false),
     )
+
+    private fun createInitialPlot() = "Lol"
 
 }

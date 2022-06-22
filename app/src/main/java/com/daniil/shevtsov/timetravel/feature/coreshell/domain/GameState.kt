@@ -10,6 +10,7 @@ data class GameState(
     val drawerTabs: List<DrawerTab>,
     val currentScreen: Screen,
     val screenStack: List<Screen>,
+    val plot: String,
 )
 
 fun gameState(
@@ -17,9 +18,11 @@ fun gameState(
     currentScreen: Screen = Screen.Main,
     screenStack: List<Screen> = emptyList(),
     drawerTabs: List<DrawerTab> = emptyList(),
+    plot: String = "",
     ) = GameState(
     balanceConfig = balanceConfig,
     drawerTabs = drawerTabs,
     currentScreen = currentScreen,
     screenStack = screenStack,
+    plot = plot,
 )
