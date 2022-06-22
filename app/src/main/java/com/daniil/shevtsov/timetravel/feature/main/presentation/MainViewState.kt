@@ -5,6 +5,6 @@ sealed class MainViewState {
     object Loading : MainViewState()
 
     data class Success(
-        val drawerState: DrawerViewState,
+        val kek: String,
     ) : MainViewState()
 }

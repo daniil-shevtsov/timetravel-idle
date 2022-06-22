@@ -1,9 +1,8 @@
 package com.daniil.shevtsov.timetravel.core.navigation
 
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
+import com.daniil.shevtsov.timetravel.feature.drawer.domain.drawerFunctionalCore
 import com.daniil.shevtsov.timetravel.feature.main.domain.mainFunctionalCore
-import com.daniil.shevtsov.timetravel.feature.main.domain.toMainState
-import com.daniil.shevtsov.timetravel.feature.main.domain.updateGameState
 
 fun screenFunctionalCore(
     state: GameState,
@@ -11,10 +10,14 @@ fun screenFunctionalCore(
 ): GameState {
     return when (viewAction) {
         is ScreenViewAction.Main -> mainFunctionalCore(
-            state = state.toMainState(),
+            state = state,
             viewAction = viewAction.action,
-        ).updateGameState(currentState = state)
+        )
         is ScreenViewAction.General -> generalFunctionalCore(
+            state = state,
+            viewAction = viewAction.action,
+        )
+        is ScreenViewAction.Drawer -> drawerFunctionalCore(
             state = state,
             viewAction = viewAction.action,
         )

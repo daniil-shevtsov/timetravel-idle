@@ -1,27 +1,15 @@
 package com.daniil.shevtsov.timetravel.feature.main.presentation
 
-import com.daniil.shevtsov.timetravel.feature.debug.presentation.DebugViewState
-import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
-import com.daniil.shevtsov.timetravel.feature.main.domain.MainFunctionalCoreState
+import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 
 fun mapMainViewState(
-    state: MainFunctionalCoreState
+    state: GameState
 ): MainViewState {
     return createMainViewState(state)
 }
 
-private fun createMainViewState(state: MainFunctionalCoreState): MainViewState {
+private fun createMainViewState(state: GameState): MainViewState {
     return MainViewState.Success(
-        drawerState = DrawerViewState(
-            tabSelectorState = state.drawerTabs,
-            drawerContent = when (state.drawerTabs.find { it.isSelected }?.id
-                ?: DrawerTabId.Debug) {
-                DrawerTabId.Debug -> {
-                    DrawerContentViewState.Debug(
-                        state = DebugViewState,
-                    )
-                }
-            }
-        ),
+        kek = "Lol",
     )
 }

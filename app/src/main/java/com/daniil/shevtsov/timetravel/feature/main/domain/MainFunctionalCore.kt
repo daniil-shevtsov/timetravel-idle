@@ -1,25 +1,24 @@
 package com.daniil.shevtsov.timetravel.feature.main.domain
 
+import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
+import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 
+
 fun mainFunctionalCore(
-    state: MainFunctionalCoreState,
+    state: GameState,
     viewAction: MainViewAction,
-): MainFunctionalCoreState {
+): GameState {
     val newState = when (viewAction) {
-        is MainViewAction.DrawerTabSwitched -> handleDrawerTabSwitched(
-            state = state,
-            viewAction = viewAction,
-        )
         MainViewAction.Init -> state
     }
     return newState
 }
 
 fun handleDrawerTabSwitched(
-    state: MainFunctionalCoreState,
-    viewAction: MainViewAction.DrawerTabSwitched
-): MainFunctionalCoreState {
+    state: GameState,
+    viewAction: DrawerViewAction.TabSwitched
+): GameState {
     return state.copy(
         drawerTabs = state.drawerTabs.map { tab ->
             tab.copy(isSelected = tab.id == viewAction.id)

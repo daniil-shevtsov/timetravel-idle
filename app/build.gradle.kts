@@ -74,6 +74,7 @@ dependencies {
     with(Deps.Accompanist) {
         implementation(insets)
         implementation(pager)
+        implementation(systemUiController)
     }
 
     with(Deps.Dagger) {

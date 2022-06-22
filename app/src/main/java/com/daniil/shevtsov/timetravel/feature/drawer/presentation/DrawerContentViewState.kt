@@ -1,4 +1,4 @@
-package com.daniil.shevtsov.timetravel.feature.main.presentation
+package com.daniil.shevtsov.timetravel.feature.drawer.presentation
 
 import com.daniil.shevtsov.timetravel.feature.debug.presentation.DebugViewState
 
