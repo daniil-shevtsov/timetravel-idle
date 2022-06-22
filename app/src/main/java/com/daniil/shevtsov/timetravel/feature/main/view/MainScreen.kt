@@ -8,7 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
-import com.daniil.shevtsov.timetravel.feature.main.presentation.mainViewState
+import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
+import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
+import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
 
 @Preview(
     widthDp = 320,
@@ -17,8 +19,14 @@ import com.daniil.shevtsov.timetravel.feature.main.presentation.mainViewState
 @Composable
 fun MainPreview() {
     MainScreen(
-        state = mainViewState(
-            kek = "kek",
+        state = MainViewState.Content(
+            plot = PlotViewState(
+                text = "Very important plot",
+                choices = listOf(
+                    ChoiceModel(id = ChoiceId(1L), text = "Do something smart"),
+                    ChoiceModel(id = ChoiceId(2L), text = "Do something stupid"),
+                )
+            )
         ),
         onViewAction = {},
     )
@@ -32,7 +40,7 @@ fun MainScreen(
 ) {
     when (state) {
         is MainViewState.Loading -> LoadingContent()
-        is MainViewState.Success -> SuccessContent(
+        is MainViewState.Content -> Content(
             state = state,
             onViewAction = onViewAction,
             modifier = modifier,
@@ -42,27 +50,14 @@ fun MainScreen(
 }
 
 @Composable
-fun SuccessContent(
-    state: MainViewState.Success,
-    onViewAction: (MainViewAction) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    ContentBody(
-        state = state,
-        onViewAction = onViewAction,
-        modifier = modifier,
-    )
-}
-
-@Composable
 fun LoadingContent() {
     Text("Loading")
 }
 
 
 @Composable
-fun ContentBody(
-    state: MainViewState.Success,
+fun Content(
+    state: MainViewState.Content,
     modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit = {},
 ) {

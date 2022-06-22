@@ -1,10 +1,14 @@
 package com.daniil.shevtsov.timetravel.feature.main.presentation
 
+import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+
 
 sealed class MainViewState {
     object Loading : MainViewState()
 
-    data class Success(
-        val kek: String,
+    data class Content(
+        val plot: PlotViewState,
     ) : MainViewState()
 }
+
+
