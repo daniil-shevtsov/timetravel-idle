@@ -42,10 +42,12 @@ private fun Choice.toModel() = ChoiceModel(
 
 private fun PassedTime.toModel() = ResourceModel(
     id = ResourceId.Time,
+    title = "Passed Time",
     text = value.toString(DurationUnit.SECONDS, decimals = 2)
 )
 
 private fun Resource.toModel() = ResourceModel(
     id = id,
+    title = name,
     text = value.toString(),
 )

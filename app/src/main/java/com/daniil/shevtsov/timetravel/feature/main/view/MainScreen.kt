@@ -34,8 +34,18 @@ fun MainPreview() {
                 )
             ),
             resources = ResourcesViewState(
-                passedTime = ResourceModel(id = ResourceId.Time, text = "5.00 s"),
-                resources = listOf(ResourceModel(id = ResourceId.Money, text = "100 $"))
+                passedTime = ResourceModel(
+                    id = ResourceId.Time,
+                    title = "Passed Time",
+                    text = "5.00 s"
+                ),
+                resources = listOf(
+                    ResourceModel(
+                        id = ResourceId.Money,
+                        title = "Money",
+                        text = "100 $"
+                    )
+                )
             )
         ),
         onViewAction = {},
@@ -78,18 +88,36 @@ fun Content(
             .background(AppTheme.colors.backgroundDark)
             .padding(AppTheme.dimensions.paddingS)
     ) {
-        Row {
-            Text(
-                text = "Passed time:",
-                style = AppTheme.typography.bodyTitle,
-                modifier = Modifier,
-            )
-            Text(
-                text = state.resources.passedTime.text,
-                style = AppTheme.typography.body,
-                modifier = Modifier,
-            )
+        Column(modifier = Modifier.width(IntrinsicSize.Max)) {
+            Row {
+                Text(
+                    text = "Passed time:",
+                    style = AppTheme.typography.bodyTitle,
+                    modifier = Modifier,
+                )
+                Text(
+                    text = state.resources.passedTime.text,
+                    style = AppTheme.typography.body,
+                    modifier = Modifier,
+                )
+            }
+            state.resources.resources.forEach { resource ->
+                Row {
+                    Text(
+                        text = resource.title,
+                        style = AppTheme.typography.bodyTitle,
+                        modifier = Modifier,
+                    )
+                    Text(
+                        text = resource.text,
+                        textAlign = TextAlign.End,
+                        style = AppTheme.typography.body,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
         }
+
 
         Text(
             text = state.plot.text,
