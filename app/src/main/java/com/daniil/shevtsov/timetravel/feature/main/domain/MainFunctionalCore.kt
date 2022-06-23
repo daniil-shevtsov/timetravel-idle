@@ -14,6 +14,10 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        is MainViewAction.SelectAction -> selectAction(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
 }
@@ -29,6 +33,13 @@ fun selectChoice(
     return state.copy(
         plot = newPlot
     )
+}
+
+fun selectAction(
+    state: GameState,
+    viewAction: MainViewAction.SelectAction
+): GameState {
+    return state
 }
 
 fun handleDrawerTabSwitched(
