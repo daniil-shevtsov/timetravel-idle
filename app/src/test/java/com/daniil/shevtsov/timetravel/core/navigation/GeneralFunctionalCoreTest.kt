@@ -15,7 +15,7 @@ internal class GeneralFunctionalCoreTest {
     @Test
     fun `should update passed time when ticked`() {
         val tickRate = Duration.milliseconds(5)
-        val state = generalFunctionalCore(
+        val stateAfterOneTick = generalFunctionalCore(
             state = gameState(
                 balanceConfig(tickRate = tickRate),
                 passedTime = PassedTime(Duration.ZERO)
@@ -23,10 +23,20 @@ internal class GeneralFunctionalCoreTest {
             viewAction = GeneralViewAction.Tick,
         )
 
-        assertThat(state)
+        assertThat(stateAfterOneTick)
             .prop(GameState::passedTime)
             .prop(PassedTime::value)
             .isEqualTo(tickRate)
+
+        val stateAfterTwoTicks = generalFunctionalCore(
+            state = stateAfterOneTick,
+            viewAction = GeneralViewAction.Tick,
+        )
+
+        assertThat(stateAfterTwoTicks)
+            .prop(GameState::passedTime)
+            .prop(PassedTime::value)
+            .isEqualTo(tickRate * 2)
     }
 
     //TODO: Uncomment when gave several screens
