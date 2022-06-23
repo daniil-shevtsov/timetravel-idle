@@ -14,6 +14,7 @@ import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 
@@ -33,7 +34,8 @@ fun MainPreview() {
                 )
             ),
             resources = ResourcesViewState(
-                passedTime = ResourceModel(text = "5.00 s")
+                passedTime = ResourceModel(id = ResourceId.Time, text = "5.00 s"),
+                resources = listOf(ResourceModel(id = ResourceId.Money, text = "100 $"))
             )
         ),
         onViewAction = {},

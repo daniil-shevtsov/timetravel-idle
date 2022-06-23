@@ -6,6 +6,7 @@ import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
+import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import kotlin.time.Duration
 
@@ -17,6 +18,7 @@ data class GameState(
     val plot: Plot,
     val plots: List<Plot>,
     val passedTime: PassedTime,
+    val resources: List<Resource>,
 )
 
 fun gameState(
@@ -27,6 +29,7 @@ fun gameState(
     plot: Plot = plot(),
     plots: List<Plot> = emptyList(),
     passedTime: PassedTime = PassedTime(Duration.ZERO),
+    resources: List<Resource> = emptyList(),
 ) = GameState(
     balanceConfig = balanceConfig,
     drawerTabs = drawerTabs,
@@ -35,4 +38,5 @@ fun gameState(
     plot = plot,
     plots = plots,
     passedTime = passedTime,
+    resources = resources,
 )

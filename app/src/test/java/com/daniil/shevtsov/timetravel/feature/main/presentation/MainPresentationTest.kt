@@ -9,6 +9,8 @@ import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
@@ -49,6 +51,25 @@ class MainPresentationTest {
                     }
             }
 
+    }
+
+    @Test
+    fun `should show only resources that you have`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                resources = listOf(
+                    resource(id = ResourceId.TimeCrystal, value = 0f),
+                    resource(id = ResourceId.Money, value = 100f),
+                ),
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .extracting(ResourceModel::id, ResourceModel::text)
+            .containsExactly(ResourceId.Money to "100.0")
     }
 
 }

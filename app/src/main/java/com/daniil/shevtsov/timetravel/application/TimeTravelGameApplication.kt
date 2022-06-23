@@ -10,6 +10,8 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
+import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.koin.core.Koin
 import timber.log.Timber
@@ -31,6 +33,9 @@ class TimeTravelGameApplication : Application() {
                     plot = createInitialPlots().first(),
                     plots = createInitialPlots(),
                     passedTime = PassedTime(Duration.ZERO),
+                    resources = ResourceId.values().map { id ->
+                        Resource(id = id, name = id.toString(), value = 0f)
+                    }
                 )
             )
     }
