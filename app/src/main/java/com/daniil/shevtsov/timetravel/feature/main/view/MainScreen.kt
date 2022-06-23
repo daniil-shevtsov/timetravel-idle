@@ -132,12 +132,14 @@ fun Content(
                                 } else {
                                     modifier
                                 }.weight(1f)
+                                    .clickable { onViewAction(MainViewAction.SelectAction(id = startAction.id)) }
                             },
                         )
                         if (endAction != null) {
                             ActionItem(
                                 model = endAction,
                                 modifier = Modifier.weight(1f)
+                                    .clickable { onViewAction(MainViewAction.SelectAction(id = endAction.id)) }
                             )
                         }
 
