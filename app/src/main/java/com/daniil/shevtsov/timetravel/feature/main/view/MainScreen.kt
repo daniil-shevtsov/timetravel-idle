@@ -19,6 +19,11 @@ import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
+import kotlin.time.Duration
 
 @Preview(
     widthDp = 320,
@@ -53,6 +58,13 @@ fun MainPreview() {
                 ActionModel(id = ActionId(0L), title = "Do Lol"),
                 ActionModel(id = ActionId(1L), title = "Do Kek"),
                 ActionModel(id = ActionId(2L), title = "Do Cheburek"),
+            ),
+            timeTravel = TimeTravelViewState(
+                moments = listOf(
+                    TimeMomentModel(id = TimeMomentId(1L), time = PassedTime(Duration.seconds(4L))),
+                    TimeMomentModel(id = TimeMomentId(2L), time = PassedTime(Duration.seconds(8L))),
+                    TimeMomentModel(id = TimeMomentId(3L), time = PassedTime(Duration.seconds(10L))),
+                )
             )
         ),
         onViewAction = {},

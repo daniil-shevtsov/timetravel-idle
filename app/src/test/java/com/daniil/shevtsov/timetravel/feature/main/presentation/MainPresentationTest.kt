@@ -19,6 +19,10 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
 
@@ -31,10 +35,15 @@ class MainPresentationTest {
             text = "Text",
             choices = listOf(choice),
         )
+        val timeMoment = timeMoment(
+            id = TimeMomentId(1L),
+            stateSnapshot = gameState(passedTime = PassedTime(Duration.seconds(2L)))
+        )
         val viewState = mapMainViewState(
             state = gameState(
                 plot = plot,
                 passedTime = PassedTime(Duration.seconds(5L)),
+                timeMoments = listOf(timeMoment)
             )
         )
 
@@ -53,6 +62,13 @@ class MainPresentationTest {
                         prop(ResourcesViewState::passedTime)
                             .prop(ResourceModel::text)
                             .isEqualTo("5.00s")
+                    }
+                prop(MainViewState.Content::timeTravel)
+                    .prop(TimeTravelViewState::moments)
+                    .index(0)
+                    .all {
+                        prop(TimeMomentModel::id).isEqualTo(timeMoment.id)
+                        prop(TimeMomentModel::time).isEqualTo(timeMoment.stateSnapshot.passedTime)
                     }
             }
 

@@ -12,6 +12,9 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import kotlin.time.DurationUnit
 
 fun mapMainViewState(
@@ -26,6 +29,9 @@ fun mapMainViewState(
                 .map { it.toModel() }
         ),
         actions = state.actions.map { it.toModel() },
+        timeTravel = TimeTravelViewState(
+            moments = state.timeMoments.map { it.toModel() }
+        )
     )
 }
 
@@ -54,4 +60,9 @@ private fun Resource.toModel() = ResourceModel(
 private fun Action.toModel() = ActionModel(
     id = id,
     title = title,
+)
+
+private fun TimeMoment.toModel() = TimeMomentModel(
+    id = id,
+    time = stateSnapshot.passedTime
 )
