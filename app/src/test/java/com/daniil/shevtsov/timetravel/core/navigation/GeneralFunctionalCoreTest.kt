@@ -3,6 +3,7 @@ package com.daniil.shevtsov.timetravel.core.navigation
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
+import com.daniil.shevtsov.timetravel.core.domain.balanceConfig
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
@@ -13,16 +14,19 @@ import kotlin.time.Duration
 internal class GeneralFunctionalCoreTest {
     @Test
     fun `should update passed time when ticked`() {
-        val tickValue = Duration.milliseconds(5)
+        val tickRate = Duration.milliseconds(5)
         val state = generalFunctionalCore(
-            state = gameState(passedTime = PassedTime(Duration.ZERO)),
+            state = gameState(
+                balanceConfig(tickRate = tickRate),
+                passedTime = PassedTime(Duration.ZERO)
+            ),
             viewAction = GeneralViewAction.Tick,
         )
 
         assertThat(state)
             .prop(GameState::passedTime)
             .prop(PassedTime::value)
-            .isEqualTo(tickValue)
+            .isEqualTo(tickRate)
     }
 
     //TODO: Uncomment when gave several screens

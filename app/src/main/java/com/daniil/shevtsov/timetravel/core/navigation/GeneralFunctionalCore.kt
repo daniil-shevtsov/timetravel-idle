@@ -28,5 +28,12 @@ fun generalFunctionalCore(
             state
         }
     }
-    GeneralViewAction.Tick -> state
+    GeneralViewAction.Tick -> {
+        val previousTime = state.passedTime
+        val newTime = state.passedTime.copy(value = previousTime.value + state.balanceConfig.tickRate)
+
+        state.copy(
+            passedTime = newTime
+        )
+    }
 }

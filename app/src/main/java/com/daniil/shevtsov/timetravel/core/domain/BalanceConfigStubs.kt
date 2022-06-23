@@ -1,9 +1,10 @@
 package com.daniil.shevtsov.timetravel.core.domain
 
 import com.daniil.shevtsov.timetravel.core.BalanceConfig
+import kotlin.time.Duration
 
 fun balanceConfig(
-    tickRateMillis: Long = 0L,
+    tickRate: Duration = Duration.ZERO,
 ) = BalanceConfig(
-    tickRateMillis = tickRateMillis,
+    tickRate = tickRate,
 )
