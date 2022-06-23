@@ -8,7 +8,9 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.junit.jupiter.api.Test
+import kotlin.time.Duration
 
 
 class MainFunctionalCoreTest {
@@ -18,7 +20,7 @@ class MainFunctionalCoreTest {
         val initialPlot = plot(text = "Hello")
 
         val state = mainFunctionalCore(
-            state = gameState(plot = initialPlot),
+            state = gameState(plot = initialPlot, passedTime = PassedTime(Duration.ZERO)),
             viewAction = MainViewAction.Init,
         )
 
@@ -50,7 +52,8 @@ class MainFunctionalCoreTest {
                 initialPlot,
                 lolPlot,
                 kekPlot,
-            )
+            ),
+            passedTime = PassedTime(Duration.ZERO)
         )
 
         val lolState = mainFunctionalCore(

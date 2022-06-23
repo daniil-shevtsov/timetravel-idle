@@ -28,4 +28,5 @@ fun generalFunctionalCore(
             state
         }
     }
+    GeneralViewAction.Tick -> state
 }

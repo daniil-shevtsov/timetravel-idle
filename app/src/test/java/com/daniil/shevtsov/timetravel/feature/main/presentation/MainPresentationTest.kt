@@ -9,7 +9,9 @@ import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.junit.jupiter.api.Test
+import kotlin.time.Duration
 
 class MainPresentationTest {
 
@@ -23,6 +25,7 @@ class MainPresentationTest {
         val viewState = mapMainViewState(
             state = gameState(
                 plot = plot,
+                passedTime = PassedTime(Duration.ZERO),
             )
         )
 

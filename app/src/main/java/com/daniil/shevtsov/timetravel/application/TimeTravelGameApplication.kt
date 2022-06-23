@@ -10,9 +10,11 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.koin.core.Koin
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Duration
 
 class TimeTravelGameApplication : Application() {
     lateinit var koin: Koin
@@ -28,6 +30,7 @@ class TimeTravelGameApplication : Application() {
                     screenStack = listOf(Screen.Main),
                     plot = createInitialPlots().first(),
                     plots = createInitialPlots(),
+                    passedTime = PassedTime(Duration.ZERO),
                 )
             )
     }

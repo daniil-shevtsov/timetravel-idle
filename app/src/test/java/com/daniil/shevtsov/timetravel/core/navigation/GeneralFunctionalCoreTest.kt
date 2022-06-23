@@ -1,7 +1,31 @@
 package com.daniil.shevtsov.timetravel.core.navigation
 
-//TODO: Uncomment when gave several screens
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.prop
+import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
+import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import org.junit.jupiter.api.Test
+import kotlin.time.Duration
+
+
 internal class GeneralFunctionalCoreTest {
+    @Test
+    fun `should update passed time when ticked`() {
+        val tickValue = Duration.milliseconds(5)
+        val state = generalFunctionalCore(
+            state = gameState(passedTime = PassedTime(Duration.ZERO)),
+            viewAction = GeneralViewAction.Tick,
+        )
+
+        assertThat(state)
+            .prop(GameState::passedTime)
+            .prop(PassedTime::value)
+            .isEqualTo(tickValue)
+    }
+
+    //TODO: Uncomment when gave several screens
 //    @Test
 //    fun `should replace current screen when opening another`() {
 //        val state = generalFunctionalCore(
