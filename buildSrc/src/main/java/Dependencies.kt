@@ -1,39 +1,40 @@
 object Versions {
-    const val androidMinSdk = 21
-    const val androidCompileSdk = 31
-    const val androidTargetSdk = androidCompileSdk
+const val androidMinSdk = 21
+const val androidCompileSdk = 31
+const val androidTargetSdk = androidCompileSdk
 
-    const val assertk = "0.24"
+const val assertk = "0.24"
 
-    const val accompanist = "0.20.2"
+const val accompanist = "0.20.2"
 
-    const val compose = "1.0.5"
-    const val composeMultiplatform = "1.0.0-alpha08"
+const val compose = "1.1.1"
+const val composeMultiplatform = "1.0.0-alpha08"
 
-    const val dagger = "2.36"
+const val dagger = "2.42"
 
-    const val jupiter = "5.7.2"
-    const val junit = "4.13"
-    const val mockk = "1.11.0"
+const val jupiter = "5.7.2"
+const val junit = "4.13"
+const val mockk = "1.11.0"
 
-    const val kBigNum = "2.2.0"
+const val kBigNum = "2.2.0"
 
-    const val kotlin = "1.5.31"
-    const val kotlinCoroutines = "1.5.2-native-mt"
-    const val koin = "3.1.1"
-    const val kotlinterGradle = "3.4.5"
+const val kotlin = "1.6.10"
+const val kotlinCoroutines = "1.5.2-native-mt"
+const val koin = "3.1.1"
+const val kotlinterGradle = "3.4.5"
 
-    const val material = "1.4.0"
+const val material = "1.4.0"
 
-    const val navCompose = "2.4.0-alpha04"
-    const val navigationComponent = "2.3.5"
+const val navCompose = "2.4.0-alpha04"
+const val navigationComponent = "2.3.5"
 
-    const val shadow = "7.0.0"
+const val shadow = "7.0.0"
+const val snapper = "0.2.1"
 
-    const val timber = "5.0.1"
-    const val turbine = "0.6.1"
+const val timber = "5.0.1"
+const val turbine = "0.6.1"
 
-    const val viewBindingDelegate = "1.4.6"
+const val viewBindingDelegate = "1.4.6"
 }
 
 object Deps {
@@ -64,11 +65,15 @@ object Deps {
         const val ui = "androidx.compose.ui:ui:${Versions.compose}"
         const val uiGraphics = "androidx.compose.ui:ui-graphics:${Versions.compose}"
         const val uiTooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
+        const val uiToolingPreview = "androidx.compose.ui:ui-tooling-preview:${Versions.compose}"
         const val foundationLayout =
             "androidx.compose.foundation:foundation-layout:${Versions.compose}"
         const val material = "androidx.compose.material:material:${Versions.compose}"
-        const val materialExtended = "androidx.compose.material:material-icons-extended:${Versions.compose}"
+        const val materialExtended =
+            "androidx.compose.material:material-icons-extended:${Versions.compose}"
         const val navigation = "androidx.navigation:navigation-compose:${Versions.navCompose}"
+
+        const val snapper = "dev.chrisbanes.snapper:snapper:${Versions.snapper}"
     }
 
     object Koin {
