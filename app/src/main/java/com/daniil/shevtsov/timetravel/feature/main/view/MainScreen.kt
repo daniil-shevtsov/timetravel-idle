@@ -69,7 +69,13 @@ fun Content(
     modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit = {},
 ) {
-    Column(modifier = modifier.fillMaxSize().padding(AppTheme.dimensions.paddingXS)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+        modifier = modifier
+            .fillMaxSize()
+            .background(AppTheme.colors.backgroundDark)
+            .padding(AppTheme.dimensions.paddingS)
+    ) {
         Row {
             Text(
                 text = "Passed time:",
@@ -85,10 +91,13 @@ fun Content(
 
         Text(
             text = state.plot.text,
-            textAlign = TextAlign.Center,
-            style = AppTheme.typography.title,
-            modifier = Modifier.weight(1f)
-                .fillMaxWidth(),
+            textAlign = TextAlign.Start,
+            style = AppTheme.typography.body,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .background(AppTheme.colors.backgroundLight)
+                .padding(AppTheme.dimensions.paddingS),
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS)
