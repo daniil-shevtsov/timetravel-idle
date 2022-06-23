@@ -16,6 +16,8 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
 
@@ -123,26 +125,27 @@ class MainFunctionalCoreTest {
             .isEqualTo(initialState)
     }
 
-//    @Test
-//    fun `should restore moment in the past when travelling through time`() {
-//        val pastState = gameState(
-//            passedTime = PassedTime(Duration.milliseconds(5)),
-//        )
-//
-//        val currentState = gameState(
-//            passedTime = PassedTime(Duration.milliseconds(10))
-//        )
-//
-//        val newState = mainFunctionalCore(
-//            state = currentState,
-//            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
-//        )
-//
-//        assertThat(newState)
-//            .prop(GameState::passedTime)
-//            .prop(PassedTime::value)
-//            .isEqualTo(pastState.passedTime)
-//    }
+    @Test
+    fun `should restore moment in the past when travelling through time`() {
+        val pastState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(5)),
+        )
+
+        val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
+        val currentState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(10)),
+            timeMoments = listOf(timeMoment),
+        )
+
+        val newState = mainFunctionalCore(
+            state = currentState,
+            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
+        )
+
+        assertThat(newState)
+            .prop(GameState::passedTime)
+            .isEqualTo(pastState.passedTime)
+    }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
     private fun Assert<Plot>.extractingText() = prop(Plot::text)

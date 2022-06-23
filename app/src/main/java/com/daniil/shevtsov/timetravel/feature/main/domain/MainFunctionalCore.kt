@@ -20,26 +20,16 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
-        is MainViewAction.TravelBackToMoment -> state
+        is MainViewAction.TravelBackToMoment -> travelBackInTime(
+            state = state,
+            viewAction = viewAction,
+        )
         is MainViewAction.RegisterTimePoint -> registerTimePoint(
             state = state,
             viewAction = viewAction,
         )
     }
     return newState
-}
-
-fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
-    return state.copy(
-        timeMoments = state.timeMoments + listOf(
-            TimeMoment(
-                id = TimeMomentId(
-                    (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
-                ),
-                stateSnapshot = state,
-            )
-        )
-    )
 }
 
 fun selectChoice(
@@ -71,6 +61,25 @@ fun selectAction(
         }
     }
     return state.copy(resources = newResources)
+}
+
+fun travelBackInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment): GameState {
+    val selectedMoment =
+        state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
+    return selectedMoment.stateSnapshot
+}
+
+fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
+    return state.copy(
+        timeMoments = state.timeMoments + listOf(
+            TimeMoment(
+                id = TimeMomentId(
+                    (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
+                ),
+                stateSnapshot = state,
+            )
+        )
+    )
 }
 
 fun handleDrawerTabSwitched(
