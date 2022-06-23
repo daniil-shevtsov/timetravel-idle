@@ -70,6 +70,19 @@ fun Content(
     onViewAction: (MainViewAction) -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxSize()) {
+        Row {
+            Text(
+                text = "Passed time:",
+                style = AppTheme.typography.bodyTitle,
+                modifier = Modifier,
+            )
+            Text(
+                text = state.resources.passedTime.text,
+                style = AppTheme.typography.body,
+                modifier = Modifier,
+            )
+        }
+
         Text(
             text = state.plot.text,
             textAlign = TextAlign.Center,
