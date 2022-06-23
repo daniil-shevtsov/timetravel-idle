@@ -40,11 +40,12 @@ class ScreenHostViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        timeImperativeShell.startEmitingTime()
+        timeImperativeShell.passedTime
             .onEach {
                 viewActionFlow.emit(ScreenViewAction.General(GeneralViewAction.Tick))
             }
             .launchIn(viewModelScope)
+        viewModelScope.launch { timeImperativeShell.startEmitingTime() }
     }
 
     fun handleAction(action: ScreenViewAction) {
