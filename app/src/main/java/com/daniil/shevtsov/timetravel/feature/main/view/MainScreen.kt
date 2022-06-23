@@ -145,6 +145,7 @@ fun Content(
                 color = AppTheme.colors.textLight,
                 modifier = modifier
                     .fillMaxWidth()
+                    .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
                     .background(AppTheme.colors.background)
                     .padding(AppTheme.dimensions.paddingS)
             )
@@ -166,6 +167,7 @@ fun Content(
                         color = AppTheme.colors.textLight,
                         modifier = modifier
                             .background(AppTheme.colors.background)
+                            .clickable { onViewAction(MainViewAction.TravelBackToMoment(id = item.id)) }
                             .padding(AppTheme.dimensions.paddingS)
                     )
                 }
