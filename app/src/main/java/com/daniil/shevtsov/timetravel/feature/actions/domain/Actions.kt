@@ -21,4 +21,12 @@ fun createInitialActions() = listOf(
             resourceChange(id = ResourceId.Money, change = 100f)
         )
     ),
+    action(
+        id = ActionId(2L),
+        title = "Pass time",
+        requiredTime = Duration.seconds(5L),
+        resourceChanges = resourceChanges(
+            resourceChange(id = ResourceId.Time, change = 100f)
+        )
+    ),
 )
