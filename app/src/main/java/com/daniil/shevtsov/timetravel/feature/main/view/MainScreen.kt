@@ -89,28 +89,18 @@ fun Content(
             .padding(AppTheme.dimensions.paddingS)
     ) {
         Column(modifier = Modifier.width(IntrinsicSize.Max)) {
-            Row {
-                Text(
-                    text = "Passed time:",
-                    style = AppTheme.typography.bodyTitle,
-                    modifier = Modifier,
-                )
-                Text(
-                    text = state.resources.passedTime.text,
-                    style = AppTheme.typography.body,
-                    modifier = Modifier,
-                )
-            }
-            state.resources.resources.forEach { resource ->
-                Row {
+            (listOf(state.resources.passedTime) + state.resources.resources).forEach { resource ->
+                Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
                     Text(
                         text = resource.title,
+                        color = AppTheme.colors.textLight,
                         style = AppTheme.typography.bodyTitle,
                         modifier = Modifier,
                     )
                     Text(
                         text = resource.text,
                         textAlign = TextAlign.End,
+                        color = AppTheme.colors.textLight,
                         style = AppTheme.typography.body,
                         modifier = Modifier.fillMaxWidth(),
                     )
