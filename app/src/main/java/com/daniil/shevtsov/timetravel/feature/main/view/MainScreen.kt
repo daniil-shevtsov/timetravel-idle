@@ -3,8 +3,11 @@ package com.daniil.shevtsov.timetravel.feature.main.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,7 +66,10 @@ fun MainPreview() {
                 moments = listOf(
                     TimeMomentModel(id = TimeMomentId(1L), time = PassedTime(Duration.seconds(4L))),
                     TimeMomentModel(id = TimeMomentId(2L), time = PassedTime(Duration.seconds(8L))),
-                    TimeMomentModel(id = TimeMomentId(3L), time = PassedTime(Duration.seconds(10L))),
+                    TimeMomentModel(
+                        id = TimeMomentId(3L),
+                        time = PassedTime(Duration.seconds(10L))
+                    ),
                 )
             )
         ),
@@ -122,6 +128,45 @@ fun Content(
                         color = AppTheme.colors.textLight,
                         style = AppTheme.typography.body,
                         modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+        ) {
+            Text(
+                text = "Register time point",
+                style = AppTheme.typography.bodyTitle,
+                textAlign = TextAlign.Center,
+                color = AppTheme.colors.textLight,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(AppTheme.colors.background)
+                    .padding(AppTheme.dimensions.paddingS)
+            )
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AppTheme.colors.backgroundDarkest)
+                    .padding(AppTheme.dimensions.paddingS),
+                horizontalArrangement = Arrangement.spacedBy(
+                    AppTheme.dimensions.paddingS,
+                    Alignment.CenterHorizontally
+                )
+            ) {
+                items(state.timeTravel.moments) { item ->
+                    Text(
+                        text = item.time.value.toString(),
+                        style = AppTheme.typography.bodyTitle,
+                        textAlign = TextAlign.Center,
+                        color = AppTheme.colors.textLight,
+                        modifier = modifier
+                            .background(AppTheme.colors.background)
+                            .padding(AppTheme.dimensions.paddingS)
                     )
                 }
             }
