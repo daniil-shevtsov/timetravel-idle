@@ -59,7 +59,7 @@ class TimeTravelGameApplication : Application() {
     }
 
     private fun createBalanceConfig() = BalanceConfig(
-        tickRate = Duration.milliseconds(1),
+        tickRate = Duration.milliseconds(500),
     )
 
     private fun createInitialDrawerTabs() = listOf(
