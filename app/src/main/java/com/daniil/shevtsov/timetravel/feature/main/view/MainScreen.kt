@@ -69,7 +69,7 @@ fun Content(
     modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit = {},
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().padding(AppTheme.dimensions.paddingXS)) {
         Row {
             Text(
                 text = "Passed time:",
@@ -91,16 +91,19 @@ fun Content(
                 .fillMaxWidth(),
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingSmall)
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS)
         ) {
             state.plot.choices.forEach { choice ->
                 Text(
                     text = choice.text,
+                    style = AppTheme.typography.bodyTitle,
+                    textAlign = TextAlign.Center,
+                    color = AppTheme.colors.textLight,
                     modifier = Modifier
                         .weight(1f)
                         .clickable { onViewAction(MainViewAction.SelectChoice(id = choice.id)) }
                         .background(AppTheme.colors.background)
-                        .padding(AppTheme.dimensions.paddingSmall)
+                        .padding(AppTheme.dimensions.paddingS)
                 )
             }
         }
