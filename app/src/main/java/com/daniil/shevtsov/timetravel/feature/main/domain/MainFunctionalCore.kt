@@ -3,6 +3,8 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
 fun mainFunctionalCore(
     state: GameState,
@@ -19,8 +21,25 @@ fun mainFunctionalCore(
             viewAction = viewAction,
         )
         is MainViewAction.TravelBackToMoment -> state
+        is MainViewAction.RegisterTimePoint -> registerTimePoint(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
+}
+
+fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
+    return state.copy(
+        timeMoments = state.timeMoments + listOf(
+            TimeMoment(
+                id = TimeMomentId(
+                    (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
+                ),
+                stateSnapshot = state,
+            )
+        )
+    )
 }
 
 fun selectChoice(

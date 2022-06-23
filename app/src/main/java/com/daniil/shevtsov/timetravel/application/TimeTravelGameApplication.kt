@@ -38,6 +38,7 @@ class TimeTravelGameApplication : Application() {
                         Resource(id = id, name = id.toString(), value = 0f)
                     },
                     actions = createInitialActions(),
+                    timeMoments = emptyList(),
                 )
             )
     }

@@ -8,5 +8,6 @@ sealed class MainViewAction {
     object Init : MainViewAction()
     data class SelectChoice(val id: ChoiceId) : MainViewAction()
     data class SelectAction(val id: ActionId) : MainViewAction()
+    object RegisterTimePoint : MainViewAction()
     data class TravelBackToMoment(val id: TimeMomentId): MainViewAction()
 }

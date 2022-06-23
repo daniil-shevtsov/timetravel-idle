@@ -2,10 +2,7 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 
 import assertk.Assert
 import assertk.assertThat
-import assertk.assertions.containsExactly
-import assertk.assertions.extracting
-import assertk.assertions.isEqualTo
-import assertk.assertions.prop
+import assertk.assertions.*
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.domain.action
 import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
@@ -18,7 +15,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
-import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
 
@@ -112,26 +109,40 @@ class MainFunctionalCoreTest {
     }
 
     @Test
-    fun `should restore moment in the past when travelling through time`() {
-        val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
-        )
-        val timeMoment = timeMoment()
-
-        val currentState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10))
+    fun `should save gamestatesnapshot when register time point clicked`() {
+        val initialState = gameState()
+        val state = mainFunctionalCore(
+            state = initialState,
+            viewAction = MainViewAction.RegisterTimePoint,
         )
 
-        val newState = mainFunctionalCore(
-            state = currentState,
-            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
-        )
-
-        assertThat(newState)
-            .prop(GameState::passedTime)
-            .prop(PassedTime::value)
-            .isEqualTo(pastState.passedTime)
+        assertThat(state)
+            .prop(GameState::timeMoments)
+            .index(0)
+            .prop(TimeMoment::stateSnapshot)
+            .isEqualTo(initialState)
     }
+
+//    @Test
+//    fun `should restore moment in the past when travelling through time`() {
+//        val pastState = gameState(
+//            passedTime = PassedTime(Duration.milliseconds(5)),
+//        )
+//
+//        val currentState = gameState(
+//            passedTime = PassedTime(Duration.milliseconds(10))
+//        )
+//
+//        val newState = mainFunctionalCore(
+//            state = currentState,
+//            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
+//        )
+//
+//        assertThat(newState)
+//            .prop(GameState::passedTime)
+//            .prop(PassedTime::value)
+//            .isEqualTo(pastState.passedTime)
+//    }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
     private fun Assert<Plot>.extractingText() = prop(Plot::text)

@@ -41,7 +41,7 @@ class ScreenHostViewModel @Inject constructor(
             .launchIn(viewModelScope)
 
         timeImperativeShell.passedTime
-            .onEach {
+            .onEach { passed ->
                 viewActionFlow.emit(ScreenViewAction.General(GeneralViewAction.Tick))
             }
             .launchIn(viewModelScope)
