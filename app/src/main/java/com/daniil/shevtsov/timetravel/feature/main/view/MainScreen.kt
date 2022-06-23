@@ -50,7 +50,9 @@ fun MainPreview() {
                 )
             ),
             actions = listOf(
-                ActionModel(id = ActionId(0L), title = "Prepare Cheburek")
+                ActionModel(id = ActionId(0L), title = "Do Lol"),
+                ActionModel(id = ActionId(1L), title = "Do Kek"),
+                ActionModel(id = ActionId(2L), title = "Do Cheburek"),
             )
         ),
         onViewAction = {},
@@ -113,6 +115,35 @@ fun Content(
             }
         }
 
+        Column(
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+        ) {
+            (0..state.actions.size step 2)
+                .map { index -> state.actions.get(index) to state.actions.getOrNull(index + 1) }
+                .forEach { (startAction, endAction) ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+                    ) {
+                        ActionItem(
+                            model = startAction,
+                            modifier = Modifier.let { modifier ->
+                                if (endAction == null) {
+                                    modifier.fillMaxWidth()
+                                } else {
+                                    modifier
+                                }.weight(1f)
+                            },
+                        )
+                        if (endAction != null) {
+                            ActionItem(
+                                model = endAction,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                    }
+                }
+        }
 
         Text(
             text = state.plot.text,
@@ -143,5 +174,20 @@ fun Content(
         }
     }
 
+}
 
+@Composable
+private fun ActionItem(
+    model: ActionModel,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = model.title,
+        style = AppTheme.typography.bodyTitle,
+        textAlign = TextAlign.Center,
+        color = AppTheme.colors.textLight,
+        modifier = modifier
+            .background(AppTheme.colors.background)
+            .padding(AppTheme.dimensions.paddingS)
+    )
 }
