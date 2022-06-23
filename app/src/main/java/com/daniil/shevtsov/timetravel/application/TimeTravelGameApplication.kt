@@ -6,6 +6,7 @@ import com.daniil.shevtsov.timetravel.core.BalanceConfig
 import com.daniil.shevtsov.timetravel.core.di.DaggerAppComponent
 import com.daniil.shevtsov.timetravel.core.di.koin.appModule
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
+import com.daniil.shevtsov.timetravel.feature.actions.domain.createInitialActions
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
@@ -35,7 +36,8 @@ class TimeTravelGameApplication : Application() {
                     passedTime = PassedTime(Duration.ZERO),
                     resources = ResourceId.values().map { id ->
                         Resource(id = id, name = id.toString(), value = 0f)
-                    }
+                    },
+                    actions = createInitialActions(),
                 )
             )
     }

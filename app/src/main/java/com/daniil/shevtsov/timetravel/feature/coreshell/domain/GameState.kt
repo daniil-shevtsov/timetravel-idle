@@ -3,6 +3,7 @@ package com.daniil.shevtsov.timetravel.feature.coreshell.domain
 import com.daniil.shevtsov.timetravel.core.BalanceConfig
 import com.daniil.shevtsov.timetravel.core.domain.balanceConfig
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
+import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
@@ -19,6 +20,7 @@ data class GameState(
     val plots: List<Plot>,
     val passedTime: PassedTime,
     val resources: List<Resource>,
+    val actions: List<Action>,
 )
 
 fun gameState(
@@ -30,6 +32,7 @@ fun gameState(
     plots: List<Plot> = emptyList(),
     passedTime: PassedTime = PassedTime(Duration.ZERO),
     resources: List<Resource> = emptyList(),
+    actions: List<Action> = emptyList(),
 ) = GameState(
     balanceConfig = balanceConfig,
     drawerTabs = drawerTabs,
@@ -39,4 +42,5 @@ fun gameState(
     plots = plots,
     passedTime = passedTime,
     resources = resources,
+    actions = actions,
 )

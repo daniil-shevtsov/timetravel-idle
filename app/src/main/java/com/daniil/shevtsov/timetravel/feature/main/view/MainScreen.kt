@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
+import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
+import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
@@ -46,6 +48,9 @@ fun MainPreview() {
                         text = "100 $"
                     )
                 )
+            ),
+            actions = listOf(
+                ActionModel(id = ActionId(0L), title = "Prepare Cheburek")
             )
         ),
         onViewAction = {},

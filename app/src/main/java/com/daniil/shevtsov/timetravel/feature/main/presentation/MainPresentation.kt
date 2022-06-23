@@ -1,5 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.main.presentation
 
+import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
+import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
@@ -15,10 +17,6 @@ import kotlin.time.DurationUnit
 fun mapMainViewState(
     state: GameState
 ): MainViewState {
-    return createMainViewState(state)
-}
-
-private fun createMainViewState(state: GameState): MainViewState {
     return MainViewState.Content(
         plot = state.plot.toViewState(),
         resources = ResourcesViewState(
@@ -26,7 +24,8 @@ private fun createMainViewState(state: GameState): MainViewState {
             resources = state.resources
                 .filter { resource -> resource.value > 0f }
                 .map { it.toModel() }
-        )
+        ),
+        actions = state.actions.map { it.toModel() },
     )
 }
 
@@ -50,4 +49,9 @@ private fun Resource.toModel() = ResourceModel(
     id = id,
     title = name,
     text = value.toString(),
+)
+
+private fun Action.toModel() = ActionModel(
+    id = id,
+    title = title,
 )

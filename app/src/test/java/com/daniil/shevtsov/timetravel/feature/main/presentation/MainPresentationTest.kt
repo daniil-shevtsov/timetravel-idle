@@ -3,6 +3,11 @@ package com.daniil.shevtsov.timetravel.feature.main.presentation
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
+import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
+import com.daniil.shevtsov.timetravel.feature.actions.domain.action
+import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
+import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChanges
+import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
@@ -70,6 +75,32 @@ class MainPresentationTest {
             .prop(ResourcesViewState::resources)
             .extracting(ResourceModel::id, ResourceModel::text)
             .containsExactly(ResourceId.Money to "100.0")
+    }
+
+    @Test
+    fun `should show available actions`() {
+        val action = action(
+            id = ActionId(1L),
+            resourceChanges = resourceChanges(
+                resourceChange(
+                    id = ResourceId.Money,
+                    change = -50f
+                )
+            )
+        )
+        val viewState = mapMainViewState(
+            state = gameState(
+                actions = listOf(
+                    action
+                ),
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::actions)
+            .extracting(ActionModel::id, ActionModel::title)
+            .containsExactly(action.id to action.title)
     }
 
 }
