@@ -9,6 +9,8 @@ import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
@@ -25,7 +27,7 @@ class MainPresentationTest {
         val viewState = mapMainViewState(
             state = gameState(
                 plot = plot,
-                passedTime = PassedTime(Duration.ZERO),
+                passedTime = PassedTime(Duration.seconds(5L)),
             )
         )
 
@@ -38,6 +40,12 @@ class MainPresentationTest {
                         prop(PlotViewState::choices)
                             .extracting(ChoiceModel::id, ChoiceModel::text)
                             .containsExactly(choice.id to choice.text)
+                    }
+                prop(MainViewState.Content::resources)
+                    .all {
+                        prop(ResourcesViewState::passedTime)
+                            .prop(ResourceModel::text)
+                            .isEqualTo("5.00s")
                     }
             }
 

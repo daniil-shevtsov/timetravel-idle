@@ -33,7 +33,7 @@ fun generalFunctionalCore(
         val newTime = state.passedTime.copy(value = previousTime.value + state.balanceConfig.tickRate)
 
         state.copy(
-            passedTime = newTime
+            passedTime = newTime,
         )
     }
 }

@@ -14,6 +14,8 @@ import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 
 @Preview(
     widthDp = 320,
@@ -29,6 +31,9 @@ fun MainPreview() {
                     ChoiceModel(id = ChoiceId(1L), text = "Do something smart"),
                     ChoiceModel(id = ChoiceId(2L), text = "Do something stupid"),
                 )
+            ),
+            resources = ResourcesViewState(
+                passedTime = ResourceModel(text = "5.00 s")
             )
         ),
         onViewAction = {},
