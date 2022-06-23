@@ -18,6 +18,7 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        is MainViewAction.TravelBackToMoment -> state
     }
     return newState
 }

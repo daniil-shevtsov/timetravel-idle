@@ -18,6 +18,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
 
@@ -108,6 +109,28 @@ class MainFunctionalCoreTest {
             .prop(GameState::resources)
             .extracting(Resource::id, Resource::value)
             .containsExactly(resource.id to 75f)
+    }
+
+    @Test
+    fun `should restore moment in the past when travelling through time`() {
+        val pastState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(5)),
+        )
+        val timeMoment = timeMoment()
+
+        val currentState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(10))
+        )
+
+        val newState = mainFunctionalCore(
+            state = currentState,
+            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
+        )
+
+        assertThat(newState)
+            .prop(GameState::passedTime)
+            .prop(PassedTime::value)
+            .isEqualTo(pastState.passedTime)
     }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
