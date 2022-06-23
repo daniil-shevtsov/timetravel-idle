@@ -68,8 +68,8 @@ class AppColors(
 fun defaultColors(): AppColors = AppColors(
     backgroundLight = Color(0xFFD1E3DD),
     background = Color(0xFF6E7DAB),
-    backgroundDark = Color(0xFF750404),
-    backgroundDarkest = Color(0xFF575366),
+    backgroundDark = Color(0xFF575366),
+    backgroundDarkest = Color(0xFF32292F),
     backgroundText = Color.White,
     textDark = Color.Black,
     textLight = Color.White,

@@ -6,13 +6,18 @@ import com.daniil.shevtsov.timetravel.core.BalanceConfig
 import com.daniil.shevtsov.timetravel.core.di.DaggerAppComponent
 import com.daniil.shevtsov.timetravel.core.di.koin.appModule
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
+import com.daniil.shevtsov.timetravel.feature.actions.domain.createInitialActions
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
+import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.koin.core.Koin
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Duration
 
 class TimeTravelGameApplication : Application() {
     lateinit var koin: Koin
@@ -28,6 +33,11 @@ class TimeTravelGameApplication : Application() {
                     screenStack = listOf(Screen.Main),
                     plot = createInitialPlots().first(),
                     plots = createInitialPlots(),
+                    passedTime = PassedTime(Duration.ZERO),
+                    resources = ResourceId.values().map { id ->
+                        Resource(id = id, name = id.toString(), value = 0f)
+                    },
+                    actions = createInitialActions(),
                 )
             )
     }
@@ -56,7 +66,7 @@ class TimeTravelGameApplication : Application() {
     }
 
     private fun createBalanceConfig() = BalanceConfig(
-        tickRateMillis = 1L,
+        tickRate = Duration.milliseconds(500),
     )
 
     private fun createInitialDrawerTabs() = listOf(

@@ -3,13 +3,24 @@ package com.daniil.shevtsov.timetravel.feature.main.presentation
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
+import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
+import com.daniil.shevtsov.timetravel.feature.actions.domain.action
+import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
+import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChanges
+import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.junit.jupiter.api.Test
+import kotlin.time.Duration
 
 class MainPresentationTest {
 
@@ -23,6 +34,7 @@ class MainPresentationTest {
         val viewState = mapMainViewState(
             state = gameState(
                 plot = plot,
+                passedTime = PassedTime(Duration.seconds(5L)),
             )
         )
 
@@ -36,8 +48,59 @@ class MainPresentationTest {
                             .extracting(ChoiceModel::id, ChoiceModel::text)
                             .containsExactly(choice.id to choice.text)
                     }
+                prop(MainViewState.Content::resources)
+                    .all {
+                        prop(ResourcesViewState::passedTime)
+                            .prop(ResourceModel::text)
+                            .isEqualTo("5.00s")
+                    }
             }
 
+    }
+
+    @Test
+    fun `should show only resources that you have`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                resources = listOf(
+                    resource(id = ResourceId.TimeCrystal, value = 0f),
+                    resource(id = ResourceId.Money, value = 100f),
+                ),
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .extracting(ResourceModel::id, ResourceModel::text)
+            .containsExactly(ResourceId.Money to "100.0")
+    }
+
+    @Test
+    fun `should show available actions`() {
+        val action = action(
+            id = ActionId(1L),
+            resourceChanges = resourceChanges(
+                resourceChange(
+                    id = ResourceId.Money,
+                    change = -50f
+                )
+            )
+        )
+        val viewState = mapMainViewState(
+            state = gameState(
+                actions = listOf(
+                    action
+                ),
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::actions)
+            .extracting(ActionModel::id, ActionModel::title)
+            .containsExactly(action.id to action.title)
     }
 
 }

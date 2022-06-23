@@ -3,9 +3,13 @@ package com.daniil.shevtsov.timetravel.feature.coreshell.domain
 import com.daniil.shevtsov.timetravel.core.BalanceConfig
 import com.daniil.shevtsov.timetravel.core.domain.balanceConfig
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
+import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
+import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
+import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import kotlin.time.Duration
 
 data class GameState(
     val balanceConfig: BalanceConfig,
@@ -14,6 +18,9 @@ data class GameState(
     val screenStack: List<Screen>,
     val plot: Plot,
     val plots: List<Plot>,
+    val passedTime: PassedTime,
+    val resources: List<Resource>,
+    val actions: List<Action>,
 )
 
 fun gameState(
@@ -23,6 +30,9 @@ fun gameState(
     drawerTabs: List<DrawerTab> = emptyList(),
     plot: Plot = plot(),
     plots: List<Plot> = emptyList(),
+    passedTime: PassedTime = PassedTime(Duration.ZERO),
+    resources: List<Resource> = emptyList(),
+    actions: List<Action> = emptyList(),
 ) = GameState(
     balanceConfig = balanceConfig,
     drawerTabs = drawerTabs,
@@ -30,4 +40,7 @@ fun gameState(
     screenStack = screenStack,
     plot = plot,
     plots = plots,
+    passedTime = passedTime,
+    resources = resources,
+    actions = actions,
 )

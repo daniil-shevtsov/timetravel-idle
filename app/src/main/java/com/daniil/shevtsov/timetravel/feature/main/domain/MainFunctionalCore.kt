@@ -14,6 +14,10 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        is MainViewAction.SelectAction -> selectAction(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
 }
@@ -29,6 +33,24 @@ fun selectChoice(
     return state.copy(
         plot = newPlot
     )
+}
+
+fun selectAction(
+    state: GameState,
+    viewAction: MainViewAction.SelectAction
+): GameState {
+    val selectedAction = state.actions.find { action -> action.id == viewAction.id } ?: return state
+    val newResources = state.resources.map { resource ->
+        val resourceChange = selectedAction.resourceChanges[resource.id]
+        if (resourceChange != null) {
+            resource.copy(
+                value = resource.value + resourceChange
+            )
+        } else {
+            resource
+        }
+    }
+    return state.copy(resources = newResources)
 }
 
 fun handleDrawerTabSwitched(

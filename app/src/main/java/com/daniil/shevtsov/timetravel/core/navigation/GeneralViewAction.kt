@@ -6,4 +6,5 @@ sealed class GeneralViewAction {
         val shouldReplace: Boolean = false,
         ) : GeneralViewAction()
     object Back : GeneralViewAction()
+    object Tick : GeneralViewAction()
 }
