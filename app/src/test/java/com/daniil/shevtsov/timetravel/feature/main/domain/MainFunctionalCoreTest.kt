@@ -147,6 +147,31 @@ class MainFunctionalCoreTest {
             .isEqualTo(pastState.passedTime)
     }
 
+    @Test
+    fun `should keep time moments when travelling through time`() {
+        val pastState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(5)),
+        )
+
+        val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
+        val futureState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(10)),
+            timeMoments = listOf(timeMoment),
+        )
+
+        val newState = mainFunctionalCore(
+            state = futureState,
+            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
+        )
+
+        assertThat(newState)
+            .prop(GameState::timeMoments)
+            .extracting(TimeMoment::id)
+            .containsExactly(
+                timeMoment.id,
+            )
+    }
+
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
     private fun Assert<Plot>.extractingText() = prop(Plot::text)
 

@@ -66,7 +66,9 @@ fun selectAction(
 fun travelBackInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment): GameState {
     val selectedMoment =
         state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
-    return selectedMoment.stateSnapshot
+    return selectedMoment.stateSnapshot.copy(
+        timeMoments = state.timeMoments,
+    )
 }
 
 fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
