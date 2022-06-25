@@ -1,17 +1,23 @@
 package com.daniil.shevtsov.timetravel.feature.main.view
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -200,10 +206,97 @@ fun Content(
                     .padding(AppTheme.dimensions.paddingS)
             )
 
-            TimeMoments(
-                state = state,
-                onViewAction = onViewAction,
-            )
+//            TimeMoments(
+//                state = state,
+//                onViewAction = onViewAction,
+//            )
+            val timelineHeight = 60.dp
+            val allTimelines = state.timeTravel.moments
+                .groupBy { it.timelineParent }
+
+            val stateRowMap: Map<TimeMomentId?, LazyListState> =
+                allTimelines.keys.toList().map { it to rememberLazyListState() }.toMap()
+
+            val itemWidth = 60.dp
+            val itemSpacing = AppTheme.dimensions.paddingS
+            val temporaryPaddingMap = mutableMapOf<TimeMomentId?, Dp>()
+
+            val paddingMap =
+                (allTimelines.entries.map { it.key to it.value })
+                    .mapIndexed { mapIndex, (timelineParentId, timeMoments) ->
+                        val parentTimeline = allTimelines.entries.find { (_, timeMoments) ->
+                            timeMoments.any { moment -> moment.id == timelineParentId }
+                        }?.toPair()
+                        val parentTimeMoments = parentTimeline?.second.orEmpty()
+
+                        if (mapIndex == 0) {
+                            temporaryPaddingMap[null] = Dp(0f)
+                        } else {
+
+                            val parent = parentTimeMoments.find { it.id == timelineParentId }
+                            requireNotNull(parent) { "Can't find timeline with parent moment" }
+                            val itemsBeforeParentAndParent = parentTimeMoments
+                                .mapIndexed { index, moment -> index to moment }
+                                .count { (index, moment) ->
+                                    index <= parentTimeMoments.indexOf(
+                                        parent
+                                    )
+                                }
+
+                            temporaryPaddingMap[timelineParentId] =
+                                (AppTheme.dimensions.paddingS.value + temporaryPaddingMap[parent.timelineParent]!!.value + itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value).dp
+                        }
+
+                        timelineParentId to temporaryPaddingMap[timelineParentId]!!
+                    }.toMap()
+
+            val pointSize = with(LocalDensity.current) { 10.dp.toPx() }
+            val lineHeight = with(LocalDensity.current) { 4.dp.toPx() }
+            val segmentLength = with(LocalDensity.current) {  16.dp.toPx() }
+            val padding = with(LocalDensity.current) {  AppTheme.dimensions.paddingS.toPx() }
+
+            val lineColor = AppTheme.colors.background
+            val pointColor = AppTheme.colors.textLight
+            Canvas(
+                modifier = Modifier
+                    .background(AppTheme.colors.backgroundDarkest)
+                    .scrollable(rememberScrollState(), Orientation.Horizontal)
+                    .fillMaxWidth()
+                    .height(100.dp)
+            ) {
+                allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
+                    if (timelineIndex == 0) {
+                        moments.forEachIndexed { index, moment ->
+                            if (index == 0) {
+                                drawCircle(
+                                    color = pointColor,
+                                    radius = pointSize / 2,
+                                    center = Offset(padding, padding)
+                                )
+                            } else {
+                                drawLine(
+                                    color = lineColor,
+                                    strokeWidth = lineHeight,
+                                    start = Offset(
+                                        padding + (index - 1) * segmentLength,
+                                        padding
+                                    ),
+                                    end = Offset(
+                                        padding + index * segmentLength,
+                                        padding
+                                    ),
+                                )
+                                drawCircle(
+                                    color = pointColor,
+                                    radius = pointSize / 2,
+                                    center = Offset(padding, padding)
+                                )
+                            }
+                        }
+                    }
+                }
+
+            }
         }
 
         Column(
@@ -281,7 +374,8 @@ private fun TimeMoments(
     val allTimelines = state.timeTravel.moments
         .groupBy { it.timelineParent }
 
-    val stateRowMap: Map<TimeMomentId?, LazyListState> = allTimelines.keys.toList().map { it to rememberLazyListState() }.toMap()
+    val stateRowMap: Map<TimeMomentId?, LazyListState> =
+        allTimelines.keys.toList().map { it to rememberLazyListState() }.toMap()
 
     val itemWidth = 60.dp
     val itemSpacing = AppTheme.dimensions.paddingS
@@ -360,10 +454,6 @@ private fun TimeMoments(
 
                 if (stateYId != timelineOriginId) {
                     if (!stateToScroll.isScrollInProgress) {
-//                        stateToScroll.scrollBy(scrolledState.firstVisibleItemScrollOffset.toFloat())
-//                        stateY.scroll {
-//                            scrollBy(timelineScrollState.firstVisibleItemScrollOffset.toFloat())
-//                        }
                         stateToScroll.scrollToItem(
                             scrolledState.firstVisibleItemIndex,
                             scrolledState.firstVisibleItemScrollOffset
