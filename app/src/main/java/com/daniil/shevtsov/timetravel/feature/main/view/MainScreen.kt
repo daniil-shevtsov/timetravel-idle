@@ -268,6 +268,8 @@ fun Content(
 
 }
 
+typealias Timeline = Map<TimeMomentId?, List<TimeMomentModel>>
+
 @Composable
 private fun TimeMoments(
     state: MainViewState.Content,
@@ -275,7 +277,6 @@ private fun TimeMoments(
     onViewAction: (MainViewAction) -> Unit
 ) {
     val timelineHeight = 60.dp
-    val titleHeight = 20.dp
     val mainTimeline = state.timeTravel.moments.filter { it.timelineParent == null }
     val otherTimelines = state.timeTravel.moments
         .filter { it.timelineParent != null }
@@ -319,7 +320,15 @@ private fun TimeMoments(
                 contentPadding = PaddingValues(AppTheme.dimensions.paddingS)
             )
             otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
-                val parent = mainTimeline.find { it.id == timelineParentId }!!
+                val parentTimeline = when {
+                    mainTimeline.any { moment -> moment.id == timelineParentId } -> mainTimeline
+                    else -> otherTimelines.entries.find { (_, timeMoments) ->
+                        timeMoments.any { moment -> moment.id == timelineParentId }
+                    }?.value
+                }
+                val parent = parentTimeline?.find { it.id == timelineParentId }
+                requireNotNull(parent) { "Can't find timeline with parent moment" }
+
                 val itemsBeforeParentAndParent = mainTimeline
                     .mapIndexed { index, moment -> index to moment }
                     .count { (index, moment) -> index <= mainTimeline.indexOf(parent) }
