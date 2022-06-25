@@ -64,5 +64,6 @@ private fun Action.toModel() = ActionModel(
 
 private fun TimeMoment.toModel() = TimeMomentModel(
     id = id,
-    time = stateSnapshot.passedTime
+    time = stateSnapshot.passedTime,
+    timelineParent = timelineParentId,
 )

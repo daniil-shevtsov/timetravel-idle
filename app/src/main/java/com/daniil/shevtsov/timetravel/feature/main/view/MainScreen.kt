@@ -31,6 +31,7 @@ import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
 import kotlin.time.Duration
 
 @Preview(
@@ -69,51 +70,51 @@ fun MainPreview() {
             ),
             timeTravel = TimeTravelViewState(
                 moments = listOf(
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(1L),
-                        time = PassedTime(Duration.seconds(4L))
+                        time = PassedTime(Duration.seconds(4L)),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(2L),
-                        time = PassedTime(Duration.seconds(8L))
+                        time = PassedTime(Duration.seconds(8L)),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(3L),
-                        time = PassedTime(Duration.seconds(10L))
+                        time = PassedTime(Duration.seconds(10L)),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(4L),
-                        time = PassedTime(Duration.seconds(11L))
+                        time = PassedTime(Duration.seconds(11L)),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(5L),
-                        time = PassedTime(Duration.seconds(12L))
+                        time = PassedTime(Duration.seconds(12L)),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(6L),
-                        time = PassedTime(Duration.seconds(13L))
+                        time = PassedTime(Duration.seconds(13L)),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(7L),
                         time = PassedTime(Duration.seconds(10L)),
                         timelineParent = TimeMomentId(2L),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(8L),
                         time = PassedTime(Duration.seconds(11L)),
                         timelineParent = TimeMomentId(2L),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(9L),
                         time = PassedTime(Duration.seconds(12L)),
                         timelineParent = TimeMomentId(2L),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(10L),
                         time = PassedTime(Duration.seconds(13L)),
                         timelineParent = TimeMomentId(2L),
                     ),
-                    TimeMomentModel(
+                    timeMomentModel(
                         id = TimeMomentId(11L),
                         time = PassedTime(Duration.seconds(14L)),
                         timelineParent = TimeMomentId(2L),
@@ -306,7 +307,7 @@ private fun TimeMoments(
                 )
             }
         }
-        val itemWidth = 50.dp
+        val itemWidth = 60.dp
         val itemSpacing = AppTheme.dimensions.paddingS
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
             Timeline(
@@ -372,7 +373,7 @@ private fun Timeline(
             .background(AppTheme.colors.backgroundDarkest),
         horizontalArrangement = Arrangement.spacedBy(
             AppTheme.dimensions.paddingS,
-            Alignment.CenterHorizontally
+            Alignment.Start
         ),
         contentPadding = contentPadding,
     ) {
