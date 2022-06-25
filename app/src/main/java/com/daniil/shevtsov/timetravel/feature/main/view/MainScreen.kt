@@ -240,13 +240,28 @@ private fun TimeMoments(
     val otherTimelines = state.timeTravel.moments
         .filter { it.timelineParent != null }
         .groupBy { it.timelineParent }
+    Timeline(
+        title = "Main timeline",
+        mainTimeline = mainTimeline,
+        modifier = modifier,
+        onViewAction = onViewAction,
+    )
+}
+
+@Composable
+private fun Timeline(
+    title: String,
+    mainTimeline: List<TimeMomentModel>,
+    modifier: Modifier = Modifier,
+    onViewAction: (MainViewAction) -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
         modifier = modifier,
     ) {
         Text(
-            text = "Main Timeline",
+            text = title,
             color = AppTheme.colors.textLight,
             style = AppTheme.typography.bodyTitle,
             modifier = Modifier,
