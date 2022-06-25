@@ -3,10 +3,13 @@ package com.daniil.shevtsov.timetravel.feature.main.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -79,9 +82,41 @@ fun MainPreview() {
                     ),
                     TimeMomentModel(
                         id = TimeMomentId(4L),
+                        time = PassedTime(Duration.seconds(11L))
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(5L),
+                        time = PassedTime(Duration.seconds(12L))
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(6L),
+                        time = PassedTime(Duration.seconds(13L))
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(7L),
                         time = PassedTime(Duration.seconds(10L)),
                         timelineParent = TimeMomentId(2L),
-                    )
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(8L),
+                        time = PassedTime(Duration.seconds(11L)),
+                        timelineParent = TimeMomentId(2L),
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(9L),
+                        time = PassedTime(Duration.seconds(12L)),
+                        timelineParent = TimeMomentId(2L),
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(10L),
+                        time = PassedTime(Duration.seconds(13L)),
+                        timelineParent = TimeMomentId(2L),
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(11L),
+                        time = PassedTime(Duration.seconds(14L)),
+                        timelineParent = TimeMomentId(2L),
+                    ),
                 )
             )
         ),
@@ -243,6 +278,11 @@ private fun TimeMoments(
     val otherTimelines = state.timeTravel.moments
         .filter { it.timelineParent != null }
         .groupBy { it.timelineParent }
+
+    val stateRowX = rememberLazyListState() // State for the first Row, X
+    val stateRowY = rememberLazyListState() // State for the second Row, Y
+
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
         modifier = modifier
@@ -268,12 +308,14 @@ private fun TimeMoments(
         }
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
             Timeline(
+                state = stateRowX,
                 timeMoments = mainTimeline,
                 modifier = modifier.height(timelineHeight),
                 onViewAction = onViewAction,
             )
             otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
                 Timeline(
+                    state = stateRowY,
                     timeMoments = timeMoments,
                     modifier = modifier.height(timelineHeight),
                     onViewAction = onViewAction,
@@ -282,15 +324,30 @@ private fun TimeMoments(
         }
     }
 
+    LaunchedEffect(stateRowX.firstVisibleItemScrollOffset) {
+        stateRowY.scrollToItem(
+            stateRowX.firstVisibleItemIndex,
+            stateRowX.firstVisibleItemScrollOffset
+        )
+    }
+
+    LaunchedEffect(stateRowY.firstVisibleItemScrollOffset) {
+        stateRowX.scrollToItem(
+            stateRowY.firstVisibleItemIndex,
+            stateRowY.firstVisibleItemScrollOffset
+        )
+    }
 }
 
 @Composable
 private fun Timeline(
     timeMoments: List<TimeMomentModel>,
     modifier: Modifier = Modifier,
+    state: LazyListState,
     onViewAction: (MainViewAction) -> Unit
 ) {
     LazyRow(
+        state = state,
         modifier = modifier
             .fillMaxWidth()
             .background(AppTheme.colors.backgroundDarkest)
