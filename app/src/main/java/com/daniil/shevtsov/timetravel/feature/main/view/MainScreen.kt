@@ -2,6 +2,7 @@ package com.daniil.shevtsov.timetravel.feature.main.view
 
 import android.graphics.Typeface
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +42,8 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
 import timber.log.Timber
+import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.time.Duration
 
 @Preview(
@@ -212,7 +216,8 @@ fun Content(
 //                onViewAction = onViewAction,
 //            )
             TimelineCanvas(
-                state = state
+                state = state,
+                onViewAction = onViewAction,
             )
         }
 
@@ -386,9 +391,12 @@ data class MomentPosition(
     val position: Offset
 )
 
+fun Offset.distanceTo(offset: Offset) = sqrt((offset.x - x).pow(2) + (offset.y - y).pow(2))
+
 @Composable
 private fun TimelineCanvas(
-    state: MainViewState.Content
+    state: MainViewState.Content,
+    onViewAction: (MainViewAction) -> Unit
 ) {
     val timelineHeight = 60.dp
     val allTimelines = state.timeTravel.moments
@@ -447,13 +455,44 @@ private fun TimelineCanvas(
         typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
         textAlign = android.graphics.Paint.Align.CENTER
     }
+    val momentPositions = mutableMapOf<TimeMomentId, MomentPosition>()
+    allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
+        val parentTimeline = allTimelines.entries.find { (_, moments) ->
+            moments.any { it.id == timelineId }
+        }?.value
+        val parentMoment = parentTimeline?.find { it.id == timelineId }
+        val splitPadding = parentMoment?.let { parentMoment ->
+            parentTimeline.indexOf(parentMoment) * segmentLength
+        } ?: 0f
+        val horizontalPadding = canvasPadding + splitPadding
+        val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
+        moments.forEachIndexed { index, moment ->
+            val circlePosition =
+                horizontalPadding + 0 * segmentLength + pointSize / 2
+            momentPositions[moment.id] =
+                MomentPosition(Offset(x = circlePosition, y = verticalPadding))
+        }
+    }
     Canvas(
         modifier = Modifier
             .background(AppTheme.colors.backgroundDarkest)
             .horizontalScroll(rememberScrollState())
             .width(500.dp)
             .height(100.dp)
-    ) {
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { tapOffset ->
+                        val nearestMoment =
+                            momentPositions.entries.minByOrNull { (momentId, position) ->
+                                tapOffset.distanceTo(position.position)
+                            }
+                        if (nearestMoment != null
+                            && nearestMoment.value.position.distanceTo(tapOffset) <= pointSize
+                        ) {
+                            onViewAction(MainViewAction.TravelBackToMoment(nearestMoment.key))
+                        }
+                    })
+            }) {
         val maxLineLength = (allTimelines.entries
             .maxByOrNull { (id, moments) -> moments.size }?.value?.size?.let {
                 if (it > 0) {
@@ -462,24 +501,7 @@ private fun TimelineCanvas(
                     it
                 }
             } ?: 0) * segmentLength
-        val momentPositions = mutableMapOf<TimeMomentId?, MomentPosition?>()
-        allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-            val parentTimeline = allTimelines.entries.find { (_, moments) ->
-                moments.any { it.id == timelineId }
-            }?.value
-            val parentMoment = parentTimeline?.find { it.id == timelineId }
-            val splitPadding = parentMoment?.let { parentMoment ->
-                parentTimeline.indexOf(parentMoment) * segmentLength
-            } ?: 0f
-            val horizontalPadding = canvasPadding + splitPadding
-            val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
-            moments.forEachIndexed { index, moment ->
-                val circlePosition =
-                    horizontalPadding + 0 * segmentLength + pointSize / 2
-                momentPositions[moment.id] =
-                    MomentPosition(Offset(x = circlePosition, y = verticalPadding))
-            }
-        }
+
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             if (timelineIndex <= 1) {
                 val parentTimeline = allTimelines.entries.find { (_, moments) ->
