@@ -278,6 +278,8 @@ private fun TimeMoments(
     onViewAction: (MainViewAction) -> Unit
 ) {
     val timelineHeight = 60.dp
+    val allTimelines = state.timeTravel.moments
+        .groupBy { it.timelineParent }
     val mainTimeline = state.timeTravel.moments.filter { it.timelineParent == null }
     val otherTimelines = state.timeTravel.moments
         .filter { it.timelineParent != null }
@@ -326,15 +328,10 @@ private fun TimeMoments(
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
         ) {
-            Text(
-                text = "Main Timeline",
-                color = AppTheme.colors.textLight,
-                style = AppTheme.typography.bodyTitle,
-                modifier = Modifier.height(timelineHeight).wrapContentHeight(),
-            )
-            otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
+            allTimelines.entries.forEach { (timelineParentId, timeMoments) ->
                 Text(
-                    text = "Timeline ${timelineParentId?.value}-A",
+                    text = timelineParentId?.let { "Timeline ${timelineParentId.value}-A" }
+                        ?: "Main Timeline",
                     color = AppTheme.colors.textLight,
                     style = AppTheme.typography.bodyTitle,
                     modifier = Modifier.height(timelineHeight).wrapContentHeight(),
@@ -351,7 +348,7 @@ private fun TimeMoments(
                 onViewAction = onViewAction,
                 contentPadding = PaddingValues(
                     start = AppTheme.dimensions.paddingS,
-                    end = AppTheme.dimensions.paddingS /*+ (paddingMap.values.sumOf { it.value.toDouble() }).dp*/,
+                    end = AppTheme.dimensions.paddingS, /*+ (paddingMap.values.sumOf { it.value.toDouble() }).dp*/
                     top = AppTheme.dimensions.paddingS,
                     bottom = AppTheme.dimensions.paddingS,
                 )
@@ -376,7 +373,7 @@ private fun TimeMoments(
                     modifier = modifier.height(timelineHeight),
                     contentPadding = PaddingValues(
                         start = AppTheme.dimensions.paddingS + padding,
-                        end = AppTheme.dimensions.paddingS/* + (paddingMap.values.sumOf { it.value.toDouble() }).dp - padding*/,
+                        end = AppTheme.dimensions.paddingS,/* + (paddingMap.values.sumOf { it.value.toDouble() }).dp - padding*/
                         top = AppTheme.dimensions.paddingS,
                         bottom = AppTheme.dimensions.paddingS,
                     ),
@@ -389,7 +386,7 @@ private fun TimeMoments(
     stateRowMap.entries.forEach { (timelineOriginId, timelineScrollState) ->
         LaunchedEffect(timelineScrollState.firstVisibleItemScrollOffset) {
             stateRowMap.entries.forEach { (stateYId, stateY) ->
-                if(stateYId == null) {
+                if (stateYId == null) {
                     Timber.d("stateY: firstVisibleItemIndex: ${stateY.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${stateY.firstVisibleItemScrollOffset} stateX: firstVisibleItemIndex: ${timelineScrollState.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${timelineScrollState.firstVisibleItemScrollOffset}")
                 }
 
