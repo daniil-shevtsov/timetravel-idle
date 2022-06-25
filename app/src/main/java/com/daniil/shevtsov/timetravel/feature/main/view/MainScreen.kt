@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
@@ -306,18 +307,34 @@ private fun TimeMoments(
                 )
             }
         }
+        val itemWidth = 50.dp
+        val itemSpacing = AppTheme.dimensions.paddingS
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
             Timeline(
                 state = stateRowX,
+                itemWidth = itemWidth,
                 timeMoments = mainTimeline,
                 modifier = modifier.height(timelineHeight),
                 onViewAction = onViewAction,
+                contentPadding = PaddingValues(AppTheme.dimensions.paddingS)
             )
             otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
+                val parent = mainTimeline.find { it.id == timelineParentId }!!
+                val itemsBeforeParentAndParent = mainTimeline
+                    .mapIndexed { index, moment -> index to moment }
+                    .count { (index, moment) -> index <= mainTimeline.indexOf(parent) }
+                val padding = (itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent-1)*itemSpacing.value + AppTheme.dimensions.paddingS.value).dp
                 Timeline(
                     state = stateRowY,
+                    itemWidth = itemWidth,
                     timeMoments = timeMoments,
                     modifier = modifier.height(timelineHeight),
+                    contentPadding = PaddingValues(
+                        start = AppTheme.dimensions.paddingS + padding,
+                        end = AppTheme.dimensions.paddingS,
+                        top = AppTheme.dimensions.paddingS,
+                        bottom = AppTheme.dimensions.paddingS,
+                    ),
                     onViewAction = onViewAction,
                 )
             }
@@ -343,6 +360,8 @@ private fun TimeMoments(
 private fun Timeline(
     timeMoments: List<TimeMomentModel>,
     modifier: Modifier = Modifier,
+    itemWidth: Dp,
+    contentPadding: PaddingValues,
     state: LazyListState,
     onViewAction: (MainViewAction) -> Unit
 ) {
@@ -355,12 +374,12 @@ private fun Timeline(
             AppTheme.dimensions.paddingS,
             Alignment.CenterHorizontally
         ),
-        contentPadding = PaddingValues(AppTheme.dimensions.paddingS),
+        contentPadding = contentPadding,
     ) {
         items(timeMoments) { item ->
             TimeMoment(
                 item = item,
-                modifier = modifier.width(50.dp).fillMaxHeight(),
+                modifier = modifier.width(itemWidth).fillMaxHeight(),
                 onViewAction = onViewAction
             )
         }
