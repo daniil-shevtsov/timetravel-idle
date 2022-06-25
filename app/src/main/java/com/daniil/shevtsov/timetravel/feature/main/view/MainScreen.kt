@@ -64,12 +64,23 @@ fun MainPreview() {
             ),
             timeTravel = TimeTravelViewState(
                 moments = listOf(
-                    TimeMomentModel(id = TimeMomentId(1L), time = PassedTime(Duration.seconds(4L))),
-                    TimeMomentModel(id = TimeMomentId(2L), time = PassedTime(Duration.seconds(8L))),
+                    TimeMomentModel(
+                        id = TimeMomentId(1L),
+                        time = PassedTime(Duration.seconds(4L))
+                    ),
+                    TimeMomentModel(
+                        id = TimeMomentId(2L),
+                        time = PassedTime(Duration.seconds(8L))
+                    ),
                     TimeMomentModel(
                         id = TimeMomentId(3L),
                         time = PassedTime(Duration.seconds(10L))
                     ),
+                    TimeMomentModel(
+                        id = TimeMomentId(4L),
+                        time = PassedTime(Duration.seconds(10L)),
+                        timelineParent = TimeMomentId(2L),
+                    )
                 )
             )
         ),
@@ -149,29 +160,8 @@ fun Content(
                     .background(AppTheme.colors.background)
                     .padding(AppTheme.dimensions.paddingS)
             )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(AppTheme.colors.backgroundDarkest)
-                    .padding(AppTheme.dimensions.paddingS),
-                horizontalArrangement = Arrangement.spacedBy(
-                    AppTheme.dimensions.paddingS,
-                    Alignment.CenterHorizontally
-                )
-            ) {
-                items(state.timeTravel.moments) { item ->
-                    Text(
-                        text = item.time.value.toString(),
-                        style = AppTheme.typography.bodyTitle,
-                        textAlign = TextAlign.Center,
-                        color = AppTheme.colors.textLight,
-                        modifier = modifier
-                            .background(AppTheme.colors.background)
-                            .clickable { onViewAction(MainViewAction.TravelBackToMoment(id = item.id)) }
-                            .padding(AppTheme.dimensions.paddingS)
-                    )
-                }
-            }
+
+            TimeMoments(state, modifier, onViewAction)
         }
 
         Column(
@@ -235,6 +225,38 @@ fun Content(
         }
     }
 
+}
+
+@Composable
+private fun TimeMoments(
+    state: MainViewState.Content,
+    modifier: Modifier,
+    onViewAction: (MainViewAction) -> Unit
+) {
+    val mainTimeline = state.timeTravel.moments.filter { it.timelineParent == null }
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(AppTheme.colors.backgroundDarkest)
+            .padding(AppTheme.dimensions.paddingS),
+        horizontalArrangement = Arrangement.spacedBy(
+            AppTheme.dimensions.paddingS,
+            Alignment.CenterHorizontally
+        )
+    ) {
+        items(mainTimeline) { item ->
+            Text(
+                text = item.time.value.toString(),
+                style = AppTheme.typography.bodyTitle,
+                textAlign = TextAlign.Center,
+                color = AppTheme.colors.textLight,
+                modifier = modifier
+                    .background(AppTheme.colors.background)
+                    .clickable { onViewAction(MainViewAction.TravelBackToMoment(id = item.id)) }
+                    .padding(AppTheme.dimensions.paddingS)
+            )
+        }
+    }
 }
 
 @Composable

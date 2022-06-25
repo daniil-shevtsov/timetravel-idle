@@ -15,6 +15,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeLineId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
@@ -169,6 +170,34 @@ class MainFunctionalCoreTest {
             .extracting(TimeMoment::id)
             .containsExactly(
                 timeMoment.id,
+            )
+    }
+
+    @Test
+    fun `should split timeline if registering moment in the past`() {
+        val pastState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(5)),
+        )
+
+        val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
+        val futureMoment = timeMoment(id = TimeMomentId(2L), stateSnapshot = pastState)
+        val currentState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(10)),
+            timeMoments = listOf(timeMoment, futureMoment),
+        )
+
+        val newState = mainFunctionalCore(
+            state = currentState,
+            viewAction = MainViewAction.RegisterTimePoint,
+        )
+
+        assertThat(newState)
+            .prop(GameState::timeMoments)
+            .extracting(TimeMoment::timeLineId)
+            .containsExactly(
+                timeMoment.timeLineId,
+                futureMoment.timeLineId,
+                TimeLineId(1L),
             )
     }
 

@@ -3,6 +3,7 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeLineId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
@@ -20,7 +21,7 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
-        is MainViewAction.TravelBackToMoment -> travelBackInTime(
+        is MainViewAction.TravelBackToMoment -> travelInTime(
             state = state,
             viewAction = viewAction,
         )
@@ -63,7 +64,7 @@ fun selectAction(
     return state.copy(resources = newResources)
 }
 
-fun travelBackInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment): GameState {
+fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment): GameState {
     val selectedMoment =
         state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
     return selectedMoment.stateSnapshot.copy(
@@ -78,6 +79,7 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
                 id = TimeMomentId(
                     (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
                 ),
+                timeLineId = TimeLineId(0L),
                 stateSnapshot = state,
             )
         )
