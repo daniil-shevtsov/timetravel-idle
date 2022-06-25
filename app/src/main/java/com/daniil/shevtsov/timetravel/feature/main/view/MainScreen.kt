@@ -130,7 +130,8 @@ fun MainPreview() {
                         time = PassedTime(Duration.seconds(14L)),
                         timelineParent = TimeMomentId(7L),
                     ),
-                )
+                ),
+                lastSelectedMomentId = TimeMomentId(1L),
             )
         ),
         onViewAction = {},
@@ -445,6 +446,7 @@ private fun TimelineCanvas(
 
     val lineColor = AppTheme.colors.textLight
     val pointColor = AppTheme.colors.background
+    val selectedPointColor = AppTheme.colors.backgroundLight
     val textColor = AppTheme.colors.textLight
 
     val textPaint = Paint().asFrameworkPaint().apply {
@@ -490,11 +492,6 @@ private fun TimelineCanvas(
                             momentPositions.entries.minByOrNull { (momentId, position) ->
                                 tapOffset.distanceTo(position.position)
                             }
-                        val kekMap = momentPositions.entries.map { (momentId, position) ->
-                            momentId to (position to tapOffset.distanceTo(position.position))
-                        }
-                        val kekX = tapOffset.x
-                        val kekY = tapOffset.y
                         if (nearestMoment != null
                             && nearestMoment.value.position.distanceTo(tapOffset) <= pointSize
                         ) {
@@ -570,6 +567,18 @@ private fun TimelineCanvas(
                         radius = pointSize / 2,
                         center = Offset(circlePosition, verticalPadding)
                     )
+                    if (moment.id == state.timeTravel.lastSelectedMomentId) {
+                        drawCircle(
+                            color = selectedPointColor,
+                            radius = pointSize * 0.5f,
+                            center = Offset(circlePosition, verticalPadding)
+                        )
+                        drawCircle(
+                            color = pointColor,
+                            radius = pointSize * 0.40f,
+                            center = Offset(circlePosition, verticalPadding)
+                        )
+                    }
                     drawIntoCanvas {
                         it.nativeCanvas.drawText(
                             moment.time.value.toString(),
