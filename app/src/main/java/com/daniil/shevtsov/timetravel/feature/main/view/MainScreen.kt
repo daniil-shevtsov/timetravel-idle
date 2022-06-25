@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
@@ -236,53 +237,75 @@ private fun TimeMoments(
     modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit
 ) {
+    val timelineHeight = 60.dp
+    val titleHeight = 20.dp
     val mainTimeline = state.timeTravel.moments.filter { it.timelineParent == null }
     val otherTimelines = state.timeTravel.moments
         .filter { it.timelineParent != null }
         .groupBy { it.timelineParent }
-    Timeline(
-        title = "Main timeline",
-        mainTimeline = mainTimeline,
-        modifier = modifier,
-        onViewAction = onViewAction,
-    )
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+        modifier = modifier
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+//            verticalArrangement = Arrangement.spacedBy(timelineHeight - titleHeight + AppTheme.dimensions.paddingS)
+        ) {
+            Text(
+                text = "Main Timeline",
+                color = AppTheme.colors.textLight,
+                style = AppTheme.typography.bodyTitle,
+                modifier = Modifier.height(timelineHeight).wrapContentHeight(),
+            )
+            otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
+                Text(
+                    text = "Timeline ${timelineParentId?.value}-A",
+                    color = AppTheme.colors.textLight,
+                    style = AppTheme.typography.bodyTitle,
+                    modifier = Modifier.height(timelineHeight).wrapContentHeight(),
+                )
+            }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
+            Timeline(
+                timeMoments = mainTimeline,
+                modifier = modifier.height(timelineHeight),
+                onViewAction = onViewAction,
+            )
+            otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
+                Timeline(
+                    timeMoments = timeMoments,
+                    modifier = modifier.height(timelineHeight),
+                    onViewAction = onViewAction,
+                )
+            }
+        }
+    }
+
 }
 
 @Composable
 private fun Timeline(
-    title: String,
-    mainTimeline: List<TimeMomentModel>,
+    timeMoments: List<TimeMomentModel>,
     modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
-        modifier = modifier,
-    ) {
-        Text(
-            text = title,
-            color = AppTheme.colors.textLight,
-            style = AppTheme.typography.bodyTitle,
-            modifier = Modifier,
+    LazyRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(AppTheme.colors.backgroundDarkest)
+            .padding(AppTheme.dimensions.paddingS),
+        horizontalArrangement = Arrangement.spacedBy(
+            AppTheme.dimensions.paddingS,
+            Alignment.CenterHorizontally
         )
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(AppTheme.colors.backgroundDarkest)
-                .padding(AppTheme.dimensions.paddingS),
-            horizontalArrangement = Arrangement.spacedBy(
-                AppTheme.dimensions.paddingS,
-                Alignment.CenterHorizontally
+    ) {
+        items(timeMoments) { item ->
+            TimeMoment(
+                item = item,
+                modifier = modifier,
+                onViewAction = onViewAction
             )
-        ) {
-            items(mainTimeline) { item ->
-                TimeMoment(
-                    item = item,
-                    modifier = modifier,
-                    onViewAction = onViewAction
-                )
-            }
         }
     }
 }
