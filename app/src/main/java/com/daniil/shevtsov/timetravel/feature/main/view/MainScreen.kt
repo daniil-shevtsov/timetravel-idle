@@ -280,13 +280,8 @@ private fun TimeMoments(
     val timelineHeight = 60.dp
     val allTimelines = state.timeTravel.moments
         .groupBy { it.timelineParent }
-    val otherTimelines = state.timeTravel.moments
-        .filter { it.timelineParent != null }
-        .groupBy { it.timelineParent }
 
-    val stateRowMap: Map<TimeMomentId?, LazyListState> = (listOf(
-        null to rememberLazyListState(),
-    ) + otherTimelines.keys.toList().map { it to rememberLazyListState() }).toMap()
+    val stateRowMap: Map<TimeMomentId?, LazyListState> = allTimelines.keys.toList().map { it to rememberLazyListState() }.toMap()
 
     val itemWidth = 60.dp
     val itemSpacing = AppTheme.dimensions.paddingS
@@ -337,13 +332,6 @@ private fun TimeMoments(
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
             allTimelines.entries.forEach { (timelineParentId, timeMoments) ->
-                val parentTimeline = allTimelines.entries.find { (_, timeMoments) ->
-                    timeMoments.any { moment -> moment.id == timelineParentId }
-                }?.toPair()
-                val parentTimeMoments = parentTimeline?.second.orEmpty()
-                val parent = parentTimeMoments.find { it.id == timelineParentId }
-                requireNotNull(parent) { "Can't find timeline with parent moment" }
-
                 val padding: Dp = paddingMap[timelineParentId]!!
 
                 Timeline(
