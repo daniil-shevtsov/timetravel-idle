@@ -351,7 +351,7 @@ private fun TimeMoments(
                 onViewAction = onViewAction,
                 contentPadding = PaddingValues(
                     start = AppTheme.dimensions.paddingS,
-                    end = AppTheme.dimensions.paddingS + (paddingMap.values.sumOf { it.value.toDouble() }).dp,
+                    end = AppTheme.dimensions.paddingS /*+ (paddingMap.values.sumOf { it.value.toDouble() }).dp*/,
                     top = AppTheme.dimensions.paddingS,
                     bottom = AppTheme.dimensions.paddingS,
                 )
@@ -376,7 +376,7 @@ private fun TimeMoments(
                     modifier = modifier.height(timelineHeight),
                     contentPadding = PaddingValues(
                         start = AppTheme.dimensions.paddingS + padding,
-                        end = AppTheme.dimensions.paddingS + (paddingMap.values.sumOf { it.value.toDouble() }).dp - paddingMap[timelineParentId]!!,
+                        end = AppTheme.dimensions.paddingS/* + (paddingMap.values.sumOf { it.value.toDouble() }).dp - padding*/,
                         top = AppTheme.dimensions.paddingS,
                         bottom = AppTheme.dimensions.paddingS,
                     ),
@@ -395,6 +395,9 @@ private fun TimeMoments(
 
                 if (stateYId != timelineOriginId) {
                     if (!stateY.isScrollInProgress) {
+//                        stateY.scroll {
+//                            scrollBy(timelineScrollState.firstVisibleItemScrollOffset.toFloat())
+//                        }
                         stateY.scrollToItem(
                             timelineScrollState.firstVisibleItemIndex,
                             timelineScrollState.firstVisibleItemScrollOffset
