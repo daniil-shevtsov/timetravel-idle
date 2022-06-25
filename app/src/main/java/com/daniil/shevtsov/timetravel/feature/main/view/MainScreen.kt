@@ -329,9 +329,9 @@ private fun TimeMoments(
                 val parent = parentTimeline?.find { it.id == timelineParentId }
                 requireNotNull(parent) { "Can't find timeline with parent moment" }
 
-                val itemsBeforeParentAndParent = mainTimeline
+                val itemsBeforeParentAndParent = parentTimeline
                     .mapIndexed { index, moment -> index to moment }
-                    .count { (index, moment) -> index <= mainTimeline.indexOf(parent) }
+                    .count { (index, moment) -> index <= parentTimeline.indexOf(parent) }
                 val padding =
                     (itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value + AppTheme.dimensions.paddingS.value).dp
                 Timeline(
