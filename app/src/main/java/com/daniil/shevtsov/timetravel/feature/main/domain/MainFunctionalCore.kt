@@ -68,6 +68,7 @@ fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment
         state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
     return selectedMoment.stateSnapshot.copy(
         timeMoments = state.timeMoments,
+        lastTimeMomentId = selectedMoment.id,
     )
 }
 

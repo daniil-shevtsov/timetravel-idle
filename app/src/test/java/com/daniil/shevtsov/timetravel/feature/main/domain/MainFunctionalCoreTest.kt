@@ -1,6 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.main.domain
 
 import assertk.Assert
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
@@ -143,8 +144,14 @@ class MainFunctionalCoreTest {
         )
 
         assertThat(newState)
-            .prop(GameState::passedTime)
-            .isEqualTo(pastState.passedTime)
+            .all {
+                prop(GameState::passedTime)
+                .isEqualTo(pastState.passedTime)
+
+                prop(GameState::lastTimeMomentId)
+                    .isEqualTo(timeMoment.id)
+            }
+
     }
 
     @Test
