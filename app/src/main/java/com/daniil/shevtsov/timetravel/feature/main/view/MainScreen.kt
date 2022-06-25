@@ -282,9 +282,9 @@ private fun TimeMoments(
         .filter { it.timelineParent != null }
         .groupBy { it.timelineParent }
 
-    val stateRowX = rememberLazyListState() // State for the first Row, X
-    val stateRowY = rememberLazyListState() // State for the second Row, Y
-
+    val stateRowMap: Map<TimeMomentId?, LazyListState> = (listOf(
+        null to rememberLazyListState(),
+    ) + otherTimelines.keys.toList().map { it to rememberLazyListState() }).toMap()
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
@@ -312,7 +312,7 @@ private fun TimeMoments(
         val itemSpacing = AppTheme.dimensions.paddingS
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
             Timeline(
-                state = stateRowX,
+                state = stateRowMap[null]!!,
                 itemWidth = itemWidth,
                 timeMoments = mainTimeline,
                 modifier = modifier.height(timelineHeight),
@@ -335,7 +335,7 @@ private fun TimeMoments(
                 val padding =
                     (itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value + AppTheme.dimensions.paddingS.value).dp
                 Timeline(
-                    state = stateRowY,
+                    state = stateRowMap[timelineParentId]!!,
                     itemWidth = itemWidth,
                     timeMoments = timeMoments,
                     modifier = modifier.height(timelineHeight),
@@ -351,18 +351,17 @@ private fun TimeMoments(
         }
     }
 
-    LaunchedEffect(stateRowX.firstVisibleItemScrollOffset) {
-        stateRowY.scrollToItem(
-            stateRowX.firstVisibleItemIndex,
-            stateRowX.firstVisibleItemScrollOffset
-        )
-    }
-
-    LaunchedEffect(stateRowY.firstVisibleItemScrollOffset) {
-        stateRowX.scrollToItem(
-            stateRowY.firstVisibleItemIndex,
-            stateRowY.firstVisibleItemScrollOffset
-        )
+    stateRowMap.entries.forEach { (stateXId, stateX) ->
+        LaunchedEffect(stateX.firstVisibleItemScrollOffset) {
+            stateRowMap.entries.forEach { (stateYId, stateY) ->
+                if (stateYId != stateXId) {
+                    stateY.scrollToItem(
+                        stateX.firstVisibleItemIndex,
+                        stateX.firstVisibleItemScrollOffset
+                    )
+                }
+            }
+        }
     }
 }
 
