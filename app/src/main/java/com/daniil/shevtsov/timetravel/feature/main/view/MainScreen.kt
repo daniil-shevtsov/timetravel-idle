@@ -429,7 +429,7 @@ private fun TimelineCanvas(
     val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
     val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
     val segmentLength = with(LocalDensity.current) { 60.dp.toPx() }
-    val padding = with(LocalDensity.current) { 25.dp.toPx() }
+    val canvasPadding = with(LocalDensity.current) { 25.dp.toPx() }
     val textSize = with(LocalDensity.current) { 12.sp.toPx() }
 
     val lineColor = AppTheme.colors.textLight
@@ -450,46 +450,46 @@ private fun TimelineCanvas(
             .width(500.dp)
             .height(100.dp)
     ) {
+        val maxLineLength = (allTimelines.entries
+            .maxByOrNull { (id, moments) -> moments.size }?.value?.size ?: 0) * segmentLength
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             if (timelineIndex <= 1) {
-                moments.forEachIndexed { index, moment ->
-                    if (index != 0) {
-                        drawLine(
-                            color = lineColor,
-                            strokeWidth = lineHeight,
-                            start = Offset(
-                                padding + (index - 1) * segmentLength,
-                                padding + pointSize * timelineIndex
-                            ),
-                            end = Offset(
-                                padding + index * segmentLength,
-                                padding + pointSize * timelineIndex
-                            ),
-                        )
-                    }
-                }
-            }
-        }
-        allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-            if (timelineIndex <= 1) {
-                moments.forEachIndexed { index, moment ->
-                    val parentTimeline = allTimelines.entries.find { (_, moments) ->
-                        moments.any { it.id == timelineId }
-                    }?.value
-                    val splitPadding = parentTimeline?.find { it.id == timelineId }?.let { parentMoment ->
+                val parentTimeline = allTimelines.entries.find { (_, moments) ->
+                    moments.any { it.id == timelineId }
+                }?.value
+                val splitPadding =
+                    parentTimeline?.find { it.id == timelineId }?.let { parentMoment ->
                         parentTimeline.indexOf(parentMoment) * segmentLength
                     } ?: 0f
-                    val circlePosition = splitPadding + padding + index * segmentLength + pointSize / 2
+                val horizontalPadding = canvasPadding + splitPadding
+                val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
+
+                drawLine(
+                    color = lineColor,
+                    strokeWidth = lineHeight,
+                    start = Offset(
+                        horizontalPadding,
+                        verticalPadding
+                    ),
+                    end = Offset(
+                        horizontalPadding + maxLineLength,
+                        verticalPadding
+                    ),
+                )
+
+                moments.forEachIndexed { index, moment ->
+                    val circlePosition =
+                        horizontalPadding + index * segmentLength + pointSize / 2
                     drawCircle(
                         color = pointColor,
                         radius = pointSize / 2,
-                        center = Offset(circlePosition, padding + pointSize * timelineIndex)
+                        center = Offset(circlePosition, verticalPadding)
                     )
                     drawIntoCanvas {
                         it.nativeCanvas.drawText(
                             moment.time.value.toString(),
                             circlePosition,
-                            splitPadding + padding + textSize / 2 + pointSize * timelineIndex,
+                            verticalPadding + textSize / 2,
                             textPaint
                         )
                     }
