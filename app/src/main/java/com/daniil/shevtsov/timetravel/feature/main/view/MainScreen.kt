@@ -1,27 +1,28 @@
 package com.daniil.shevtsov.timetravel.feature.main.view
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import android.graphics.Typeface
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
@@ -382,7 +383,7 @@ private fun TimeMoments(
 }
 
 @Composable
-private  fun TimelineCanvas(
+private fun TimelineCanvas(
     state: MainViewState.Content
 ) {
     val timelineHeight = 60.dp
@@ -425,30 +426,34 @@ private  fun TimelineCanvas(
                 timelineParentId to temporaryPaddingMap[timelineParentId]!!
             }.toMap()
 
-    val pointSize = with(LocalDensity.current) { 10.dp.toPx() }
-    val lineHeight = with(LocalDensity.current) { 4.dp.toPx() }
-    val segmentLength = with(LocalDensity.current) {  16.dp.toPx() }
-    val padding = with(LocalDensity.current) {  AppTheme.dimensions.paddingS.toPx() }
+    val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
+    val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
+    val segmentLength = with(LocalDensity.current) { 60.dp.toPx() }
+    val padding = with(LocalDensity.current) { 25.dp.toPx() }
+    val textSize = with(LocalDensity.current) { 12.sp.toPx() }
 
-    val lineColor = AppTheme.colors.background
-    val pointColor = AppTheme.colors.textLight
+    val lineColor = AppTheme.colors.textLight
+    val pointColor = AppTheme.colors.background
+    val textColor = AppTheme.colors.textLight
+
+    val textPaint = Paint().asFrameworkPaint().apply {
+        isAntiAlias = true
+        this.textSize = textSize
+        color = textColor.toArgb()
+        typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+        textAlign = android.graphics.Paint.Align.CENTER
+    }
     Canvas(
         modifier = Modifier
             .background(AppTheme.colors.backgroundDarkest)
-            .scrollable(rememberScrollState(), Orientation.Horizontal)
-            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .width(500.dp)
             .height(100.dp)
     ) {
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             if (timelineIndex == 0) {
                 moments.forEachIndexed { index, moment ->
-                    if (index == 0) {
-                        drawCircle(
-                            color = pointColor,
-                            radius = pointSize / 2,
-                            center = Offset(padding, padding)
-                        )
-                    } else {
+                    if (index != 0) {
                         drawLine(
                             color = lineColor,
                             strokeWidth = lineHeight,
@@ -461,10 +466,25 @@ private  fun TimelineCanvas(
                                 padding
                             ),
                         )
-                        drawCircle(
-                            color = pointColor,
-                            radius = pointSize / 2,
-                            center = Offset(padding, padding)
+                    }
+                }
+            }
+        }
+        allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
+            if (timelineIndex == 0) {
+                moments.forEachIndexed { index, moment ->
+                    val circlePosition = padding + index * segmentLength + pointSize / 2
+                    drawCircle(
+                        color = pointColor,
+                        radius = pointSize / 2,
+                        center = Offset(circlePosition, padding)
+                    )
+                    drawIntoCanvas {
+                        it.nativeCanvas.drawText(
+                            moment.time.value.toString(),
+                            circlePosition,
+                            padding + textSize / 2,
+                            textPaint
                         )
                     }
                 }
