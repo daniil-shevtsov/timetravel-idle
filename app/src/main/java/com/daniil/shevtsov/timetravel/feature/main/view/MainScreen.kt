@@ -9,8 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -455,7 +454,11 @@ private fun TimelineCanvas(
         typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
         textAlign = android.graphics.Paint.Align.CENTER
     }
-    val momentPositions = mutableMapOf<TimeMomentId, MomentPosition>()
+    var momentPositions: Map<TimeMomentId, MomentPosition> by remember {
+        mutableStateOf(
+            mapOf()
+        )
+    }
     allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
@@ -468,9 +471,10 @@ private fun TimelineCanvas(
         val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
         moments.forEachIndexed { index, moment ->
             val circlePosition =
-                horizontalPadding + 0 * segmentLength + pointSize / 2
-            momentPositions[moment.id] =
-                MomentPosition(Offset(x = circlePosition, y = verticalPadding))
+                horizontalPadding + index * segmentLength + pointSize / 2
+            momentPositions = momentPositions.toMutableMap().apply {
+                put(moment.id, MomentPosition(Offset(x = circlePosition, y = verticalPadding)))
+            }.toMap()
         }
     }
     Canvas(
@@ -486,6 +490,11 @@ private fun TimelineCanvas(
                             momentPositions.entries.minByOrNull { (momentId, position) ->
                                 tapOffset.distanceTo(position.position)
                             }
+                        val kekMap = momentPositions.entries.map { (momentId, position) ->
+                            momentId to (position to tapOffset.distanceTo(position.position))
+                        }
+                        val kekX = tapOffset.x
+                        val kekY = tapOffset.y
                         if (nearestMoment != null
                             && nearestMoment.value.position.distanceTo(tapOffset) <= pointSize
                         ) {
