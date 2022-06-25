@@ -351,21 +351,22 @@ private fun TimeMoments(
         }
     }
 
-    stateRowMap.entries.forEach { (timelineOriginId, timelineScrollState) ->
-        LaunchedEffect(timelineScrollState.firstVisibleItemScrollOffset) {
-            stateRowMap.entries.forEach { (stateYId, stateY) ->
+    stateRowMap.entries.forEach { (timelineOriginId, scrolledState) ->
+        LaunchedEffect(scrolledState.firstVisibleItemScrollOffset) {
+            stateRowMap.entries.forEach { (stateYId, stateToScroll) ->
                 if (stateYId == null) {
-                    Timber.d("stateY: firstVisibleItemIndex: ${stateY.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${stateY.firstVisibleItemScrollOffset} stateX: firstVisibleItemIndex: ${timelineScrollState.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${timelineScrollState.firstVisibleItemScrollOffset}")
+                    Timber.d("stateY: firstVisibleItemIndex: ${stateToScroll.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${stateToScroll.firstVisibleItemScrollOffset} stateX: firstVisibleItemIndex: ${scrolledState.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${scrolledState.firstVisibleItemScrollOffset}")
                 }
 
                 if (stateYId != timelineOriginId) {
-                    if (!stateY.isScrollInProgress) {
+                    if (!stateToScroll.isScrollInProgress) {
+//                        stateToScroll.scrollBy(scrolledState.firstVisibleItemScrollOffset.toFloat())
 //                        stateY.scroll {
 //                            scrollBy(timelineScrollState.firstVisibleItemScrollOffset.toFloat())
 //                        }
-                        stateY.scrollToItem(
-                            timelineScrollState.firstVisibleItemIndex,
-                            timelineScrollState.firstVisibleItemScrollOffset
+                        stateToScroll.scrollToItem(
+                            scrolledState.firstVisibleItemIndex,
+                            scrolledState.firstVisibleItemScrollOffset
                         )
                     }
                 }
