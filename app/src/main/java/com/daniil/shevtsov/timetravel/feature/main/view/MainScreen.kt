@@ -341,7 +341,7 @@ private fun TimeMoments(
                     modifier = modifier.height(timelineHeight),
                     contentPadding = PaddingValues(
                         start = AppTheme.dimensions.paddingS + padding,
-                        end = AppTheme.dimensions.paddingS,/* + (paddingMap.values.sumOf { it.value.toDouble() }).dp - padding*/
+                        end = AppTheme.dimensions.paddingS + (paddingMap.values.sumOf { it.value.toDouble() }).dp - padding,
                         top = AppTheme.dimensions.paddingS,
                         bottom = AppTheme.dimensions.paddingS,
                     ),
