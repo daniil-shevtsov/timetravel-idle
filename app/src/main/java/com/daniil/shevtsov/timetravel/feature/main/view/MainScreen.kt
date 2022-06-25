@@ -280,7 +280,6 @@ private fun TimeMoments(
     val timelineHeight = 60.dp
     val allTimelines = state.timeTravel.moments
         .groupBy { it.timelineParent }
-    val mainTimeline = state.timeTravel.moments.filter { it.timelineParent == null }
     val otherTimelines = state.timeTravel.moments
         .filter { it.timelineParent != null }
         .groupBy { it.timelineParent }
@@ -294,14 +293,11 @@ private fun TimeMoments(
     val temporaryPaddingMap = mutableMapOf<TimeMomentId?, Dp>()
 
     val paddingMap =
-        (listOf(null to mainTimeline) + otherTimelines.entries.map { it.key to it.value })
+        (allTimelines.entries.map { it.key to it.value })
             .mapIndexed { mapIndex, (timelineParentId, timeMoments) ->
-                val parentTimeline = when {
-                    mainTimeline.any { moment -> moment.id == timelineParentId } -> null to mainTimeline
-                    else -> otherTimelines.entries.find { (_, timeMoments) ->
-                        timeMoments.any { moment -> moment.id == timelineParentId }
-                    }?.toPair()
-                }
+                val parentTimeline = allTimelines.entries.find { (_, timeMoments) ->
+                    timeMoments.any { moment -> moment.id == timelineParentId }
+                }?.toPair()
                 val parentTimeMoments = parentTimeline?.second.orEmpty()
 
                 if (mapIndex == 0) {
@@ -340,26 +336,10 @@ private fun TimeMoments(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
-            Timeline(
-                state = stateRowMap[null]!!,
-                itemWidth = itemWidth,
-                timeMoments = mainTimeline,
-                modifier = modifier.height(timelineHeight),
-                onViewAction = onViewAction,
-                contentPadding = PaddingValues(
-                    start = AppTheme.dimensions.paddingS,
-                    end = AppTheme.dimensions.paddingS, /*+ (paddingMap.values.sumOf { it.value.toDouble() }).dp*/
-                    top = AppTheme.dimensions.paddingS,
-                    bottom = AppTheme.dimensions.paddingS,
-                )
-            )
-            otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
-                val parentTimeline = when {
-                    mainTimeline.any { moment -> moment.id == timelineParentId } -> null to mainTimeline
-                    else -> otherTimelines.entries.find { (_, timeMoments) ->
-                        timeMoments.any { moment -> moment.id == timelineParentId }
-                    }?.toPair()
-                }
+            allTimelines.entries.forEach { (timelineParentId, timeMoments) ->
+                val parentTimeline = allTimelines.entries.find { (_, timeMoments) ->
+                    timeMoments.any { moment -> moment.id == timelineParentId }
+                }?.toPair()
                 val parentTimeMoments = parentTimeline?.second.orEmpty()
                 val parent = parentTimeMoments.find { it.id == timelineParentId }
                 requireNotNull(parent) { "Can't find timeline with parent moment" }
