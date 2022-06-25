@@ -380,14 +380,16 @@ private fun TimeMoments(
         }
     }
 
-    stateRowMap.entries.forEach { (stateXId, stateX) ->
-        LaunchedEffect(stateX.firstVisibleItemScrollOffset) {
+    stateRowMap.entries.forEach { (timelineOriginId, timelineScrollState) ->
+        LaunchedEffect(timelineScrollState.firstVisibleItemScrollOffset) {
             stateRowMap.entries.forEach { (stateYId, stateY) ->
-                if (stateYId != stateXId) {
-                    stateY.scrollToItem(
-                        stateX.firstVisibleItemIndex,
-                        stateX.firstVisibleItemScrollOffset
-                    )
+                if (stateYId != timelineOriginId) {
+                    if(!stateY.isScrollInProgress) {
+                        stateY.scrollToItem(
+                            timelineScrollState.firstVisibleItemIndex,
+                            timelineScrollState.firstVisibleItemScrollOffset
+                        )
+                    }
                 }
             }
         }
