@@ -451,7 +451,13 @@ private fun TimelineCanvas(
             .height(100.dp)
     ) {
         val maxLineLength = (allTimelines.entries
-            .maxByOrNull { (id, moments) -> moments.size }?.value?.size ?: 0) * segmentLength
+            .maxByOrNull { (id, moments) -> moments.size }?.value?.size?.let {
+                if (it > 0) {
+                    it - 1
+                } else {
+                    it
+                }
+            } ?: 0) * segmentLength
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             if (timelineIndex <= 1) {
                 val parentTimeline = allTimelines.entries.find { (_, moments) ->
