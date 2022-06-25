@@ -154,14 +154,17 @@ fun Content(
                 style = AppTheme.typography.bodyTitle,
                 textAlign = TextAlign.Center,
                 color = AppTheme.colors.textLight,
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
                     .background(AppTheme.colors.background)
                     .padding(AppTheme.dimensions.paddingS)
             )
 
-            TimeMoments(state, modifier, onViewAction)
+            TimeMoments(
+                state = state,
+                onViewAction = onViewAction,
+            )
         }
 
         Column(
@@ -230,33 +233,61 @@ fun Content(
 @Composable
 private fun TimeMoments(
     state: MainViewState.Content,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit
 ) {
     val mainTimeline = state.timeTravel.moments.filter { it.timelineParent == null }
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.backgroundDarkest)
-            .padding(AppTheme.dimensions.paddingS),
-        horizontalArrangement = Arrangement.spacedBy(
-            AppTheme.dimensions.paddingS,
-            Alignment.CenterHorizontally
-        )
+    val otherTimelines = state.timeTravel.moments
+        .filter { it.timelineParent != null }
+        .groupBy { it.timelineParent }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+        modifier = modifier,
     ) {
-        items(mainTimeline) { item ->
-            Text(
-                text = item.time.value.toString(),
-                style = AppTheme.typography.bodyTitle,
-                textAlign = TextAlign.Center,
-                color = AppTheme.colors.textLight,
-                modifier = modifier
-                    .background(AppTheme.colors.background)
-                    .clickable { onViewAction(MainViewAction.TravelBackToMoment(id = item.id)) }
-                    .padding(AppTheme.dimensions.paddingS)
+        Text(
+            text = "Main Timeline",
+            color = AppTheme.colors.textLight,
+            style = AppTheme.typography.bodyTitle,
+            modifier = Modifier,
+        )
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(AppTheme.colors.backgroundDarkest)
+                .padding(AppTheme.dimensions.paddingS),
+            horizontalArrangement = Arrangement.spacedBy(
+                AppTheme.dimensions.paddingS,
+                Alignment.CenterHorizontally
             )
+        ) {
+            items(mainTimeline) { item ->
+                TimeMoment(
+                    item = item,
+                    modifier = modifier,
+                    onViewAction = onViewAction
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun TimeMoment(
+    item: TimeMomentModel,
+    modifier: Modifier,
+    onViewAction: (MainViewAction) -> Unit
+) {
+    Text(
+        text = item.time.value.toString(),
+        style = AppTheme.typography.bodyTitle,
+        textAlign = TextAlign.Center,
+        color = AppTheme.colors.textLight,
+        modifier = modifier
+            .background(AppTheme.colors.background)
+            .clickable { onViewAction(MainViewAction.TravelBackToMoment(id = item.id)) }
+            .padding(AppTheme.dimensions.paddingS)
+    )
 }
 
 @Composable
