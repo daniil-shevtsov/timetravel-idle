@@ -32,6 +32,7 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
+import timber.log.Timber
 import kotlin.time.Duration
 
 @Preview(
@@ -388,11 +389,15 @@ private fun TimeMoments(
     stateRowMap.entries.forEach { (timelineOriginId, timelineScrollState) ->
         LaunchedEffect(timelineScrollState.firstVisibleItemScrollOffset) {
             stateRowMap.entries.forEach { (stateYId, stateY) ->
+                if(stateYId == null) {
+                    Timber.d("stateY: firstVisibleItemIndex: ${stateY.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${stateY.firstVisibleItemScrollOffset} stateX: firstVisibleItemIndex: ${timelineScrollState.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${timelineScrollState.firstVisibleItemScrollOffset}")
+                }
+
                 if (stateYId != timelineOriginId) {
                     if (!stateY.isScrollInProgress) {
                         stateY.scrollToItem(
                             timelineScrollState.firstVisibleItemIndex,
-                            (timelineScrollState.firstVisibleItemScrollOffset)
+                            timelineScrollState.firstVisibleItemScrollOffset
                         )
                     }
                 }
