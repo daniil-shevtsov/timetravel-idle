@@ -360,7 +360,7 @@ private fun Timeline(
         items(timeMoments) { item ->
             TimeMoment(
                 item = item,
-                modifier = modifier,
+                modifier = modifier.width(50.dp).fillMaxHeight(),
                 onViewAction = onViewAction
             )
         }
