@@ -105,12 +105,12 @@ fun MainPreview() {
                     timeMomentModel(
                         id = TimeMomentId(7L),
                         time = PassedTime(Duration.seconds(10L)),
-                        timelineParent = TimeMomentId(1L),
+                        timelineParent = TimeMomentId(2L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(8L),
                         time = PassedTime(Duration.seconds(11L)),
-                        timelineParent = TimeMomentId(1L),
+                        timelineParent = TimeMomentId(2L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(9L),
@@ -451,7 +451,7 @@ private fun TimelineCanvas(
             .height(100.dp)
     ) {
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-            if (timelineIndex == 0) {
+            if (timelineIndex <= 1) {
                 moments.forEachIndexed { index, moment ->
                     if (index != 0) {
                         drawLine(
@@ -459,11 +459,11 @@ private fun TimelineCanvas(
                             strokeWidth = lineHeight,
                             start = Offset(
                                 padding + (index - 1) * segmentLength,
-                                padding
+                                padding + pointSize * timelineIndex
                             ),
                             end = Offset(
                                 padding + index * segmentLength,
-                                padding
+                                padding + pointSize * timelineIndex
                             ),
                         )
                     }
@@ -471,19 +471,25 @@ private fun TimelineCanvas(
             }
         }
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-            if (timelineIndex == 0) {
+            if (timelineIndex <= 1) {
                 moments.forEachIndexed { index, moment ->
-                    val circlePosition = padding + index * segmentLength + pointSize / 2
+                    val parentTimeline = allTimelines.entries.find { (_, moments) ->
+                        moments.any { it.id == timelineId }
+                    }?.value
+                    val splitPadding = parentTimeline?.find { it.id == timelineId }?.let { parentMoment ->
+                        parentTimeline.indexOf(parentMoment) * segmentLength
+                    } ?: 0f
+                    val circlePosition = splitPadding + padding + index * segmentLength + pointSize / 2
                     drawCircle(
                         color = pointColor,
                         radius = pointSize / 2,
-                        center = Offset(circlePosition, padding)
+                        center = Offset(circlePosition, padding + pointSize * timelineIndex)
                     )
                     drawIntoCanvas {
                         it.nativeCanvas.drawText(
                             moment.time.value.toString(),
                             circlePosition,
-                            padding + textSize / 2,
+                            splitPadding + padding + textSize / 2 + pointSize * timelineIndex,
                             textPaint
                         )
                     }
