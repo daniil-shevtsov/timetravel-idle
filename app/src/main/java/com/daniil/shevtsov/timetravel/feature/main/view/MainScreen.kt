@@ -107,27 +107,27 @@ fun MainPreview() {
                     ),
                     timeMomentModel(
                         id = TimeMomentId(7L),
-                        time = PassedTime(Duration.seconds(10L)),
+                        time = PassedTime(Duration.seconds(15L)),
                         timelineParent = TimeMomentId(2L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(8L),
-                        time = PassedTime(Duration.seconds(11L)),
+                        time = PassedTime(Duration.seconds(16L)),
                         timelineParent = TimeMomentId(2L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(9L),
-                        time = PassedTime(Duration.seconds(12L)),
+                        time = PassedTime(Duration.seconds(17L)),
                         timelineParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(10L),
-                        time = PassedTime(Duration.seconds(13L)),
+                        time = PassedTime(Duration.seconds(18L)),
                         timelineParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(11L),
-                        time = PassedTime(Duration.seconds(14L)),
+                        time = PassedTime(Duration.seconds(19L)),
                         timelineParent = TimeMomentId(7L),
                     ),
                 ),
@@ -467,11 +467,12 @@ private fun TimelineCanvas(
         }?.value
         val parentMoment = parentTimeline?.find { it.id == timelineId }
         val splitPadding = parentMoment?.let { parentMoment ->
-            parentTimeline.indexOf(parentMoment) * segmentLength
+            momentPositions[parentMoment.id]?.position?.x
         } ?: 0f
         val horizontalPadding = canvasPadding + splitPadding
         val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
         moments.forEachIndexed { index, moment ->
+            horizontalPadding + index * segmentLength + pointSize / 2
             val circlePosition =
                 horizontalPadding + index * segmentLength + pointSize / 2
             momentPositions = momentPositions.toMutableMap().apply {
@@ -514,7 +515,7 @@ private fun TimelineCanvas(
             }?.value
             val parentMoment = parentTimeline?.find { it.id == timelineId }
             val splitPadding = parentMoment?.let { parentMoment ->
-                parentTimeline.indexOf(parentMoment) * segmentLength
+                momentPositions[parentMoment.id]?.position?.x
             } ?: 0f
             val horizontalPadding = canvasPadding + splitPadding
             val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
