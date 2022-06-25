@@ -484,7 +484,7 @@ private fun TimelineCanvas(
             .background(AppTheme.colors.backgroundDarkest)
             .horizontalScroll(rememberScrollState())
             .width(500.dp)
-            .height(100.dp)
+            .height(300.dp)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
@@ -509,84 +509,82 @@ private fun TimelineCanvas(
             } ?: 0) * segmentLength
 
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-            if (timelineIndex <= 1) {
-                val parentTimeline = allTimelines.entries.find { (_, moments) ->
-                    moments.any { it.id == timelineId }
-                }?.value
-                val parentMoment = parentTimeline?.find { it.id == timelineId }
-                val splitPadding = parentMoment?.let { parentMoment ->
-                    parentTimeline.indexOf(parentMoment) * segmentLength
-                } ?: 0f
-                val horizontalPadding = canvasPadding + splitPadding
-                val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
+            val parentTimeline = allTimelines.entries.find { (_, moments) ->
+                moments.any { it.id == timelineId }
+            }?.value
+            val parentMoment = parentTimeline?.find { it.id == timelineId }
+            val splitPadding = parentMoment?.let { parentMoment ->
+                parentTimeline.indexOf(parentMoment) * segmentLength
+            } ?: 0f
+            val horizontalPadding = canvasPadding + splitPadding
+            val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
 
-                drawLine(
-                    color = lineColor,
-                    strokeWidth = lineHeight,
-                    start = Offset(
-                        horizontalPadding,
-                        verticalPadding
-                    ),
-                    end = Offset(
-                        horizontalPadding + maxLineLength,
-                        verticalPadding
-                    ),
-                )
+            drawLine(
+                color = lineColor,
+                strokeWidth = lineHeight,
+                start = Offset(
+                    horizontalPadding,
+                    verticalPadding
+                ),
+                end = Offset(
+                    horizontalPadding + maxLineLength,
+                    verticalPadding
+                ),
+            )
 
-                moments.forEachIndexed { index, moment ->
-                    if (index == 0 && parentMoment != null) {
-                        val circlePosition = momentPositions[parentMoment.id]!!.position
-                        drawLine(
-                            color = lineColor,
-                            strokeWidth = lineHeight,
-                            start = circlePosition,
-                            end = Offset(
-                                horizontalPadding + pointSize / 2,
-                                verticalPadding
-                            ),
-                        )
-                        drawCircle(
-                            color = pointColor,
-                            radius = pointSize / 2,
-                            center = circlePosition
-                        )
-                        drawIntoCanvas {
-                            it.nativeCanvas.drawText(
-                                parentMoment.time.value.toString(),
-                                circlePosition.x,
-                                circlePosition.y + textSize / 2,
-                                textPaint
-                            )
-                        }
-                    }
-
-                    val circlePosition =
-                        horizontalPadding + index * segmentLength + pointSize / 2
+            moments.forEachIndexed { index, moment ->
+                if (index == 0 && parentMoment != null) {
+                    val circlePosition = momentPositions[parentMoment.id]!!.position
+                    drawLine(
+                        color = lineColor,
+                        strokeWidth = lineHeight,
+                        start = circlePosition,
+                        end = Offset(
+                            horizontalPadding + pointSize / 2,
+                            verticalPadding
+                        ),
+                    )
                     drawCircle(
                         color = pointColor,
                         radius = pointSize / 2,
-                        center = Offset(circlePosition, verticalPadding)
+                        center = circlePosition
                     )
-                    if (moment.id == state.timeTravel.lastSelectedMomentId) {
-                        drawCircle(
-                            color = selectedPointColor,
-                            radius = pointSize * 0.5f,
-                            center = Offset(circlePosition, verticalPadding)
-                        )
-                        drawCircle(
-                            color = pointColor,
-                            radius = pointSize * 0.40f,
-                            center = Offset(circlePosition, verticalPadding)
-                        )
-                    }
                     drawIntoCanvas {
                         it.nativeCanvas.drawText(
-                            moment.time.value.toString(),
-                            circlePosition,
-                            verticalPadding + textSize / 2,
+                            parentMoment.time.value.toString(),
+                            circlePosition.x,
+                            circlePosition.y + textSize / 2,
                             textPaint
                         )
                     }
+                }
+
+                val circlePosition =
+                    horizontalPadding + index * segmentLength + pointSize / 2
+                drawCircle(
+                    color = pointColor,
+                    radius = pointSize / 2,
+                    center = Offset(circlePosition, verticalPadding)
+                )
+                if (moment.id == state.timeTravel.lastSelectedMomentId) {
+                    drawCircle(
+                        color = selectedPointColor,
+                        radius = pointSize * 0.5f,
+                        center = Offset(circlePosition, verticalPadding)
+                    )
+                    drawCircle(
+                        color = pointColor,
+                        radius = pointSize * 0.40f,
+                        center = Offset(circlePosition, verticalPadding)
+                    )
+                }
+                drawIntoCanvas {
+                    it.nativeCanvas.drawText(
+                        moment.time.value.toString(),
+                        circlePosition,
+                        verticalPadding + textSize / 2,
+                        textPaint
+                    )
                 }
             }
         }
