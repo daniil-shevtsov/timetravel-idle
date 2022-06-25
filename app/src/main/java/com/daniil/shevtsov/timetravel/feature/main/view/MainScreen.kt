@@ -348,7 +348,12 @@ private fun TimeMoments(
                 timeMoments = mainTimeline,
                 modifier = modifier.height(timelineHeight),
                 onViewAction = onViewAction,
-                contentPadding = PaddingValues(AppTheme.dimensions.paddingS)
+                contentPadding = PaddingValues(
+                    start = AppTheme.dimensions.paddingS,
+                    end = AppTheme.dimensions.paddingS + (paddingMap.values.sumOf { it.value.toDouble() }).dp,
+                    top = AppTheme.dimensions.paddingS,
+                    bottom = AppTheme.dimensions.paddingS,
+                )
             )
             otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
                 val parentTimeline = when {
@@ -370,7 +375,7 @@ private fun TimeMoments(
                     modifier = modifier.height(timelineHeight),
                     contentPadding = PaddingValues(
                         start = AppTheme.dimensions.paddingS + padding,
-                        end = AppTheme.dimensions.paddingS,
+                        end = AppTheme.dimensions.paddingS + (paddingMap.values.sumOf { it.value.toDouble() }).dp - paddingMap[timelineParentId]!!,
                         top = AppTheme.dimensions.paddingS,
                         bottom = AppTheme.dimensions.paddingS,
                     ),
@@ -384,10 +389,10 @@ private fun TimeMoments(
         LaunchedEffect(timelineScrollState.firstVisibleItemScrollOffset) {
             stateRowMap.entries.forEach { (stateYId, stateY) ->
                 if (stateYId != timelineOriginId) {
-                    if(!stateY.isScrollInProgress) {
+                    if (!stateY.isScrollInProgress) {
                         stateY.scrollToItem(
                             timelineScrollState.firstVisibleItemIndex,
-                            timelineScrollState.firstVisibleItemScrollOffset
+                            (timelineScrollState.firstVisibleItemScrollOffset)
                         )
                     }
                 }
