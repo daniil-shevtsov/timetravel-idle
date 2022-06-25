@@ -3,7 +3,6 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
-import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeLineId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
@@ -79,7 +78,11 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
                 id = TimeMomentId(
                     (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
                 ),
-                timeLineId = TimeLineId(0L),
+                timelineParentId = when {
+                    state.lastTimeMomentId == null -> null
+                    state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.lastTimeMomentId } -> state.lastTimeMomentId
+                    else -> null
+                },
                 stateSnapshot = state,
             )
         )

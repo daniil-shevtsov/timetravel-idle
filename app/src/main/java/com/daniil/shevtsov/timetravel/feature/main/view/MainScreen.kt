@@ -290,7 +290,6 @@ private fun TimeMoments(
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-//            verticalArrangement = Arrangement.spacedBy(timelineHeight - titleHeight + AppTheme.dimensions.paddingS)
         ) {
             Text(
                 text = "Main Timeline",
@@ -323,7 +322,8 @@ private fun TimeMoments(
                 val itemsBeforeParentAndParent = mainTimeline
                     .mapIndexed { index, moment -> index to moment }
                     .count { (index, moment) -> index <= mainTimeline.indexOf(parent) }
-                val padding = (itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent-1)*itemSpacing.value + AppTheme.dimensions.paddingS.value).dp
+                val padding =
+                    (itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value + AppTheme.dimensions.paddingS.value).dp
                 Timeline(
                     state = stateRowY,
                     itemWidth = itemWidth,

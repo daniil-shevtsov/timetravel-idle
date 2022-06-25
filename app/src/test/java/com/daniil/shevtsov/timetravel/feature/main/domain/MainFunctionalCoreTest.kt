@@ -15,7 +15,6 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
-import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeLineId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
@@ -184,6 +183,7 @@ class MainFunctionalCoreTest {
         val currentState = gameState(
             passedTime = PassedTime(Duration.milliseconds(10)),
             timeMoments = listOf(timeMoment, futureMoment),
+            lastTimeMomentId = timeMoment.id,
         )
 
         val newState = mainFunctionalCore(
@@ -193,11 +193,11 @@ class MainFunctionalCoreTest {
 
         assertThat(newState)
             .prop(GameState::timeMoments)
-            .extracting(TimeMoment::timeLineId)
+            .extracting(TimeMoment::id, TimeMoment::timelineParentId)
             .containsExactly(
-                timeMoment.timeLineId,
-                futureMoment.timeLineId,
-                TimeLineId(1L),
+                timeMoment.id to null,
+                futureMoment.id to null,
+                TimeMomentId(3L) to timeMoment.id,
             )
     }
 

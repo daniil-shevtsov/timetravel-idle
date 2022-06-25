@@ -4,8 +4,8 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 
 data class TimeMoment(
     val id: TimeMomentId,
-    val timeLineId: TimeLineId,
     val stateSnapshot: GameState,
+    val timelineParentId: TimeMomentId?,
 )
 
 @JvmInline
@@ -16,10 +16,10 @@ value class TimeLineId(val value: Long)
 
 fun timeMoment(
     id: TimeMomentId = TimeMomentId(0L),
-    timeLineId: TimeLineId = TimeLineId(0L),
+    timelineParentId: TimeMomentId? = null,
     stateSnapshot: GameState,
 ) = TimeMoment(
     id = id,
-    timeLineId = timeLineId,
+    timelineParentId = timelineParentId,
     stateSnapshot = stateSnapshot,
 )
