@@ -382,6 +382,10 @@ private fun TimeMoments(
     }
 }
 
+data class MomentPosition(
+    val position: Offset
+)
+
 @Composable
 private fun TimelineCanvas(
     state: MainViewState.Content
@@ -458,15 +462,33 @@ private fun TimelineCanvas(
                     it
                 }
             } ?: 0) * segmentLength
+        val momentPositions = mutableMapOf<TimeMomentId?, MomentPosition?>()
+        allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
+            val parentTimeline = allTimelines.entries.find { (_, moments) ->
+                moments.any { it.id == timelineId }
+            }?.value
+            val parentMoment = parentTimeline?.find { it.id == timelineId }
+            val splitPadding = parentMoment?.let { parentMoment ->
+                parentTimeline.indexOf(parentMoment) * segmentLength
+            } ?: 0f
+            val horizontalPadding = canvasPadding + splitPadding
+            val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
+            moments.forEachIndexed { index, moment ->
+                val circlePosition =
+                    horizontalPadding + 0 * segmentLength + pointSize / 2
+                momentPositions[moment.id] =
+                    MomentPosition(Offset(x = circlePosition, y = verticalPadding))
+            }
+        }
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             if (timelineIndex <= 1) {
                 val parentTimeline = allTimelines.entries.find { (_, moments) ->
                     moments.any { it.id == timelineId }
                 }?.value
-                val splitPadding =
-                    parentTimeline?.find { it.id == timelineId }?.let { parentMoment ->
-                        parentTimeline.indexOf(parentMoment) * segmentLength
-                    } ?: 0f
+                val parentMoment = parentTimeline?.find { it.id == timelineId }
+                val splitPadding = parentMoment?.let { parentMoment ->
+                    parentTimeline.indexOf(parentMoment) * segmentLength
+                } ?: 0f
                 val horizontalPadding = canvasPadding + splitPadding
                 val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
 
@@ -484,6 +506,32 @@ private fun TimelineCanvas(
                 )
 
                 moments.forEachIndexed { index, moment ->
+                    if (index == 0 && parentMoment != null) {
+                        val circlePosition = momentPositions[parentMoment.id]!!.position
+                        drawLine(
+                            color = lineColor,
+                            strokeWidth = lineHeight,
+                            start = circlePosition,
+                            end = Offset(
+                                horizontalPadding + pointSize / 2,
+                                verticalPadding
+                            ),
+                        )
+                        drawCircle(
+                            color = pointColor,
+                            radius = pointSize / 2,
+                            center = circlePosition
+                        )
+                        drawIntoCanvas {
+                            it.nativeCanvas.drawText(
+                                parentMoment.time.value.toString(),
+                                circlePosition.x,
+                                circlePosition.y + textSize / 2,
+                                textPaint
+                            )
+                        }
+                    }
+
                     val circlePosition =
                         horizontalPadding + index * segmentLength + pointSize / 2
                     drawCircle(
