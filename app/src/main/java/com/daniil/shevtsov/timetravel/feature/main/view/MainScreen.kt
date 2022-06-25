@@ -350,12 +350,12 @@ private fun Timeline(
         state = state,
         modifier = modifier
             .fillMaxWidth()
-            .background(AppTheme.colors.backgroundDarkest)
-            .padding(AppTheme.dimensions.paddingS),
+            .background(AppTheme.colors.backgroundDarkest),
         horizontalArrangement = Arrangement.spacedBy(
             AppTheme.dimensions.paddingS,
             Alignment.CenterHorizontally
-        )
+        ),
+        contentPadding = PaddingValues(AppTheme.dimensions.paddingS),
     ) {
         items(timeMoments) { item ->
             TimeMoment(
