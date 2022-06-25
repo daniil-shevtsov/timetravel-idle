@@ -97,27 +97,27 @@ fun MainPreview() {
                     timeMomentModel(
                         id = TimeMomentId(7L),
                         time = PassedTime(Duration.seconds(10L)),
-                        timelineParent = TimeMomentId(2L),
+                        timelineParent = TimeMomentId(1L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(8L),
                         time = PassedTime(Duration.seconds(11L)),
-                        timelineParent = TimeMomentId(2L),
+                        timelineParent = TimeMomentId(1L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(9L),
                         time = PassedTime(Duration.seconds(12L)),
-                        timelineParent = TimeMomentId(2L),
+                        timelineParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(10L),
                         time = PassedTime(Duration.seconds(13L)),
-                        timelineParent = TimeMomentId(2L),
+                        timelineParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(11L),
                         time = PassedTime(Duration.seconds(14L)),
-                        timelineParent = TimeMomentId(2L),
+                        timelineParent = TimeMomentId(7L),
                     ),
                 )
             )
@@ -286,6 +286,38 @@ private fun TimeMoments(
         null to rememberLazyListState(),
     ) + otherTimelines.keys.toList().map { it to rememberLazyListState() }).toMap()
 
+    val itemWidth = 60.dp
+    val itemSpacing = AppTheme.dimensions.paddingS
+    val temporaryPaddingMap = mutableMapOf<TimeMomentId?, Dp>()
+
+    val paddingMap =
+        (listOf(null to mainTimeline) + otherTimelines.entries.map { it.key to it.value })
+            .mapIndexed { mapIndex, (timelineParentId, timeMoments) ->
+                val parentTimeline = when {
+                    mainTimeline.any { moment -> moment.id == timelineParentId } -> null to mainTimeline
+                    else -> otherTimelines.entries.find { (_, timeMoments) ->
+                        timeMoments.any { moment -> moment.id == timelineParentId }
+                    }?.toPair()
+                }
+                val parentTimeMoments = parentTimeline?.second.orEmpty()
+
+                if (mapIndex == 0) {
+                    temporaryPaddingMap[null] = Dp(0f)
+                } else {
+
+                    val parent = parentTimeMoments.find { it.id == timelineParentId }
+                    requireNotNull(parent) { "Can't find timeline with parent moment" }
+                    val itemsBeforeParentAndParent = parentTimeMoments
+                        .mapIndexed { index, moment -> index to moment }
+                        .count { (index, moment) -> index <= parentTimeMoments.indexOf(parent) }
+
+                    temporaryPaddingMap[timelineParentId] =
+                        (AppTheme.dimensions.paddingS.value + temporaryPaddingMap[parent.timelineParent]!!.value + itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value).dp
+                }
+
+                timelineParentId to temporaryPaddingMap[timelineParentId]!!
+            }.toMap()
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
         modifier = modifier
@@ -308,8 +340,7 @@ private fun TimeMoments(
                 )
             }
         }
-        val itemWidth = 60.dp
-        val itemSpacing = AppTheme.dimensions.paddingS
+
         Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
             Timeline(
                 state = stateRowMap[null]!!,
@@ -321,19 +352,17 @@ private fun TimeMoments(
             )
             otherTimelines.entries.forEach { (timelineParentId, timeMoments) ->
                 val parentTimeline = when {
-                    mainTimeline.any { moment -> moment.id == timelineParentId } -> mainTimeline
+                    mainTimeline.any { moment -> moment.id == timelineParentId } -> null to mainTimeline
                     else -> otherTimelines.entries.find { (_, timeMoments) ->
                         timeMoments.any { moment -> moment.id == timelineParentId }
-                    }?.value
+                    }?.toPair()
                 }
-                val parent = parentTimeline?.find { it.id == timelineParentId }
+                val parentTimeMoments = parentTimeline?.second.orEmpty()
+                val parent = parentTimeMoments.find { it.id == timelineParentId }
                 requireNotNull(parent) { "Can't find timeline with parent moment" }
 
-                val itemsBeforeParentAndParent = parentTimeline
-                    .mapIndexed { index, moment -> index to moment }
-                    .count { (index, moment) -> index <= parentTimeline.indexOf(parent) }
-                val padding =
-                    (itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value + AppTheme.dimensions.paddingS.value).dp
+                val padding: Dp = paddingMap[timelineParentId]!!
+
                 Timeline(
                     state = stateRowMap[timelineParentId]!!,
                     itemWidth = itemWidth,
