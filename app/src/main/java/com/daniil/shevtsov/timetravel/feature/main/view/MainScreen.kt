@@ -323,35 +323,11 @@ private fun TimelineCanvas(
             mapOf()
         )
     }
-    allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-        val parentTimeline = allTimelines.entries.find { (_, moments) ->
-            moments.any { it.id == timelineId }
-        }?.value
-        val splitPadding = parentTimeline
-            ?.find { it.id == timelineId }
-            ?.let { parentMoment ->
-                momentPositions[parentMoment.id]?.position?.x
-            } ?: 0f
-        val horizontalPadding = canvasPadding + splitPadding
-        val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
-        moments.forEachIndexed { index, moment ->
-            horizontalPadding + index * segmentLength + pointSize / 2
-            val circlePosition =
-                horizontalPadding + index * segmentLength + pointSize / 2
-            momentPositions = momentPositions.toMutableMap().apply {
-                put(moment.id, MomentPosition(Offset(x = circlePosition, y = verticalPadding)))
-            }.toMap()
-        }
+    timelineState.moments.forEach { moment ->
+        momentPositions = momentPositions.toMutableMap().apply {
+            put(moment.id, MomentPosition(moment.position))
+        }.toMap()
     }
-
-    val maxLineLength = (allTimelines.entries
-        .maxByOrNull { (_, moments) -> moments.size }?.value?.size?.let {
-            if (it > 0) {
-                it - 1
-            } else {
-                it
-            }
-        } ?: 0) * segmentLength
 
     Canvas(
         modifier = Modifier
