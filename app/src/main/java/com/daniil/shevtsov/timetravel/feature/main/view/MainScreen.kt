@@ -5,7 +5,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -318,34 +318,23 @@ private fun TimelineCanvas(
         )
     )
 
-    var momentPositions: Map<TimeMomentId, MomentPosition> by remember {
-        mutableStateOf(
-            mapOf()
-        )
-    }
-    timelineState.moments.forEach { moment ->
-        momentPositions = momentPositions.toMutableMap().apply {
-            put(moment.id, MomentPosition(moment.position))
-        }.toMap()
-    }
-
     Canvas(
         modifier = Modifier
             .background(AppTheme.colors.backgroundDarkest)
             .horizontalScroll(rememberScrollState())
             .width(500.dp)
             .height(300.dp)
-            .pointerInput(Unit) {
+            .pointerInput(timelineState.moments) {
                 detectTapGestures(
                     onTap = { tapOffset ->
                         val nearestMoment =
-                            momentPositions.entries.minByOrNull { (_, position) ->
-                                tapOffset.distanceTo(position.position)
+                            timelineState.moments.minByOrNull { model ->
+                                tapOffset.distanceTo(model.position)
                             }
                         if (nearestMoment != null
-                            && nearestMoment.value.position.distanceTo(tapOffset) <= pointSize
+                            && nearestMoment.position.distanceTo(tapOffset) <= pointSize
                         ) {
-                            onViewAction(MainViewAction.TravelBackToMoment(nearestMoment.key))
+                            onViewAction(MainViewAction.TravelBackToMoment(nearestMoment.id))
                         }
                     })
             }) {
