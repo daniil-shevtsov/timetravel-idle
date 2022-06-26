@@ -29,11 +29,16 @@ data class TimelineViewState(
 )
 
 private fun calculateMomentPosition(
-    start: Float,
+    parentCenterX: Float,
     timelineIndex: Int,
     momentIndex: Int,
     sizes: TimelineSizes,
 ): Offset {
+    val start = when (timelineIndex) {
+        0 -> sizes.canvasPadding + sizes.point / 2
+        else -> parentCenterX + sizes.timelineOffset
+    }
+
     val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
     val circlePosition = start + momentIndex * sizes.segment
     return Offset(
@@ -51,21 +56,14 @@ fun timelinePresentation(
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
         }?.value
-        val parentCenter = parentTimeline
+        val parentCenterX = parentTimeline
             ?.find { it.id == timelineId }
             ?.let { parentMoment ->
                 momentPositions[parentMoment.id]?.x
             } ?: 0f
-        val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
         moments.forEachIndexed { index, moment ->
-            val start = when {
-                timelineIndex == 0 -> sizes.canvasPadding + sizes.point / 2
-                else -> parentCenter + sizes.timelineOffset
-            }
-
-            val circlePosition = start + index * sizes.segment
             val position = calculateMomentPosition(
-                start = start,
+                parentCenterX = parentCenterX,
                 timelineIndex = timelineIndex,
                 momentIndex = index,
                 sizes = sizes,
