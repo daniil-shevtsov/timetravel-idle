@@ -1,7 +1,6 @@
 package com.daniil.shevtsov.timetravel.feature.timeline.presentation
 
 import androidx.compose.ui.geometry.Offset
-import com.daniil.shevtsov.timetravel.feature.main.view.MomentPosition
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 
@@ -29,11 +28,25 @@ data class TimelineViewState(
     val moments: List<Moment>,
 )
 
+private fun calculateMomentPosition(
+    start: Float,
+    timelineIndex: Int,
+    momentIndex: Int,
+    sizes: TimelineSizes,
+): Offset {
+    val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
+    val circlePosition = start + momentIndex * sizes.segment
+    return Offset(
+        x = circlePosition,
+        y = verticalPadding + sizes.point / 2
+    )
+}
+
 fun timelinePresentation(
     allTimelines: Map<TimeMomentId?, List<TimeMomentModel>>,
     sizes: TimelineSizes,
 ): TimelineViewState {
-    var momentPositions: Map<TimeMomentId, MomentPosition> = mapOf()
+    var momentPositions: Map<TimeMomentId, Offset> = mapOf()
     allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
@@ -41,36 +54,26 @@ fun timelinePresentation(
         val parentCenter = parentTimeline
             ?.find { it.id == timelineId }
             ?.let { parentMoment ->
-                momentPositions[parentMoment.id]?.position?.x
+                momentPositions[parentMoment.id]?.x
             } ?: 0f
         val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
         moments.forEachIndexed { index, moment ->
-            val startPadding = if (timelineIndex == 0) {
-                sizes.canvasPadding + sizes.point / 2
-            } else {
-                0f
-            }
-            val offset = if (index == 0) {
-                sizes.timelineOffset
-            } else {
-                0f
-            }
-
             val start = when {
                 timelineIndex == 0 -> sizes.canvasPadding + sizes.point / 2
                 else -> parentCenter + sizes.timelineOffset
             }
 
             val circlePosition = start + index * sizes.segment
+            val position = calculateMomentPosition(
+                start = start,
+                timelineIndex = timelineIndex,
+                momentIndex = index,
+                sizes = sizes,
+            )
             momentPositions = momentPositions.toMutableMap().apply {
                 put(
                     moment.id,
-                    MomentPosition(
-                        Offset(
-                            x = circlePosition,
-                            y = verticalPadding + sizes.point / 2
-                        )
-                    )
+                    position,
                 )
             }.toMap()
         }
@@ -85,15 +88,15 @@ fun timelinePresentation(
         val parentMoment = parentTimeline?.find { it.id == timelineId }
 
         moments.flatMapIndexed { index, moment ->
-            val momentPosition = momentPositions[moments[index].id]?.position!!
+            val momentPosition = momentPositions[moments[index].id]!!
 
             val childMoment = moments.getOrNull(index + 1)
             val childPosition = childMoment?.id?.let {
-                momentPositions[it]?.position
+                momentPositions[it]
             }
             listOfNotNull(
                 parentMoment?.let { parentMoment ->
-                    val parentPosition = momentPositions[parentMoment.id]?.position
+                    val parentPosition = momentPositions[parentMoment.id]
                     parentPosition?.let {
                         Line(
                             endMomentId = moment.id,
@@ -113,7 +116,7 @@ fun timelinePresentation(
         }.forEach { line -> lines.add(line) }
 
         moments.mapIndexed { index, moment ->
-            val momentPosition = momentPositions[moment.id]?.position!!
+            val momentPosition = momentPositions[moment.id]!!
             Moment(
                 id = moment.id,
                 title = moment.time.value.toString(),
