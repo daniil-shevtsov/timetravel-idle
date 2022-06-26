@@ -31,6 +31,8 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timeline.presentation.TimelineSizes
+import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePresentation
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
@@ -363,30 +365,11 @@ private fun TimelineCanvas(
                     })
             }) {
 
-        data class Moment(
-            val title: String,
-            val position: Offset,
-        )
-
-        val momentModels = allTimelines.entries.flatMapIndexed { timelineIndex, (timelineId, moments) ->
-            val parentTimeline = allTimelines.entries.find { (_, moments) ->
-                moments.any { it.id == timelineId }
-            }?.value
-            val parentMoment = parentTimeline?.find { it.id == timelineId }
-            val splitPadding = parentMoment?.let {
-                momentPositions[it.id]?.position?.x
-            } ?: 0f
-            val horizontalPadding = canvasPadding + splitPadding
-            val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
-
-            moments.map { moment ->
-                Moment(
-                    title = moment.time.value.toString(),
-                    position = Offset(momentPositions[moment.id]?.position?.x ?: 0f, verticalPadding)
-                )
-            }
-        }
-
+        val momentModels = timelinePresentation(allTimelines = allTimelines, sizes = TimelineSizes(
+            canvasPadding = canvasPadding,
+            point = pointSize,
+            segment = segmentLength,
+        ))
 
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
@@ -456,14 +439,6 @@ private fun TimelineCanvas(
                         color = pointColor,
                         radius = pointSize * 0.40f,
                         center = Offset(circlePosition, verticalPadding)
-                    )
-                }
-                drawIntoCanvas {
-                    it.nativeCanvas.drawText(
-                        moment.time.value.toString(),
-                        circlePosition,
-                        verticalPadding + textSize / 2,
-                        textPaint
                     )
                 }
             }
