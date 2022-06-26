@@ -3,6 +3,8 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
 fun mainFunctionalCore(
     state: GameState,
@@ -15,6 +17,14 @@ fun mainFunctionalCore(
             viewAction = viewAction,
         )
         is MainViewAction.SelectAction -> selectAction(
+            state = state,
+            viewAction = viewAction,
+        )
+        is MainViewAction.TravelBackToMoment -> travelInTime(
+            state = state,
+            viewAction = viewAction,
+        )
+        is MainViewAction.RegisterTimePoint -> registerTimePoint(
             state = state,
             viewAction = viewAction,
         )
@@ -51,6 +61,33 @@ fun selectAction(
         }
     }
     return state.copy(resources = newResources)
+}
+
+fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment): GameState {
+    val selectedMoment =
+        state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
+    return selectedMoment.stateSnapshot.copy(
+        timeMoments = state.timeMoments,
+        lastTimeMomentId = selectedMoment.id,
+    )
+}
+
+fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
+    return state.copy(
+        timeMoments = state.timeMoments + listOf(
+            TimeMoment(
+                id = TimeMomentId(
+                    (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
+                ),
+                timelineParentId = when {
+                    state.lastTimeMomentId == null -> null
+                    state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.lastTimeMomentId } -> state.lastTimeMomentId
+                    else -> null
+                },
+                stateSnapshot = state,
+            )
+        )
+    )
 }
 
 fun handleDrawerTabSwitched(
