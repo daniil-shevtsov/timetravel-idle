@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
@@ -373,6 +374,15 @@ private fun TimelineCanvas(
                     })
             }) {
 
+        timelineState.lines.forEach { line ->
+            drawLine(
+                color = Color.Red,
+                strokeWidth = lineHeight,
+                start = line.start,
+                end = line.end,
+            )
+        }
+
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
                 moments.any { it.id == timelineId }
@@ -383,19 +393,6 @@ private fun TimelineCanvas(
             } ?: 0f
             val horizontalPadding = canvasPadding + splitPadding
             val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
-
-            drawLine(
-                color = lineColor,
-                strokeWidth = lineHeight,
-                start = Offset(
-                    horizontalPadding,
-                    verticalPadding
-                ),
-                end = Offset(
-                    horizontalPadding + maxLineLength,
-                    verticalPadding
-                ),
-            )
 
             moments.forEachIndexed { index, moment ->
                 if (index == 0 && parentMoment != null) {

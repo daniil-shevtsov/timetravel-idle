@@ -51,6 +51,8 @@ fun timelinePresentation(
         }
     }
 
+    val lines = mutableListOf<Line>()
+
     val momentModels = allTimelines.entries.flatMapIndexed { timelineIndex, (timelineId, moments) ->
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
@@ -62,6 +64,18 @@ fun timelinePresentation(
         val horizontalPadding = sizes.canvasPadding + splitPadding
         val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
 
+        lines.add(
+            Line(
+                start = Offset(
+                    horizontalPadding,
+                    verticalPadding
+                ),
+                end = Offset(
+                    horizontalPadding + moments.size * sizes.segment,
+                    verticalPadding
+                )
+            )
+        )
         moments.map { moment ->
             Moment(
                 id = moment.id,
@@ -72,7 +86,7 @@ fun timelinePresentation(
     }
 
     return TimelineViewState(
-        lines = emptyList(),
+        lines = lines,
         moments = momentModels,
     )
 }
