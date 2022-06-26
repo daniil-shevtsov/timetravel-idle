@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
@@ -311,7 +310,8 @@ private fun TimelineCanvas(
     }
 
     val timelineState = timelinePresentation(
-        allTimelines = allTimelines, sizes = TimelineSizes(
+        allTimelines = allTimelines,
+        sizes = TimelineSizes(
             canvasPadding = canvasPadding,
             point = pointSize,
             segment = segmentLength,
@@ -376,68 +376,38 @@ private fun TimelineCanvas(
 
         timelineState.lines.forEach { line ->
             drawLine(
-                color = Color.Red,
+                color = lineColor,
                 strokeWidth = lineHeight,
                 start = line.start,
                 end = line.end,
             )
         }
 
-        allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-            val parentTimeline = allTimelines.entries.find { (_, moments) ->
-                moments.any { it.id == timelineId }
-            }?.value
-            val parentMoment = parentTimeline?.find { it.id == timelineId }
-            val splitPadding = parentMoment?.let {
-                momentPositions[it.id]?.position?.x
-            } ?: 0f
-            val horizontalPadding = canvasPadding + splitPadding
-            val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
-
-            moments.forEachIndexed { index, moment ->
-                if (index == 0 && parentMoment != null) {
-                    val circlePosition = momentPositions[parentMoment.id]!!.position
-                    drawCircle(
-                        color = pointColor,
-                        radius = pointSize / 2,
-                        center = circlePosition
-                    )
-                    drawIntoCanvas {
-                        it.nativeCanvas.drawText(
-                            parentMoment.time.value.toString(),
-                            circlePosition.x,
-                            circlePosition.y + textSize / 2,
-                            textPaint
-                        )
-                    }
-                }
-            }
-            timelineState.moments.forEach { model ->
+        timelineState.moments.forEach { model ->
+            drawCircle(
+                color = pointColor,
+                radius = pointSize / 2,
+                center = model.position
+            )
+            if (model.id == state.timeTravel.lastSelectedMomentId) {
                 drawCircle(
-                    color = pointColor,
-                    radius = pointSize / 2,
+                    color = selectedPointColor,
+                    radius = pointSize * 0.5f,
                     center = model.position
                 )
-                if (model.id == state.timeTravel.lastSelectedMomentId) {
-                    drawCircle(
-                        color = selectedPointColor,
-                        radius = pointSize * 0.5f,
-                        center = model.position
-                    )
-                    drawCircle(
-                        color = pointColor,
-                        radius = pointSize * 0.40f,
-                        center = model.position
-                    )
-                }
-                drawIntoCanvas {
-                    it.nativeCanvas.drawText(
-                        model.title,
-                        model.position.x,
-                        model.position.y + textSize / 2,
-                        textPaint
-                    )
-                }
+                drawCircle(
+                    color = pointColor,
+                    radius = pointSize * 0.40f,
+                    center = model.position
+                )
+            }
+            drawIntoCanvas {
+                it.nativeCanvas.drawText(
+                    model.title,
+                    model.position.x,
+                    model.position.y + textSize / 2,
+                    textPaint
+                )
             }
         }
     }
