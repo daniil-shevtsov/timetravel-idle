@@ -38,23 +38,15 @@ fun timelinePresentation(
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
         }?.value
-        val zeroPadding = 0f
-        val fullPadding = parentTimeline
-            ?.find { it.id == timelineId }
-            ?.let { parentMoment ->
-                momentPositions[parentMoment.id]?.position?.x
-            } ?: 0f
         val parentCenter = parentTimeline
             ?.find { it.id == timelineId }
             ?.let { parentMoment ->
                 momentPositions[parentMoment.id]?.position?.x
             } ?: 0f
-        val splitPadding = zeroPadding
-        val horizontalPadding = sizes.canvasPadding + splitPadding
         val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
         moments.forEachIndexed { index, moment ->
             val startPadding = if (timelineIndex == 0) {
-                sizes.canvasPadding
+                sizes.canvasPadding + sizes.point / 2
             } else {
                 0f
             }
@@ -84,15 +76,6 @@ fun timelinePresentation(
 
         moments.flatMapIndexed { index, moment ->
             val momentPosition = momentPositions[moments[index].id]?.position!!
-
-            val diagonalPair = if (index == 0 && timelineIndex != 0) {
-                parentMoment?.id?.let {
-                    val parentPosition = momentPositions[it]!!.position
-                    parentPosition to momentPosition
-                }
-            } else {
-                null
-            }
 
             val childMoment = moments.getOrNull(index + 1)
             val childPosition = childMoment?.id?.let {

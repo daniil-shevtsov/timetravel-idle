@@ -10,13 +10,15 @@ import org.junit.jupiter.api.Test
 
 class TimelinePresentationTest {
 
+    val sizes = TimelineSizes(
+        canvasPadding = 14f,
+        point = 12f,
+        segment = 16f,
+        timelineOffset = 0f,
+    )
+
     @Test
     fun `should draw one point`() {
-        val sizes = TimelineSizes(
-            canvasPadding = 14f,
-            point = 12f,
-            segment = 16f,
-        )
         val models = timelinePresentation(
             allTimelines = mapOf(
                 null to listOf(
@@ -43,11 +45,6 @@ class TimelinePresentationTest {
 
     @Test
     fun `should draw two points on the same timeline`() {
-        val sizes = TimelineSizes(
-            canvasPadding = 14f,
-            point = 12f,
-            segment = 16f,
-        )
         val models = timelinePresentation(
             allTimelines = mapOf(
                 null to listOf(
@@ -83,11 +80,6 @@ class TimelinePresentationTest {
 
     @Test
     fun `should draw timeline split`() {
-        val sizes = TimelineSizes(
-            canvasPadding = 14f,
-            point = 12f,
-            segment = 16f,
-        )
         val models = timelinePresentation(
             allTimelines = mapOf(
                 null to listOf(
