@@ -50,8 +50,14 @@ private fun calculateMomentPositionWithSideEffect(
 fun calculateMomentPositionPure(
     timelineIndex: Int,
     momentIndex: Int,
+    parentMomentIndex: Int,
     sizes: TimelineSizes,
 ): Offset {
+
+    val previous = when (timelineIndex - 1) {
+        0 -> sizes.canvasPadding + sizes.point / 2
+        else -> sizes.canvasPadding + sizes.point / 2 + sizes.segment * parentMomentIndex + sizes.timelineOffset
+    } + parentMomentIndex * sizes.segment
 
     val start = when (timelineIndex) {
         0 -> sizes.canvasPadding + sizes.point / 2
@@ -75,18 +81,20 @@ fun timelinePresentation(
     allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
-        }?.value
-        val parentCenterX = parentTimeline
-            ?.find { it.id == timelineId }
+        }?.value.orEmpty()
+        val parentMoment = parentTimeline
+            .find { it.id == timelineId }
+        val parentCenterX = parentMoment
             ?.let { parentMoment ->
                 momentPositions[parentMoment.id]?.x
             } ?: 0f
 
         moments.forEachIndexed { index, moment ->
-            val position = if(timelineIndex == 0) {
+            val position = if (timelineIndex < 1) {
                 calculateMomentPositionPure(
                     timelineIndex = timelineIndex,
                     momentIndex = index,
+                    parentMomentIndex = parentTimeline.indexOf(parentMoment),
                     sizes = sizes,
                 )
             } else {
