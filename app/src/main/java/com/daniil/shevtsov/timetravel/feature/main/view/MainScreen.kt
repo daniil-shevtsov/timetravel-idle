@@ -309,6 +309,14 @@ private fun TimelineCanvas(
         textAlign = android.graphics.Paint.Align.CENTER
     }
 
+    val timelineState = timelinePresentation(
+        allTimelines = allTimelines, sizes = TimelineSizes(
+            canvasPadding = canvasPadding,
+            point = pointSize,
+            segment = segmentLength,
+        )
+    )
+
     var momentPositions: Map<TimeMomentId, MomentPosition> by remember {
         mutableStateOf(
             mapOf()
@@ -365,14 +373,6 @@ private fun TimelineCanvas(
                     })
             }) {
 
-        val timelineState = timelinePresentation(
-            allTimelines = allTimelines, sizes = TimelineSizes(
-                canvasPadding = canvasPadding,
-                point = pointSize,
-                segment = segmentLength,
-            )
-        )
-
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
                 moments.any { it.id == timelineId }
@@ -423,28 +423,25 @@ private fun TimelineCanvas(
                         )
                     }
                 }
-
-                val circlePosition =
-                    horizontalPadding + index * segmentLength + pointSize / 2
+            }
+            timelineState.moments.forEach { model ->
                 drawCircle(
                     color = pointColor,
                     radius = pointSize / 2,
-                    center = Offset(circlePosition, verticalPadding)
+                    center = model.position
                 )
-                if (moment.id == state.timeTravel.lastSelectedMomentId) {
+                if (model.id == state.timeTravel.lastSelectedMomentId) {
                     drawCircle(
                         color = selectedPointColor,
                         radius = pointSize * 0.5f,
-                        center = Offset(circlePosition, verticalPadding)
+                        center = model.position
                     )
                     drawCircle(
                         color = pointColor,
                         radius = pointSize * 0.40f,
-                        center = Offset(circlePosition, verticalPadding)
+                        center = model.position
                     )
                 }
-            }
-            timelineState.moments.forEach { model ->
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
                         model.title,

@@ -6,6 +6,7 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 
 data class Moment(
+    val id: TimeMomentId,
     val title: String,
     val position: Offset,
 )
@@ -63,6 +64,7 @@ fun timelinePresentation(
 
         moments.map { moment ->
             Moment(
+                id = moment.id,
                 title = moment.time.value.toString(),
                 position = Offset(momentPositions[moment.id]?.position?.x ?: 0f, verticalPadding)
             )
