@@ -1,10 +1,9 @@
 package com.daniil.shevtsov.timetravel.feature.timeline.presentation
 
 import androidx.compose.ui.geometry.Offset
+import assertk.all
 import assertk.assertThat
-import assertk.assertions.containsExactly
-import assertk.assertions.extracting
-import assertk.assertions.prop
+import assertk.assertions.*
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
 import org.junit.jupiter.api.Test
@@ -28,14 +27,18 @@ class TimelinePresentationTest {
         )
 
         assertThat(models)
-            .prop(TimelineViewState::moments)
-            .extracting(Moment::position)
-            .containsExactly(
-                Offset(
-                    x = 20f,
-                    y = 20f,
-                )
-            )
+            .all {
+                prop(TimelineViewState::moments)
+                    .extracting(Moment::position)
+                    .containsExactly(
+                        Offset(
+                            x = 20f,
+                            y = 20f,
+                        )
+                    )
+                prop(TimelineViewState::lines)
+                    .isEmpty()
+            }
     }
 
     @Test
@@ -56,18 +59,26 @@ class TimelinePresentationTest {
         )
 
         assertThat(models)
-            .prop(TimelineViewState::moments)
-            .extracting(Moment::position)
-            .containsExactly(
-                Offset(
-                    x = 20f,
-                    y = 14f,
-                ),
-                Offset(
-                    x = 36f,
-                    y = 14f,
-                ),
-            )
+            .all {
+                prop(TimelineViewState::moments)
+                    .extracting(Moment::position)
+                    .containsExactly(
+                        Offset(
+                            x = 20f,
+                            y = 20f,
+                        ),
+                        Offset(
+                            x = 36f,
+                            y = 20f,
+                        ),
+                    )
+                prop(TimelineViewState::lines)
+                    .index(0)
+                    .all {
+                        prop(Line::start).isEqualTo(Offset(x = 20f, y = 20f))
+                        prop(Line::end).isEqualTo(Offset(x = 36f, y = 20f))
+                    }
+            }
     }
 
 }

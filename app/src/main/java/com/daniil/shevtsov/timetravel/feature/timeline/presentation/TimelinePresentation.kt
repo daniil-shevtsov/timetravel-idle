@@ -46,7 +46,15 @@ fun timelinePresentation(
         moments.forEachIndexed { index, moment ->
             val circlePosition = horizontalPadding + index * sizes.segment + sizes.point / 2
             momentPositions = momentPositions.toMutableMap().apply {
-                put(moment.id, MomentPosition(Offset(x = circlePosition, y = verticalPadding)))
+                put(
+                    moment.id,
+                    MomentPosition(
+                        Offset(
+                            x = circlePosition,
+                            y = verticalPadding + sizes.point / 2
+                        )
+                    )
+                )
             }.toMap()
         }
     }
@@ -64,20 +72,38 @@ fun timelinePresentation(
         val horizontalPadding = sizes.canvasPadding + splitPadding
         val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
 
-        lines.add(
-            Line(
-                start = Offset(
-                    horizontalPadding,
-                    verticalPadding
-                ),
-                end = Offset(
-                    horizontalPadding + moments.size * sizes.segment,
-                    verticalPadding
-                )
+        moments.flatMapIndexed { index, moment ->
+            val momentPosition = momentPositions[moments[index].id]?.position!!
+
+            val diagonalPair = if (index == 0 && timelineIndex != 0) {
+                parentMoment?.id?.let {
+                    val parentPosition = momentPositions[it]!!.position
+                    parentPosition to momentPosition
+                }
+            } else {
+                null
+            }
+
+
+            val childPosition = moments.getOrNull(index + 1)?.id?.let {
+                momentPositions[it]?.position
+            }
+            listOfNotNull(
+                diagonalPair,
+                momentPosition to childPosition,
             )
-        )
+        }.filter { (start, end) -> start != null && end != null }
+            .forEach { (start, end) ->
+                lines.add(
+                    Line(
+                        start = start!!,
+                        end = end!!
+                    )
+                )
+            }
+
         moments.mapIndexed { index, moment ->
-            val momentPosition = Offset(momentPositions[moment.id]?.position?.x ?: 0f, verticalPadding)
+            val momentPosition = momentPositions[moment.id]?.position!!
             if (index == 0 && parentMoment != null) {
                 val parentPosition = momentPositions[parentMoment.id]?.position!!
                 lines.add(
