@@ -33,9 +33,7 @@ fun timelinePresentation(
         val horizontalPadding = sizes.canvasPadding + splitPadding
         val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
         moments.forEachIndexed { index, moment ->
-            horizontalPadding + index * sizes.segment + sizes.point / 2
-            val circlePosition =
-                horizontalPadding + index * sizes.segment + sizes.point / 2
+            val circlePosition = horizontalPadding + index * sizes.segment + sizes.point / 2
             momentPositions = momentPositions.toMutableMap().apply {
                 put(moment.id, MomentPosition(Offset(x = circlePosition, y = verticalPadding)))
             }.toMap()

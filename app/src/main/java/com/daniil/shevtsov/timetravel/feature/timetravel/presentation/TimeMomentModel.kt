@@ -2,6 +2,7 @@ package com.daniil.shevtsov.timetravel.feature.timetravel.presentation
 
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
+import kotlin.time.Duration
 
 data class TimeMomentModel(
     val id: TimeMomentId,
@@ -10,8 +11,8 @@ data class TimeMomentModel(
 )
 
 fun timeMomentModel(
-    id: TimeMomentId,
-    time: PassedTime,
+    id: TimeMomentId = TimeMomentId(0L),
+    time: PassedTime = PassedTime(Duration.ZERO),
     timelineParent: TimeMomentId? = null,
 ) = TimeMomentModel(
     id = id,
