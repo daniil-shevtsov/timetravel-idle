@@ -4,10 +4,6 @@ import android.graphics.Typeface
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +17,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
@@ -37,13 +32,11 @@ import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceMod
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
-import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
-import timber.log.Timber
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 @Preview(
     widthDp = 320,
@@ -83,51 +76,51 @@ fun MainPreview() {
                 moments = listOf(
                     timeMomentModel(
                         id = TimeMomentId(1L),
-                        time = PassedTime(Duration.seconds(4L)),
+                        time = PassedTime(4L.seconds),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(2L),
-                        time = PassedTime(Duration.seconds(8L)),
+                        time = PassedTime(8L.seconds),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(3L),
-                        time = PassedTime(Duration.seconds(10L)),
+                        time = PassedTime(10L.seconds),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(4L),
-                        time = PassedTime(Duration.seconds(11L)),
+                        time = PassedTime(11L.seconds),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(5L),
-                        time = PassedTime(Duration.seconds(12L)),
+                        time = PassedTime(12L.seconds),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(6L),
-                        time = PassedTime(Duration.seconds(13L)),
+                        time = PassedTime(13L.seconds),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(7L),
-                        time = PassedTime(Duration.seconds(15L)),
+                        time = PassedTime(15L.seconds),
                         timelineParent = TimeMomentId(2L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(8L),
-                        time = PassedTime(Duration.seconds(16L)),
+                        time = PassedTime(16L.seconds),
                         timelineParent = TimeMomentId(2L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(9L),
-                        time = PassedTime(Duration.seconds(17L)),
+                        time = PassedTime(17L.seconds),
                         timelineParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(10L),
-                        time = PassedTime(Duration.seconds(18L)),
+                        time = PassedTime(18L.seconds),
                         timelineParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(11L),
-                        time = PassedTime(Duration.seconds(19L)),
+                        time = PassedTime(19L.seconds),
                         timelineParent = TimeMomentId(7L),
                     ),
                 ),
@@ -210,11 +203,6 @@ fun Content(
                     .background(AppTheme.colors.background)
                     .padding(AppTheme.dimensions.paddingS)
             )
-
-//            TimeMoments(
-//                state = state,
-//                onViewAction = onViewAction,
-//            )
             TimelineCanvas(
                 state = state,
                 onViewAction = onViewAction,
@@ -284,109 +272,6 @@ fun Content(
 
 }
 
-typealias Timeline = Map<TimeMomentId?, List<TimeMomentModel>>
-
-@Composable
-private fun TimeMoments(
-    state: MainViewState.Content,
-    modifier: Modifier = Modifier,
-    onViewAction: (MainViewAction) -> Unit
-) {
-    val timelineHeight = 60.dp
-    val allTimelines = state.timeTravel.moments
-        .groupBy { it.timelineParent }
-
-    val stateRowMap: Map<TimeMomentId?, LazyListState> =
-        allTimelines.keys.toList().map { it to rememberLazyListState() }.toMap()
-
-    val itemWidth = 60.dp
-    val itemSpacing = AppTheme.dimensions.paddingS
-    val temporaryPaddingMap = mutableMapOf<TimeMomentId?, Dp>()
-
-    val paddingMap =
-        (allTimelines.entries.map { it.key to it.value })
-            .mapIndexed { mapIndex, (timelineParentId, timeMoments) ->
-                val parentTimeline = allTimelines.entries.find { (_, timeMoments) ->
-                    timeMoments.any { moment -> moment.id == timelineParentId }
-                }?.toPair()
-                val parentTimeMoments = parentTimeline?.second.orEmpty()
-
-                if (mapIndex == 0) {
-                    temporaryPaddingMap[null] = Dp(0f)
-                } else {
-
-                    val parent = parentTimeMoments.find { it.id == timelineParentId }
-                    requireNotNull(parent) { "Can't find timeline with parent moment" }
-                    val itemsBeforeParentAndParent = parentTimeMoments
-                        .mapIndexed { index, moment -> index to moment }
-                        .count { (index, moment) -> index <= parentTimeMoments.indexOf(parent) }
-
-                    temporaryPaddingMap[timelineParentId] =
-                        (AppTheme.dimensions.paddingS.value + temporaryPaddingMap[parent.timelineParent]!!.value + itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value).dp
-                }
-
-                timelineParentId to temporaryPaddingMap[timelineParentId]!!
-            }.toMap()
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
-        modifier = modifier
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-        ) {
-            allTimelines.entries.forEach { (timelineParentId, timeMoments) ->
-                Text(
-                    text = timelineParentId?.let { "Timeline ${timelineParentId.value}-A" }
-                        ?: "Main Timeline",
-                    color = AppTheme.colors.textLight,
-                    style = AppTheme.typography.bodyTitle,
-                    modifier = Modifier.height(timelineHeight).wrapContentHeight(),
-                )
-            }
-        }
-
-        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
-            allTimelines.entries.forEach { (timelineParentId, timeMoments) ->
-                val padding: Dp = paddingMap[timelineParentId]!!
-
-                Timeline(
-                    state = stateRowMap[timelineParentId]!!,
-                    itemWidth = itemWidth,
-                    timeMoments = timeMoments,
-                    modifier = modifier.height(timelineHeight),
-                    contentPadding = PaddingValues(
-                        start = AppTheme.dimensions.paddingS + padding,
-                        end = AppTheme.dimensions.paddingS + (paddingMap.values.sumOf { it.value.toDouble() }).dp - padding,
-                        top = AppTheme.dimensions.paddingS,
-                        bottom = AppTheme.dimensions.paddingS,
-                    ),
-                    onViewAction = onViewAction,
-                )
-            }
-        }
-    }
-
-    stateRowMap.entries.forEach { (timelineOriginId, scrolledState) ->
-        LaunchedEffect(scrolledState.firstVisibleItemScrollOffset) {
-            stateRowMap.entries.forEach { (stateYId, stateToScroll) ->
-                if (stateYId == null) {
-                    Timber.d("stateY: firstVisibleItemIndex: ${stateToScroll.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${stateToScroll.firstVisibleItemScrollOffset} stateX: firstVisibleItemIndex: ${scrolledState.firstVisibleItemIndex} firstVisibleItemScrollOffset: ${scrolledState.firstVisibleItemScrollOffset}")
-                }
-
-                if (stateYId != timelineOriginId) {
-                    if (!stateToScroll.isScrollInProgress) {
-                        stateToScroll.scrollToItem(
-                            scrolledState.firstVisibleItemIndex,
-                            scrolledState.firstVisibleItemScrollOffset
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
 data class MomentPosition(
     val position: Offset
 )
@@ -398,45 +283,8 @@ private fun TimelineCanvas(
     state: MainViewState.Content,
     onViewAction: (MainViewAction) -> Unit
 ) {
-    val timelineHeight = 60.dp
     val allTimelines = state.timeTravel.moments
         .groupBy { it.timelineParent }
-
-    val stateRowMap: Map<TimeMomentId?, LazyListState> =
-        allTimelines.keys.toList().map { it to rememberLazyListState() }.toMap()
-
-    val itemWidth = 60.dp
-    val itemSpacing = AppTheme.dimensions.paddingS
-    val temporaryPaddingMap = mutableMapOf<TimeMomentId?, Dp>()
-
-    val paddingMap =
-        (allTimelines.entries.map { it.key to it.value })
-            .mapIndexed { mapIndex, (timelineParentId, timeMoments) ->
-                val parentTimeline = allTimelines.entries.find { (_, timeMoments) ->
-                    timeMoments.any { moment -> moment.id == timelineParentId }
-                }?.toPair()
-                val parentTimeMoments = parentTimeline?.second.orEmpty()
-
-                if (mapIndex == 0) {
-                    temporaryPaddingMap[null] = Dp(0f)
-                } else {
-
-                    val parent = parentTimeMoments.find { it.id == timelineParentId }
-                    requireNotNull(parent) { "Can't find timeline with parent moment" }
-                    val itemsBeforeParentAndParent = parentTimeMoments
-                        .mapIndexed { index, moment -> index to moment }
-                        .count { (index, moment) ->
-                            index <= parentTimeMoments.indexOf(
-                                parent
-                            )
-                        }
-
-                    temporaryPaddingMap[timelineParentId] =
-                        (AppTheme.dimensions.paddingS.value + temporaryPaddingMap[parent.timelineParent]!!.value + itemsBeforeParentAndParent * itemWidth.value + (itemsBeforeParentAndParent - 1) * itemSpacing.value).dp
-                }
-
-                timelineParentId to temporaryPaddingMap[timelineParentId]!!
-            }.toMap()
 
     val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
     val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
@@ -590,54 +438,6 @@ private fun TimelineCanvas(
             }
         }
     }
-}
-
-@Composable
-private fun Timeline(
-    timeMoments: List<TimeMomentModel>,
-    modifier: Modifier = Modifier,
-    itemWidth: Dp,
-    contentPadding: PaddingValues,
-    state: LazyListState,
-    onViewAction: (MainViewAction) -> Unit
-) {
-    LazyRow(
-        state = state,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.backgroundDarkest),
-        horizontalArrangement = Arrangement.spacedBy(
-            AppTheme.dimensions.paddingS,
-            Alignment.Start
-        ),
-        contentPadding = contentPadding,
-    ) {
-        items(timeMoments) { item ->
-            TimeMoment(
-                item = item,
-                modifier = modifier.width(itemWidth).fillMaxHeight(),
-                onViewAction = onViewAction
-            )
-        }
-    }
-}
-
-@Composable
-private fun TimeMoment(
-    item: TimeMomentModel,
-    modifier: Modifier,
-    onViewAction: (MainViewAction) -> Unit
-) {
-    Text(
-        text = item.time.value.toString(),
-        style = AppTheme.typography.bodyTitle,
-        textAlign = TextAlign.Center,
-        color = AppTheme.colors.textLight,
-        modifier = modifier
-            .background(AppTheme.colors.background)
-            .clickable { onViewAction(MainViewAction.TravelBackToMoment(id = item.id)) }
-            .padding(AppTheme.dimensions.paddingS)
-    )
 }
 
 @Composable
