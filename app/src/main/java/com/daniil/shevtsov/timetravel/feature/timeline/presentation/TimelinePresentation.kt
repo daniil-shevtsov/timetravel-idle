@@ -28,7 +28,7 @@ data class TimelineViewState(
     val moments: List<Moment>,
 )
 
-private fun calculateMomentPosition(
+private fun calculateMomentPositionWithSideEffect(
     parentCenterX: Float,
     timelineIndex: Int,
     momentIndex: Int,
@@ -47,7 +47,7 @@ private fun calculateMomentPosition(
     )
 }
 
-fun calculateMomentStart(
+fun calculateMomentPositionPure(
     timelineIndex: Int,
     momentIndex: Int,
     sizes: TimelineSizes,
@@ -84,13 +84,13 @@ fun timelinePresentation(
 
         moments.forEachIndexed { index, moment ->
             val position = if(timelineIndex == 0) {
-                calculateMomentStart(
+                calculateMomentPositionPure(
                     timelineIndex = timelineIndex,
                     momentIndex = index,
                     sizes = sizes,
                 )
             } else {
-                calculateMomentPosition(
+                calculateMomentPositionWithSideEffect(
                     parentCenterX = parentCenterX,
                     timelineIndex = timelineIndex,
                     momentIndex = index,
