@@ -108,11 +108,11 @@ class TimelinePresentationTest {
                             y = 20f,
                         ),
                         TimeMomentId(2L) to Offset(
-                            x = 40f,
+                            x = 28f,
                             y = 42f,
                         ),
                         TimeMomentId(3L) to Offset(
-                            x = 56f,
+                            x = 44f,
                             y = 42f,
                         ),
                     )
@@ -127,12 +127,12 @@ class TimelinePresentationTest {
                         Triple(
                             TimeMomentId(2L),
                             Offset(x = 20f, y = 20f),
-                            Offset(x = 40f, y = 42f)
+                            Offset(x = 28f, y = 42f)
                         ),
                         Triple(
                             TimeMomentId(3L),
-                            Offset(x = 40f, y = 42f),
-                            Offset(x = 56f, y = 42f)
+                            Offset(x = 28f, y = 42f),
+                            Offset(x = 44f, y = 42f)
                         ),
                     )
             }
