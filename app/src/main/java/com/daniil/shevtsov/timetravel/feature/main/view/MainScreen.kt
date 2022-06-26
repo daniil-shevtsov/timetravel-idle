@@ -293,6 +293,7 @@ private fun TimelineCanvas(
     val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
     val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
     val segmentLength = with(LocalDensity.current) { 60.dp.toPx() }
+    val timelineOffset = segmentLength / 2
     val canvasPadding = with(LocalDensity.current) { 25.dp.toPx() }
     val textSize = with(LocalDensity.current) { 12.sp.toPx() }
 
@@ -308,14 +309,15 @@ private fun TimelineCanvas(
         typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
         textAlign = android.graphics.Paint.Align.CENTER
     }
-
+    val sizes = TimelineSizes(
+        canvasPadding = canvasPadding,
+        point = pointSize,
+        segment = segmentLength,
+        timelineOffset = timelineOffset,
+    )
     val timelineState = timelinePresentation(
         allTimelines = allTimelines,
-        sizes = TimelineSizes(
-            canvasPadding = canvasPadding,
-            point = pointSize,
-            segment = segmentLength,
-        )
+        sizes = sizes
     )
 
     Canvas(
@@ -375,6 +377,33 @@ private fun TimelineCanvas(
                 )
             }
         }
+
+//        timelineState.lines.forEach {
+//            drawCircle(
+//                color = Color.Red,
+//                radius = pointSize * 0.30f,
+//                center = it.start
+//            )
+//            drawCircle(
+//                color = Color.Green,
+//                radius = pointSize * 0.20f,
+//                center = it.end
+//            )
+//            drawRect(
+//                Color.Cyan,
+//                topLeft = it.start,
+//                size = Size(
+//                    sizes.
+//                )
+//            )
+//        }
+//        timelineState.moments.forEach {
+//            drawCircle(
+//                color = Color.Yellow,
+//                radius = pointSize * 0.10f,
+//                center = it.position
+//            )
+//        }
     }
 }
 

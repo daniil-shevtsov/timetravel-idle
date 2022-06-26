@@ -21,6 +21,7 @@ data class TimelineSizes(
     val canvasPadding: Float,
     val point: Float,
     val segment: Float,
+    val timelineOffset: Float,
 )
 
 data class TimelineViewState(
@@ -37,15 +38,28 @@ fun timelinePresentation(
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
         }?.value
-        val splitPadding = parentTimeline
+        val zeroPadding = 0f
+        val fullPadding = parentTimeline
             ?.find { it.id == timelineId }
             ?.let { parentMoment ->
                 momentPositions[parentMoment.id]?.position?.x
             } ?: 0f
+        val parentCenter = parentTimeline
+            ?.find { it.id == timelineId }
+            ?.let { parentMoment ->
+                momentPositions[parentMoment.id]?.position?.x
+            } ?: 0f
+        val splitPadding = zeroPadding
         val horizontalPadding = sizes.canvasPadding + splitPadding
         val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
         moments.forEachIndexed { index, moment ->
-            val circlePosition = horizontalPadding + index * sizes.segment + sizes.point / 2
+            val startPadding = if (timelineIndex == 0) {
+                sizes.canvasPadding
+            } else {
+                0f
+            }
+            val offset = sizes.timelineOffset
+            val circlePosition = startPadding + parentCenter + offset + index * sizes.segment
             momentPositions = momentPositions.toMutableMap().apply {
                 put(
                     moment.id,
@@ -107,16 +121,6 @@ fun timelinePresentation(
 
         moments.mapIndexed { index, moment ->
             val momentPosition = momentPositions[moment.id]?.position!!
-//            if (index == 0 && parentMoment != null) {
-//                val parentPosition = momentPositions[parentMoment.id]?.position!!
-//                lines.add(
-//                    Line(
-//                        start = parentPosition,
-//                        end = momentPosition,
-//                    )
-//                )
-//            }
-
             Moment(
                 id = moment.id,
                 title = moment.time.value.toString(),
