@@ -225,14 +225,16 @@ fun Content(
                                     modifier.fillMaxWidth()
                                 } else {
                                     modifier
-                                }.weight(1f)
+                                }
+                                    .weight(1f)
                                     .clickable { onViewAction(MainViewAction.SelectAction(id = startAction.id)) }
                             },
                         )
                         if (endAction != null) {
                             ActionItem(
                                 model = endAction,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier
+                                    .weight(1f)
                                     .clickable { onViewAction(MainViewAction.SelectAction(id = endAction.id)) }
                             )
                         }
@@ -313,10 +315,11 @@ private fun TimelineCanvas(
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
         }?.value
-        val parentMoment = parentTimeline?.find { it.id == timelineId }
-        val splitPadding = parentMoment?.let { parentMoment ->
-            momentPositions[parentMoment.id]?.position?.x
-        } ?: 0f
+        val splitPadding = parentTimeline
+            ?.find { it.id == timelineId }
+            ?.let { parentMoment ->
+                momentPositions[parentMoment.id]?.position?.x
+            } ?: 0f
         val horizontalPadding = canvasPadding + splitPadding
         val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
         moments.forEachIndexed { index, moment ->
@@ -338,7 +341,7 @@ private fun TimelineCanvas(
                 detectTapGestures(
                     onTap = { tapOffset ->
                         val nearestMoment =
-                            momentPositions.entries.minByOrNull { (momentId, position) ->
+                            momentPositions.entries.minByOrNull { (_, position) ->
                                 tapOffset.distanceTo(position.position)
                             }
                         if (nearestMoment != null
@@ -349,7 +352,7 @@ private fun TimelineCanvas(
                     })
             }) {
         val maxLineLength = (allTimelines.entries
-            .maxByOrNull { (id, moments) -> moments.size }?.value?.size?.let {
+            .maxByOrNull { (_, moments) -> moments.size }?.value?.size?.let {
                 if (it > 0) {
                     it - 1
                 } else {
@@ -362,8 +365,8 @@ private fun TimelineCanvas(
                 moments.any { it.id == timelineId }
             }?.value
             val parentMoment = parentTimeline?.find { it.id == timelineId }
-            val splitPadding = parentMoment?.let { parentMoment ->
-                momentPositions[parentMoment.id]?.position?.x
+            val splitPadding = parentMoment?.let {
+                momentPositions[it.id]?.position?.x
             } ?: 0f
             val horizontalPadding = canvasPadding + splitPadding
             val verticalPadding = canvasPadding + timelineIndex * (pointSize + 10)
