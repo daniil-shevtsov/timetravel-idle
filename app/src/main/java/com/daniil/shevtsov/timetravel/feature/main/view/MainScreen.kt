@@ -397,15 +397,6 @@ private fun TimelineCanvas(
             moments.forEachIndexed { index, moment ->
                 if (index == 0 && parentMoment != null) {
                     val circlePosition = momentPositions[parentMoment.id]!!.position
-                    drawLine(
-                        color = lineColor,
-                        strokeWidth = lineHeight,
-                        start = circlePosition,
-                        end = Offset(
-                            horizontalPadding + pointSize / 2,
-                            verticalPadding
-                        ),
-                    )
                     drawCircle(
                         color = pointColor,
                         radius = pointSize / 2,

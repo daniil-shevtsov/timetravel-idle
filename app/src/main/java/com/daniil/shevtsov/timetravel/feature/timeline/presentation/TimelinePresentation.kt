@@ -76,11 +76,22 @@ fun timelinePresentation(
                 )
             )
         )
-        moments.map { moment ->
+        moments.mapIndexed { index, moment ->
+            val momentPosition = Offset(momentPositions[moment.id]?.position?.x ?: 0f, verticalPadding)
+            if (index == 0 && parentMoment != null) {
+                val parentPosition = momentPositions[parentMoment.id]?.position!!
+                lines.add(
+                    Line(
+                        start = parentPosition,
+                        end = momentPosition,
+                    )
+                )
+            }
+
             Moment(
                 id = moment.id,
                 title = moment.time.value.toString(),
-                position = Offset(momentPositions[moment.id]?.position?.x ?: 0f, verticalPadding)
+                position = momentPosition,
             )
         }
     }
