@@ -14,7 +14,7 @@ class TimelinePresentationTest {
         canvasPadding = 14f,
         point = 12f,
         segment = 16f,
-        timelineOffset = 0f,
+        timelineOffset = 8f,
     )
 
     @Test

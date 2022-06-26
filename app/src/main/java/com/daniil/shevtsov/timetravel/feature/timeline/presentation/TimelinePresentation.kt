@@ -50,8 +50,18 @@ fun timelinePresentation(
             } else {
                 0f
             }
-            val offset = sizes.timelineOffset
-            val circlePosition = startPadding + parentCenter + offset + index * sizes.segment
+            val offset = if (index == 0) {
+                sizes.timelineOffset
+            } else {
+                0f
+            }
+
+            val start = when {
+                timelineIndex == 0 -> sizes.canvasPadding + sizes.point / 2
+                else -> parentCenter + sizes.timelineOffset
+            }
+
+            val circlePosition = start + index * sizes.segment
             momentPositions = momentPositions.toMutableMap().apply {
                 put(
                     moment.id,
