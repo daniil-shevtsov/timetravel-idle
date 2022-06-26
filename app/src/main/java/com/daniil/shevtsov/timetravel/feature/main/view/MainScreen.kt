@@ -377,33 +377,6 @@ private fun TimelineCanvas(
                 )
             }
         }
-
-//        timelineState.lines.forEach {
-//            drawCircle(
-//                color = Color.Red,
-//                radius = pointSize * 0.30f,
-//                center = it.start
-//            )
-//            drawCircle(
-//                color = Color.Green,
-//                radius = pointSize * 0.20f,
-//                center = it.end
-//            )
-//            drawRect(
-//                Color.Cyan,
-//                topLeft = it.start,
-//                size = Size(
-//                    sizes.
-//                )
-//            )
-//        }
-//        timelineState.moments.forEach {
-//            drawCircle(
-//                color = Color.Yellow,
-//                radius = pointSize * 0.10f,
-//                center = it.position
-//            )
-//        }
     }
 }
 
