@@ -12,6 +12,7 @@ data class Moment(
 )
 
 data class Line(
+    val endMomentId: TimeMomentId,
     val start: Offset,
     val end: Offset,
 )
@@ -66,11 +67,6 @@ fun timelinePresentation(
             moments.any { it.id == timelineId }
         }?.value
         val parentMoment = parentTimeline?.find { it.id == timelineId }
-        val splitPadding = parentMoment?.let {
-            momentPositions[it.id]?.position?.x
-        } ?: 0f
-        val horizontalPadding = sizes.canvasPadding + splitPadding
-        val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
 
         moments.flatMapIndexed { index, moment ->
             val momentPosition = momentPositions[moments[index].id]?.position!!
@@ -84,35 +80,42 @@ fun timelinePresentation(
                 null
             }
 
-
-            val childPosition = moments.getOrNull(index + 1)?.id?.let {
+            val childMoment = moments.getOrNull(index + 1)
+            val childPosition = childMoment?.id?.let {
                 momentPositions[it]?.position
             }
             listOfNotNull(
-                diagonalPair,
-                momentPosition to childPosition,
-            )
-        }.filter { (start, end) -> start != null && end != null }
-            .forEach { (start, end) ->
-                lines.add(
+                parentMoment?.let { parentMoment ->
+                    val parentPosition = momentPositions[parentMoment.id]?.position
+                    parentPosition?.let {
+                        Line(
+                            endMomentId = moment.id,
+                            start = parentPosition,
+                            end = momentPosition,
+                        )
+                    }.takeIf { index == 0 && timelineIndex != 0 }
+                },
+                childPosition?.let {
                     Line(
-                        start = start!!,
-                        end = end!!
+                        endMomentId = childMoment.id,
+                        start = momentPosition,
+                        end = childPosition
                     )
-                )
-            }
+                }
+            )
+        }.forEach { line -> lines.add(line) }
 
         moments.mapIndexed { index, moment ->
             val momentPosition = momentPositions[moment.id]?.position!!
-            if (index == 0 && parentMoment != null) {
-                val parentPosition = momentPositions[parentMoment.id]?.position!!
-                lines.add(
-                    Line(
-                        start = parentPosition,
-                        end = momentPosition,
-                    )
-                )
-            }
+//            if (index == 0 && parentMoment != null) {
+//                val parentPosition = momentPositions[parentMoment.id]?.position!!
+//                lines.add(
+//                    Line(
+//                        start = parentPosition,
+//                        end = momentPosition,
+//                    )
+//                )
+//            }
 
             Moment(
                 id = moment.id,
