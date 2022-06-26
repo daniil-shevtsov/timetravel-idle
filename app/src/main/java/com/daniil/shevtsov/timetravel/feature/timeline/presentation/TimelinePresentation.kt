@@ -10,16 +10,26 @@ data class Moment(
     val position: Offset,
 )
 
+data class Line(
+    val start: Offset,
+    val end: Offset,
+)
+
 data class TimelineSizes(
     val canvasPadding: Float,
     val point: Float,
     val segment: Float,
 )
 
+data class TimelineViewState(
+    val lines: List<Line>,
+    val moments: List<Moment>,
+)
+
 fun timelinePresentation(
     allTimelines: Map<TimeMomentId?, List<TimeMomentModel>>,
     sizes: TimelineSizes,
-): List<Moment> {
+): TimelineViewState {
     var momentPositions: Map<TimeMomentId, MomentPosition> = mapOf()
     allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
@@ -59,5 +69,8 @@ fun timelinePresentation(
         }
     }
 
-    return momentModels
+    return TimelineViewState(
+        lines = emptyList(),
+        moments = momentModels,
+    )
 }

@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
+import assertk.assertions.prop
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
 import org.junit.jupiter.api.Test
@@ -27,6 +28,7 @@ class TimelinePresentationTest {
         )
 
         assertThat(models)
+            .prop(TimelineViewState::moments)
             .extracting(Moment::position)
             .containsExactly(
                 Offset(
@@ -54,6 +56,7 @@ class TimelinePresentationTest {
         )
 
         assertThat(models)
+            .prop(TimelineViewState::moments)
             .extracting(Moment::position)
             .containsExactly(
                 Offset(

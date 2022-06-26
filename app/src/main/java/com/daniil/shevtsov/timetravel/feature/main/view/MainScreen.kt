@@ -365,11 +365,13 @@ private fun TimelineCanvas(
                     })
             }) {
 
-        val momentModels = timelinePresentation(allTimelines = allTimelines, sizes = TimelineSizes(
-            canvasPadding = canvasPadding,
-            point = pointSize,
-            segment = segmentLength,
-        ))
+        val timelineState = timelinePresentation(
+            allTimelines = allTimelines, sizes = TimelineSizes(
+                canvasPadding = canvasPadding,
+                point = pointSize,
+                segment = segmentLength,
+            )
+        )
 
         allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
@@ -442,7 +444,7 @@ private fun TimelineCanvas(
                     )
                 }
             }
-            momentModels.forEach { model ->
+            timelineState.moments.forEach { model ->
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
                         model.title,
