@@ -13,6 +13,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceMod
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import kotlin.time.DurationUnit
@@ -30,7 +31,19 @@ fun mapMainViewState(
         ),
         actions = state.actions.map { it.toModel() },
         timeTravel = TimeTravelViewState(
-            moments = state.timeMoments.map { it.toModel() },
+            moments = state.timeMoments.mapIndexed { index, timeMoment ->
+                val timeline =
+                    state.timeMoments.filter { it.timelineParentId == timeMoment.timelineParentId }
+                val isFirstInTimeline = state.timeMoments
+                    .first { it.timelineParentId == timeMoment.timelineParentId } == timeMoment
+                timeMoment.toModel(
+                    parentId = when {
+                        isFirstInTimeline -> timeMoment.timelineParentId
+                        else -> timeline.getOrNull(timeline.indexOf(timeMoment) - 1)?.id
+                    }
+
+                )
+            },
             lastSelectedMomentId = state.currentMomentId
         )
     )
@@ -63,8 +76,9 @@ private fun Action.toModel() = ActionModel(
     title = title,
 )
 
-private fun TimeMoment.toModel() = TimeMomentModel(
+private fun TimeMoment.toModel(parentId: TimeMomentId?) = TimeMomentModel(
     id = id,
     time = stateSnapshot.passedTime,
     timelineParent = timelineParentId,
+    momentParent = parentId,
 )
