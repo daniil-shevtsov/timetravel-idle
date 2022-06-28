@@ -146,7 +146,7 @@ class MainFunctionalCoreTest {
         assertThat(newState)
             .all {
                 prop(GameState::passedTime)
-                .isEqualTo(pastState.passedTime)
+                    .isEqualTo(pastState.passedTime)
 
                 prop(GameState::lastTimeMomentId)
                     .isEqualTo(timeMoment.id)
@@ -205,6 +205,44 @@ class MainFunctionalCoreTest {
                 timeMoment.id to null,
                 futureMoment.id to null,
                 TimeMomentId(3L) to timeMoment.id,
+            )
+    }
+
+    @Test
+    fun `should continue timeline when got back and registering time moment`() {
+        val pastState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(5)),
+        )
+
+        val mainTimelineMoment1 = timeMoment(id = TimeMomentId(1L))
+        val mainTimelineMoment2 = timeMoment(id = TimeMomentId(2L))
+        val splitTimelineMoment =
+            timeMoment(id = TimeMomentId(3L), timelineParentId = mainTimelineMoment1.id)
+        val currentState = gameState(
+            passedTime = PassedTime(Duration.milliseconds(10)),
+            timeMoments = listOf(mainTimelineMoment1, mainTimelineMoment2, splitTimelineMoment),
+            lastTimeMomentId = mainTimelineMoment2.id,
+        )
+
+        val stateAfterTravellingBack = mainFunctionalCore(
+            state = currentState,
+            viewAction = MainViewAction.TravelBackToMoment(id = mainTimelineMoment2.id),
+        )
+
+        val stateAfterRegisteringNewPoint =
+            mainFunctionalCore(
+                state = stateAfterTravellingBack,
+                viewAction = MainViewAction.RegisterTimePoint,
+            )
+
+        assertThat(stateAfterRegisteringNewPoint)
+            .prop(GameState::timeMoments)
+            .extracting(TimeMoment::id, TimeMoment::timelineParentId)
+            .containsExactly(
+                mainTimelineMoment1.id to null,
+                mainTimelineMoment2.id to null,
+                splitTimelineMoment.id to mainTimelineMoment1.id,
+                TimeMomentId(4L) to null,
             )
     }
 

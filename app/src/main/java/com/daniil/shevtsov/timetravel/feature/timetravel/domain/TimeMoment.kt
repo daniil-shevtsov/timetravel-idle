@@ -1,6 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.timetravel.domain
 
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
+import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 
 data class TimeMoment(
     val id: TimeMomentId,
@@ -17,7 +18,7 @@ value class TimeLineId(val value: Long)
 fun timeMoment(
     id: TimeMomentId = TimeMomentId(0L),
     timelineParentId: TimeMomentId? = null,
-    stateSnapshot: GameState,
+    stateSnapshot: GameState = gameState(),
 ) = TimeMoment(
     id = id,
     timelineParentId = timelineParentId,
