@@ -31,7 +31,7 @@ fun mapMainViewState(
         actions = state.actions.map { it.toModel() },
         timeTravel = TimeTravelViewState(
             moments = state.timeMoments.map { it.toModel() },
-            lastSelectedMomentId = state.lastTimeMomentId
+            lastSelectedMomentId = state.currentMomentId
         )
     )
 }

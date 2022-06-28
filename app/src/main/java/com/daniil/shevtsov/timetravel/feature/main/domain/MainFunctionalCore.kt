@@ -68,12 +68,12 @@ fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment
         state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
     return selectedMoment.stateSnapshot.copy(
         timeMoments = state.timeMoments,
-        lastTimeMomentId = selectedMoment.id,
+        currentMomentId = selectedMoment.id,
     )
 }
 
 fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
-    val currentTimeMoment = state.timeMoments.find { it.id == state.lastTimeMomentId }
+    val currentTimeMoment = state.timeMoments.find { it.id == state.currentMomentId }
     val isLastInTimeline =
         state.timeMoments.lastOrNull { it.timelineParentId == currentTimeMoment?.timelineParentId } == currentTimeMoment
 
@@ -82,9 +82,9 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
             (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
         ),
         timelineParentId = when {
-            state.lastTimeMomentId == null -> null
+            state.currentMomentId == null -> null
             isLastInTimeline -> currentTimeMoment?.timelineParentId
-            state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.lastTimeMomentId } -> state.lastTimeMomentId
+            state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.currentMomentId } -> state.currentMomentId
             else -> null
         },
         stateSnapshot = state,
@@ -94,7 +94,7 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
         timeMoments = state.timeMoments + listOf(
             newMoment
         ),
-        lastTimeMomentId = newMoment.id,
+        currentMomentId = newMoment.id,
     )
 }
 

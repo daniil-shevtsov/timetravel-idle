@@ -148,7 +148,7 @@ class MainFunctionalCoreTest {
                 prop(GameState::passedTime)
                     .isEqualTo(pastState.passedTime)
 
-                prop(GameState::lastTimeMomentId)
+                prop(GameState::currentMomentId)
                     .isEqualTo(timeMoment.id)
             }
 
@@ -241,7 +241,7 @@ class MainFunctionalCoreTest {
                         splitTimelineMoment.id to mainTimelineMoment1.id,
                         TimeMomentId(4L) to null,
                     )
-                prop(GameState::lastTimeMomentId).isEqualTo(TimeMomentId(4L))
+                prop(GameState::currentMomentId).isEqualTo(TimeMomentId(4L))
             }
     }
 
