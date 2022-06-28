@@ -210,10 +210,6 @@ class MainFunctionalCoreTest {
 
     @Test
     fun `should continue timeline when got back and registering time moment`() {
-        val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
-        )
-
         val mainTimelineMoment1 = timeMoment(id = TimeMomentId(1L))
         val mainTimelineMoment2 = timeMoment(id = TimeMomentId(2L))
         val splitTimelineMoment =
@@ -236,14 +232,17 @@ class MainFunctionalCoreTest {
             )
 
         assertThat(stateAfterRegisteringNewPoint)
-            .prop(GameState::timeMoments)
-            .extracting(TimeMoment::id, TimeMoment::timelineParentId)
-            .containsExactly(
-                mainTimelineMoment1.id to null,
-                mainTimelineMoment2.id to null,
-                splitTimelineMoment.id to mainTimelineMoment1.id,
-                TimeMomentId(4L) to null,
-            )
+            .all {
+                prop(GameState::timeMoments)
+                    .extracting(TimeMoment::id, TimeMoment::timelineParentId)
+                    .containsExactly(
+                        mainTimelineMoment1.id to null,
+                        mainTimelineMoment2.id to null,
+                        splitTimelineMoment.id to mainTimelineMoment1.id,
+                        TimeMomentId(4L) to null,
+                    )
+                prop(GameState::lastTimeMomentId).isEqualTo(TimeMomentId(4L))
+            }
     }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)

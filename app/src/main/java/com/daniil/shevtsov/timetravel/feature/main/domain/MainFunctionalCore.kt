@@ -76,21 +76,25 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
     val currentTimeMoment = state.timeMoments.find { it.id == state.lastTimeMomentId }
     val isLastInTimeline =
         state.timeMoments.lastOrNull { it.timelineParentId == currentTimeMoment?.timelineParentId } == currentTimeMoment
+
+    val newMoment = TimeMoment(
+        id = TimeMomentId(
+            (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
+        ),
+        timelineParentId = when {
+            state.lastTimeMomentId == null -> null
+            isLastInTimeline -> currentTimeMoment?.timelineParentId
+            state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.lastTimeMomentId } -> state.lastTimeMomentId
+            else -> null
+        },
+        stateSnapshot = state,
+    )
+
     return state.copy(
         timeMoments = state.timeMoments + listOf(
-            TimeMoment(
-                id = TimeMomentId(
-                    (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
-                ),
-                timelineParentId = when {
-                    state.lastTimeMomentId == null -> null
-                    isLastInTimeline -> currentTimeMoment?.timelineParentId
-                    state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.lastTimeMomentId } -> state.lastTimeMomentId
-                    else -> null
-                },
-                stateSnapshot = state,
-            )
-        )
+            newMoment
+        ),
+        lastTimeMomentId = newMoment.id,
     )
 }
 
