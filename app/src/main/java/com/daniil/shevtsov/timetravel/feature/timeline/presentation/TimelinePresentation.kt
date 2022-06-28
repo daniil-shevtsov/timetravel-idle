@@ -30,14 +30,14 @@ data class TimelineViewState(
 
 //TODO: Get rid of side effect
 private fun calculateMomentPositionWithSideEffect(
-    parentCenterX: Float,
+    timelineRootOffsetX: Float,
     timelineIndex: Int,
     momentIndex: Int,
     sizes: TimelineSizes,
 ): Offset {
     val start = when (timelineIndex) {
         0 -> sizes.canvasPadding + sizes.point / 2
-        else -> parentCenterX + sizes.timelineOffset
+        else -> timelineRootOffsetX + sizes.timelineOffset
     }
 
     val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
@@ -60,7 +60,7 @@ fun timelinePresentation(
         }?.value.orEmpty()
         val timelineRootMoment = parentTimeline
             .find { it.id == timelineId }
-        val parentCenterX = timelineRootMoment
+        val timelineRootOffsetX = timelineRootMoment
             ?.let { momentPositions[timelineRootMoment.id]?.x } ?: 0f
 
         moments.forEachIndexed { index, moment ->
@@ -69,9 +69,9 @@ fun timelinePresentation(
                 else -> allMoments.find { it.id == moment.momentParent }!!
             }
             val newParentCenterX =
-                parentMoment?.let { momentPositions[parentMoment.id]?.x } ?: 0f
+                parentMoment?.let { momentPositions[moment.momentParent]?.x } ?: 0f
             val position = calculateMomentPositionWithSideEffect(
-                parentCenterX = parentCenterX,
+                timelineRootOffsetX = timelineRootOffsetX,
                 timelineIndex = timelineIndex,
                 momentIndex = index,
                 sizes = sizes,
