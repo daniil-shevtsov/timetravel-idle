@@ -52,15 +52,16 @@ fun timelinePresentation(
     allTimelines: Map<TimeMomentId?, List<TimeMomentModel>>,
     sizes: TimelineSizes,
 ): TimelineViewState {
+    val allMoments = allTimelines.values.flatten()
     var momentPositions: Map<TimeMomentId, Offset> = mapOf()
     allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
         }?.value.orEmpty()
-        val parentMoment = parentTimeline
+        val timelineRootMoment = parentTimeline
             .find { it.id == timelineId }
-        val parentCenterX = parentMoment
-            ?.let { momentPositions[parentMoment.id]?.x } ?: 0f
+        val parentCenterX = timelineRootMoment
+            ?.let { momentPositions[timelineRootMoment.id]?.x } ?: 0f
 
         moments.forEachIndexed { index, moment ->
             val position = calculateMomentPositionWithSideEffect(
@@ -85,7 +86,7 @@ fun timelinePresentation(
         val parentTimeline = allTimelines.entries.find { (_, moments) ->
             moments.any { it.id == timelineId }
         }?.value
-        val parentMoment = parentTimeline?.find { it.id == timelineId }
+        val timelineRootMoment = parentTimeline?.find { it.id == timelineId }
 
         moments.flatMapIndexed { index, moment ->
             val momentPosition = momentPositions[moments[index].id]!!
@@ -95,7 +96,7 @@ fun timelinePresentation(
                 momentPositions[it]
             }
             listOfNotNull(
-                parentMoment?.let { parentMoment ->
+                timelineRootMoment?.let { parentMoment ->
                     val parentPosition = momentPositions[parentMoment.id]
                     parentPosition?.let {
                         Line(
