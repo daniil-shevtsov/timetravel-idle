@@ -48,8 +48,8 @@ class TimelinePresentationTest {
         val models = timelinePresentation(
             allTimelines = mapOf(
                 null to listOf(
-                    timeMomentModel(id = TimeMomentId(0L)),
-                    timeMomentModel(id = TimeMomentId(1L)),
+                    timeMomentModel(id = TimeMomentId(0L), momentParent = null),
+                    timeMomentModel(id = TimeMomentId(1L), momentParent = TimeMomentId(0L)),
                 )
             ),
             sizes = sizes,
@@ -83,12 +83,12 @@ class TimelinePresentationTest {
         val models = timelinePresentation(
             allTimelines = mapOf(
                 null to listOf(
-                    timeMomentModel(id = TimeMomentId(0L)),
-                    timeMomentModel(id = TimeMomentId(1L)),
+                    timeMomentModel(id = TimeMomentId(0L), momentParent = null),
+                    timeMomentModel(id = TimeMomentId(1L), momentParent = TimeMomentId(0L)),
                 ),
                 TimeMomentId(0L) to listOf(
-                    timeMomentModel(id = TimeMomentId(2L)),
-                    timeMomentModel(id = TimeMomentId(3L)),
+                    timeMomentModel(id = TimeMomentId(2L), momentParent = TimeMomentId(0L)),
+                    timeMomentModel(id = TimeMomentId(3L), momentParent = TimeMomentId(2L)),
                 )
             ),
             sizes = sizes,

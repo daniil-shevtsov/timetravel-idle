@@ -64,6 +64,12 @@ fun timelinePresentation(
             ?.let { momentPositions[timelineRootMoment.id]?.x } ?: 0f
 
         moments.forEachIndexed { index, moment ->
+            val parentMoment = when (index) {
+                0 -> timelineRootMoment
+                else -> allMoments.find { it.id == moment.momentParent }!!
+            }
+            val newParentCenterX =
+                parentMoment?.let { momentPositions[parentMoment.id]?.x } ?: 0f
             val position = calculateMomentPositionWithSideEffect(
                 parentCenterX = parentCenterX,
                 timelineIndex = timelineIndex,
