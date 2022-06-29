@@ -287,10 +287,6 @@ fun Content(
 
 }
 
-data class MomentPosition(
-    val position: Offset
-)
-
 fun Offset.distanceTo(offset: Offset) = sqrt((offset.x - x).pow(2) + (offset.y - y).pow(2))
 
 @Composable
