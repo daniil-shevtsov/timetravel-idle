@@ -13,9 +13,9 @@ class TimelinePresentationTest {
     val sizes = TimelineSizes(
         canvasPadding = 14f,
         point = 12f,
-        segment = 16f - 6f - 6f,
+        segment = 4f,
         timelineSplitOffset = Offset(
-            x = 8f,
+            x = 2f,
             y = 22f,
         ),
     )

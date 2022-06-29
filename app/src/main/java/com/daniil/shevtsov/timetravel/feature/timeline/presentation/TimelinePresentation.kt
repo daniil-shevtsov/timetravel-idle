@@ -64,7 +64,7 @@ private fun calculateMomentPositionWithoutSideEffect(
 
     if (parentTimelineId != currentMomentTimelineId) {
         return Offset(
-            x = parentMomentPosition.x + sizes.timelineSplitOffset.x,
+            x = parentMomentPosition.x + sizes.point / 2f + sizes.timelineSplitOffset.x,
             y = parentMomentPosition.y + sizes.timelineSplitOffset.y,
         )
     }

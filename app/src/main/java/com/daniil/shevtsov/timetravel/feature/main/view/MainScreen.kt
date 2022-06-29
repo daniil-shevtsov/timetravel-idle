@@ -299,10 +299,10 @@ private fun TimelineCanvas(
 
     val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
     val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
-    val segmentLength = with(LocalDensity.current) { 60.dp.toPx() }
+    val segmentLength = with(LocalDensity.current) { 10.dp.toPx() }
     val timelineOffset = with(LocalDensity.current) {
         Offset(
-            x = segmentLength / 2,
+            x = 5.dp.toPx(),
             y = pointSize + 10,
         )
     }
