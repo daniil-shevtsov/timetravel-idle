@@ -20,7 +20,7 @@ data class TimelineSizes(
     val canvasPadding: Float,
     val point: Float,
     val segment: Float,
-    val timelineOffset: Float,
+    val timelineSplitOffset: Offset,
 )
 
 data class TimelineViewState(
@@ -37,7 +37,7 @@ private fun calculateMomentPositionWithSideEffect(
 ): Offset {
     val start = when (timelineIndex) {
         0 -> sizes.canvasPadding + sizes.point / 2
-        else -> timelineRootOffsetX + sizes.timelineOffset
+        else -> timelineRootOffsetX + sizes.timelineSplitOffset.x
     }
 
     val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
@@ -63,7 +63,7 @@ private fun calculateMomentPositionWithoutSideEffect(
 
     if (parentTimelineId != currentMomentTimelineId) {
         return Offset(
-            x = parentMomentPosition.x + sizes.timelineOffset,
+            x = parentMomentPosition.x + sizes.timelineSplitOffset.x,
             y = parentMomentPosition.y + (sizes.point + 10),
         )
     }

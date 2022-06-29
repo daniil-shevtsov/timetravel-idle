@@ -300,7 +300,12 @@ private fun TimelineCanvas(
     val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
     val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
     val segmentLength = with(LocalDensity.current) { 60.dp.toPx() }
-    val timelineOffset = segmentLength / 2
+    val timelineOffset = with(LocalDensity.current) {
+        Offset(
+            x = segmentLength / 2,
+            y = 0f,
+        )
+    }
     val canvasPadding = with(LocalDensity.current) { 25.dp.toPx() }
     val textSize = with(LocalDensity.current) { 12.sp.toPx() }
 
@@ -320,7 +325,7 @@ private fun TimelineCanvas(
         canvasPadding = canvasPadding,
         point = pointSize,
         segment = segmentLength,
-        timelineOffset = timelineOffset,
+        timelineSplitOffset = timelineOffset,
     )
     val timelineState = timelinePresentation(
         allTimelines = allTimelines,

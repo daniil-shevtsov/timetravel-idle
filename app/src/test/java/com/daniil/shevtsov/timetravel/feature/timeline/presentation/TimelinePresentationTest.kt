@@ -6,6 +6,7 @@ import assertk.assertThat
 import assertk.assertions.*
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class TimelinePresentationTest {
@@ -14,7 +15,10 @@ class TimelinePresentationTest {
         canvasPadding = 14f,
         point = 12f,
         segment = 16f,
-        timelineOffset = 8f,
+        timelineSplitOffset = Offset(
+            x = 8f,
+            y = 0f,
+        ),
     )
 
     @Test
@@ -135,6 +139,84 @@ class TimelinePresentationTest {
                             Offset(x = 44f, y = 42f)
                         ),
                     )
+            }
+    }
+
+    @Disabled
+    @Test
+    fun `should draw two timeline splits`() {
+        val models = timelinePresentation(
+            allTimelines = mapOf(
+                null to listOf(
+                    timeMomentModel(id = TimeMomentId(0L), momentParent = null),
+                    timeMomentModel(id = TimeMomentId(1L), momentParent = TimeMomentId(0L)),
+                    timeMomentModel(id = TimeMomentId(2L), momentParent = TimeMomentId(1L)),
+                ),
+                TimeMomentId(1L) to listOf(
+                    timeMomentModel(id = TimeMomentId(3L), momentParent = TimeMomentId(1L)),
+                    timeMomentModel(id = TimeMomentId(4L), momentParent = TimeMomentId(3L)),
+                ),
+                TimeMomentId(3L) to listOf(
+                    timeMomentModel(id = TimeMomentId(5L), momentParent = TimeMomentId(3L)),
+                    timeMomentModel(id = TimeMomentId(6L), momentParent = TimeMomentId(5L)),
+                ),
+            ),
+            sizes = sizes,
+        )
+
+        assertThat(models)
+            .all {
+                prop(TimelineViewState::moments)
+                    .extracting(Moment::id, Moment::position)
+                    .containsExactly(
+                        TimeMomentId(0L) to Offset(
+                            x = 20f,
+                            y = 20f,
+                        ),
+                        TimeMomentId(1L) to Offset(
+                            x = 36f,
+                            y = 20f,
+                        ),
+                        TimeMomentId(2L) to Offset(
+                            x = 52f,
+                            y = 20f,
+                        ),
+                        TimeMomentId(3L) to Offset(
+                            x = 44f,
+                            y = 38f,
+                        ),
+                        TimeMomentId(4L) to Offset(
+                            x = 60f,
+                            y = 38f,
+                        ),
+                        TimeMomentId(5L) to Offset(
+                            x = 52f,
+                            y = 56f,
+                        ),
+                        TimeMomentId(6L) to Offset(
+                            x = 68f,
+                            y = 56f,
+                        ),
+                    )
+//                prop(TimelineViewState::lines)
+//                    .extracting(Line::endMomentId, Line::start, Line::end)
+//                    .containsExactly(
+//                        Triple(
+//                            TimeMomentId(1L),
+//                            Offset(x = 20f, y = 20f),
+//                            Offset(x = 36f, y = 20f)
+//                        ),
+//                        Triple(
+//                            TimeMomentId(2L),
+//                            Offset(x = 20f, y = 20f),
+//                            Offset(x = 28f, y = 42f)
+//                        ),
+//                        Triple(
+//                            TimeMomentId(3L),
+//                            Offset(x = 28f, y = 42f),
+//                            Offset(x = 44f, y = 42f)
+//                        ),
+//                    )
             }
     }
 
