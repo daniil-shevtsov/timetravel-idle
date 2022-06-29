@@ -122,7 +122,7 @@ fun MainPreview() {
                         id = TimeMomentId(9L),
                         time = PassedTime(17L.seconds),
                         timelineParent = TimeMomentId(7L),
-                        momentParent = TimeMomentId(8),
+                        momentParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(10L),
@@ -299,10 +299,10 @@ private fun TimelineCanvas(
 
     val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
     val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
-    val segmentLength = with(LocalDensity.current) { 10.dp.toPx() }
+    val segmentLength = with(LocalDensity.current) { 20.dp.toPx() }
     val timelineOffset = with(LocalDensity.current) {
         Offset(
-            x = 5.dp.toPx(),
+            x = 10.dp.toPx(),
             y = pointSize + 10,
         )
     }
