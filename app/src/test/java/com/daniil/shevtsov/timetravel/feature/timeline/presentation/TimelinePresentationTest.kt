@@ -17,7 +17,7 @@ class TimelinePresentationTest {
         segment = 16f,
         timelineSplitOffset = Offset(
             x = 8f,
-            y = 0f,
+            y = 22f,
         ),
     )
 

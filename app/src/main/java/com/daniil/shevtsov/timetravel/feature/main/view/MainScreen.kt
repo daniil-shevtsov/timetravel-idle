@@ -303,7 +303,7 @@ private fun TimelineCanvas(
     val timelineOffset = with(LocalDensity.current) {
         Offset(
             x = segmentLength / 2,
-            y = 0f,
+            y = pointSize + 10,
         )
     }
     val canvasPadding = with(LocalDensity.current) { 25.dp.toPx() }
