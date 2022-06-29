@@ -40,11 +40,12 @@ private fun calculateMomentPositionWithSideEffect(
         else -> timelineRootOffsetX + sizes.timelineSplitOffset.x
     }
 
-    val verticalPadding = sizes.canvasPadding + timelineIndex * sizes.timelineSplitOffset.y
-    val circlePosition = start + momentIndex * sizes.segment
+    val verticalPadding =
+        sizes.canvasPadding + sizes.point / 2 + timelineIndex * sizes.timelineSplitOffset.y
+    val circlePosition = start + momentIndex * (sizes.point / 2 + sizes.segment + sizes.point / 2)
     return Offset(
         x = circlePosition,
-        y = verticalPadding + sizes.point / 2
+        y = verticalPadding
     )
 }
 
@@ -64,12 +65,12 @@ private fun calculateMomentPositionWithoutSideEffect(
     if (parentTimelineId != currentMomentTimelineId) {
         return Offset(
             x = parentMomentPosition.x + sizes.timelineSplitOffset.x,
-            y = parentMomentPosition.y + sizes.timelineSplitOffset.y, /*(sizes.point + 10)*/
+            y = parentMomentPosition.y + sizes.timelineSplitOffset.y,
         )
     }
 
     return Offset(
-        x = parentMomentPosition.x + sizes.segment,
+        x = parentMomentPosition.x + (sizes.point / 2f + sizes.segment + sizes.point / 2f),
         y = parentMomentPosition.y
     )
 }
@@ -116,7 +117,7 @@ fun timelinePresentation(
             momentPositions = momentPositions.toMutableMap().apply {
                 put(
                     moment.id,
-                    position,
+                    newPosition,
                 )
             }.toMap()
         }
