@@ -54,26 +54,24 @@ private fun calculateMomentPositionWithoutSideEffect(
     currentMomentTimelineId: TimeMomentId?,
     sizes: TimelineSizes,
 ): Offset {
-
-    if (parentMomentPosition == null || parentTimelineId == null || currentMomentTimelineId == null) {
+    if (parentMomentPosition == null) {
         return Offset(
             x = sizes.canvasPadding + sizes.point / 2,
             y = sizes.canvasPadding + sizes.point / 2,
         )
     }
 
-    val centerPosition = Offset(
-        x = when (parentTimelineId) {
-            currentMomentTimelineId -> parentMomentPosition.x + sizes.segment
-            else -> parentMomentPosition.x + sizes.timelineOffset
-        },
-        y = when (parentTimelineId) {
-            currentMomentTimelineId -> parentMomentPosition.y
-            else -> parentMomentPosition.y + (sizes.point + 10)
-        }
-    )
+    if (parentTimelineId != currentMomentTimelineId) {
+        return Offset(
+            x = parentMomentPosition.x + sizes.timelineOffset,
+            y = parentMomentPosition.y + (sizes.point + 10),
+        )
+    }
 
-    return centerPosition
+    return Offset(
+        x = parentMomentPosition.x + sizes.segment,
+        y = parentMomentPosition.y
+    )
 }
 
 fun timelinePresentation(
@@ -92,14 +90,18 @@ fun timelinePresentation(
             ?.let { momentPositions[timelineRootMoment.id]?.x } ?: 0f
 
         moments.forEachIndexed { index, moment ->
-            val parentMoment = when (index) {
-                0 -> timelineRootMoment
-                else -> allMoments.find { it.id == moment.momentParent }!!
-            }
+//            val parentMoment = when (index) {
+//                0 -> timelineRootMoment
+//                else -> allMoments.find { it.id == moment.momentParent }!!
+//            }
+            val parentMoment = allMoments.find { it.id == moment.momentParent }
+            val parentTimelineId = allTimelines.entries.find { (_, moments) ->
+                moments.any { it.id == parentMoment?.id }
+            }?.key
             val newPosition = calculateMomentPositionWithoutSideEffect(
                 parentMomentPosition = momentPositions[parentMoment?.id],
-                parentTimelineId = parentMoment?.timelineParent,
-                currentMomentTimelineId = moment.timelineParent,
+                parentTimelineId = parentTimelineId,
+                currentMomentTimelineId = timelineId,
                 sizes = sizes,
             )
             val newParentCenterX =
@@ -114,7 +116,7 @@ fun timelinePresentation(
             momentPositions = momentPositions.toMutableMap().apply {
                 put(
                     moment.id,
-                    position,
+                    newPosition,
                 )
             }.toMap()
         }
