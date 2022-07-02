@@ -212,7 +212,7 @@ class MainFunctionalCoreTest {
             .extracting(TimeMoment::id, TimeMoment::parents)
             .containsExactly(
                 timeMoment.id to emptyList<TimeMomentId>(),
-                futureMoment.id to listOf(timeMoment.id),
+                futureMoment.id to emptyList<TimeMomentId>(),
                 expectedNewMoment.id to listOf(timeMoment.id),
             )
     }
