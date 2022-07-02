@@ -14,6 +14,11 @@ fun createInitialPlots() = listOf(
                 id = ChoiceId(1L),
                 text = "Use it for personal gain",
                 destinationPlotId = PlotId(2L),
+            ),
+            choice(
+                id = ChoiceId(2L),
+                text = "Cause nuclear apocalypse",
+                destinationPlotId = PlotId(3L),
             )
         )
     ),
@@ -24,5 +29,9 @@ fun createInitialPlots() = listOf(
     plot(
         id = PlotId(2L),
         text = "You get a quick buck with relatively small changes",
+    ),
+    plot(
+        id = PlotId(3L),
+        text = "The world is a nuclear wasteland, there were no survivors.",
     ),
 )

@@ -4,17 +4,10 @@ import assertk.Assert
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
-import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
-import com.daniil.shevtsov.timetravel.feature.actions.domain.action
-import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
-import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChanges
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
-import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
-import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
-import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -85,31 +78,6 @@ class MainFunctionalCoreTest {
             .extractingPlot()
             .extractingText()
             .isEqualTo(kekPlot.text)
-    }
-
-    @Test
-    fun `should apply resource changes of selected action`() {
-        val resource = resource(id = ResourceId.Money, value = 100f)
-        val action = action(
-            id = ActionId(1L),
-            resourceChanges = resourceChanges(
-                resourceChange(id = resource.id, change = -25f)
-            )
-        )
-        val initialState = gameState(
-            actions = listOf(action),
-            resources = listOf(resource),
-        )
-
-        val state = mainFunctionalCore(
-            state = initialState,
-            viewAction = MainViewAction.SelectAction(id = action.id)
-        )
-
-        assertThat(state)
-            .prop(GameState::resources)
-            .extracting(Resource::id, Resource::value)
-            .containsExactly(resource.id to 75f)
     }
 
     @Test
