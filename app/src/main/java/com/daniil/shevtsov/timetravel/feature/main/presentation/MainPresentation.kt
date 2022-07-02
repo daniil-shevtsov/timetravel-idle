@@ -44,7 +44,6 @@ fun mapMainViewState(
 
                 )
             },
-            timelineGraph = emptyList(),
             lastSelectedMomentId = state.currentMomentId
         )
     )

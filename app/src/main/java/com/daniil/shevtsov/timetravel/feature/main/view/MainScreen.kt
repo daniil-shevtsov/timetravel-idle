@@ -135,7 +135,6 @@ fun MainPreview() {
                         momentParent = TimeMomentId(9),
                     ),
                 ),
-                timelineGraph = emptyList(),
                 lastSelectedMomentId = TimeMomentId(1L),
             )
         ),

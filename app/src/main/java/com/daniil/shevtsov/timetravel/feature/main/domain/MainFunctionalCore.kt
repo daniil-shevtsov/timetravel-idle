@@ -87,6 +87,7 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
             state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.currentMomentId } -> state.currentMomentId
             else -> null
         },
+        parents = emptyList(),
         stateSnapshot = state,
     )
 
