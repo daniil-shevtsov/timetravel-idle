@@ -57,10 +57,9 @@ private fun calculateMomentPositionWithSideEffect(
 
 fun timelinePresentation(
     allTimelines: Map<TimeMomentId?, List<TimeMomentModel>>,
-    allMoments: List<TimeMomentModel> = emptyList(),
+    allMoments: List<TimeMomentModel>,
     sizes: TimelineSizes,
 ): TimelineViewState {
-    val allMoments = allTimelines.values.flatten()
     var momentPositions: Map<TimeMomentId, Offset> = mapOf()
     allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
         moments.forEachIndexed { index, moment ->

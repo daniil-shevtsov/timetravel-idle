@@ -325,6 +325,7 @@ private fun TimelineCanvas(
     )
     val timelineState = timelinePresentation(
         allTimelines = allTimelines,
+        allMoments = allTimelines.values.flatten(),
         sizes = sizes
     )
 
