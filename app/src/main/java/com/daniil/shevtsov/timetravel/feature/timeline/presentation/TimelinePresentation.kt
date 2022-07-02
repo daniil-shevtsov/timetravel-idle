@@ -90,7 +90,7 @@ fun timelinePresentation(
         val moments = allMoments.filter { it.timelineParent == timelineId }
         val innerLines = moments.flatMapIndexed { index, moment ->
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
-                moments.any { it.id == timelineId }
+                moments.any { it.id == moment.timelineParent }
             }?.value
             val timelineRootMoment = parentTimeline?.find { it.id == timelineId }
             val momentPosition = momentPositions[moments[index].id]!!
