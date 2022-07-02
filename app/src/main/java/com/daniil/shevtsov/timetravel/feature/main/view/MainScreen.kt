@@ -134,12 +134,6 @@ fun MainPreview() {
                         timelineParent = TimeMomentId(7L),
                         momentParent = TimeMomentId(9),
                     ),
-                    timeMomentModel(
-                        id = TimeMomentId(11L),
-                        time = PassedTime(19L.seconds),
-                        timelineParent = TimeMomentId(7L),
-                        momentParent = TimeMomentId(10),
-                    ),
                 ),
                 lastSelectedMomentId = TimeMomentId(1L),
             )
@@ -356,6 +350,40 @@ private fun TimelineCanvas(
                         }
                     })
             }) {
+
+        val allMoments = allTimelines.values.flatten()
+        val allMomentModels = timelineState.moments
+        val newMoment = allMoments.find { it.momentParents.size > 1 }
+        if (newMoment != null) {
+            val firstParent = allMomentModels.find { it.id == newMoment.momentParents[0] }!!
+            val secondParent = allMomentModels.find { it.id == newMoment.momentParents[1] }!!
+            val newMomentModel = allMomentModels.find { it.id == newMoment.id }!!
+            drawLine(
+                color = lineColor,
+                strokeWidth = lineHeight,
+                start = firstParent.position,
+                end = newMomentModel.position,
+            )
+            drawLine(
+                color = lineColor,
+                strokeWidth = lineHeight,
+                start = secondParent.position,
+                end = newMomentModel.position,
+            )
+            drawCircle(
+                color = pointColor,
+                radius = pointSize / 2,
+                center = newMomentModel.position
+            )
+            drawIntoCanvas {
+                it.nativeCanvas.drawText(
+                    newMomentModel.title,
+                    newMomentModel.position.x,
+                    newMomentModel.position.y + textSize / 2,
+                    textPaint
+                )
+            }
+        }
 
         timelineState.lines.forEach { line ->
             drawLine(
