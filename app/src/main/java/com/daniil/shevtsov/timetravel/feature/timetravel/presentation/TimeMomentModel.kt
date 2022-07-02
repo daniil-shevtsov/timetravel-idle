@@ -8,14 +8,17 @@ data class TimeMomentModel(
     val id: TimeMomentId,
     val time: PassedTime,
     val timelineParent: TimeMomentId?,
+    val momentParents: List<TimeMomentId> = emptyList(),
 )
 
 fun timeMomentModel(
     id: TimeMomentId = TimeMomentId(0L),
     time: PassedTime = PassedTime(Duration.ZERO),
     timelineParent: TimeMomentId? = null,
+    momentParents: List<TimeMomentId> = emptyList(),
 ) = TimeMomentModel(
     id = id,
     time = time,
     timelineParent = timelineParent,
+    momentParents = momentParents,
 )

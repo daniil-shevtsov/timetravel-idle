@@ -83,47 +83,54 @@ fun MainPreview() {
                     timeMomentModel(
                         id = TimeMomentId(2L),
                         time = PassedTime(8L.seconds),
+                        momentParents = listOf(TimeMomentId(1L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(3L),
                         time = PassedTime(10L.seconds),
+                        momentParents = listOf(TimeMomentId(2L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(4L),
                         time = PassedTime(11L.seconds),
+                        momentParents = listOf(TimeMomentId(3L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(5L),
                         time = PassedTime(12L.seconds),
+                        momentParents = listOf(
+                            TimeMomentId(4),
+                            TimeMomentId(10),
+                        )
                     ),
                     timeMomentModel(
                         id = TimeMomentId(6L),
                         time = PassedTime(13L.seconds),
+                        momentParents = listOf(TimeMomentId(5L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(7L),
                         time = PassedTime(15L.seconds),
                         timelineParent = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(2L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(8L),
                         time = PassedTime(16L.seconds),
                         timelineParent = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(7L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(9L),
                         time = PassedTime(17L.seconds),
                         timelineParent = TimeMomentId(7L),
+                        momentParents = listOf(TimeMomentId(7L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(10L),
                         time = PassedTime(18L.seconds),
                         timelineParent = TimeMomentId(7L),
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(11L),
-                        time = PassedTime(19L.seconds),
-                        timelineParent = TimeMomentId(7L),
+                        momentParents = listOf(TimeMomentId(9L)),
                     ),
                 ),
                 lastSelectedMomentId = TimeMomentId(1L),
@@ -276,10 +283,6 @@ fun Content(
 
 }
 
-data class MomentPosition(
-    val position: Offset
-)
-
 fun Offset.distanceTo(offset: Offset) = sqrt((offset.x - x).pow(2) + (offset.y - y).pow(2))
 
 @Composable
@@ -292,8 +295,13 @@ private fun TimelineCanvas(
 
     val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
     val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
-    val segmentLength = with(LocalDensity.current) { 60.dp.toPx() }
-    val timelineOffset = segmentLength / 2
+    val segmentLength = with(LocalDensity.current) { 20.dp.toPx() }
+    val timelineOffset = with(LocalDensity.current) {
+        Offset(
+            x = 10.dp.toPx(),
+            y = pointSize + 10,
+        )
+    }
     val canvasPadding = with(LocalDensity.current) { 25.dp.toPx() }
     val textSize = with(LocalDensity.current) { 12.sp.toPx() }
 
@@ -313,19 +321,31 @@ private fun TimelineCanvas(
         canvasPadding = canvasPadding,
         point = pointSize,
         segment = segmentLength,
-        timelineOffset = timelineOffset,
+        timelineSplitOffset = timelineOffset,
     )
     val timelineState = timelinePresentation(
-        allTimelines = allTimelines,
+        allMoments = allTimelines.values.flatten(),
         sizes = sizes
     )
+
+    val furthestMomentX = with(LocalDensity.current) {
+        timelineState.moments.maxByOrNull { it.position.x }?.position?.x?.let {
+            it + canvasPadding + pointSize / 2
+        }?.toDp()
+    }
+
+    val width = when {
+        furthestMomentX == null || furthestMomentX < 500.dp -> 500.dp
+        else -> furthestMomentX
+    }
+
 
     Canvas(
         modifier = Modifier
             .background(AppTheme.colors.backgroundDarkest)
             .horizontalScroll(rememberScrollState())
-            .width(500.dp)
-            .height(300.dp)
+            .width(width)
+            .height(300.dp) //TODO: Add vertical scroll
             .pointerInput(timelineState.moments) {
                 detectTapGestures(
                     onTap = { tapOffset ->

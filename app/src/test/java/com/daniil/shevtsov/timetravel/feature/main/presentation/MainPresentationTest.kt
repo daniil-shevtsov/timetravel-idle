@@ -24,7 +24,7 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import org.junit.jupiter.api.Test
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class MainPresentationTest {
 
@@ -37,12 +37,12 @@ class MainPresentationTest {
         )
         val timeMoment = timeMoment(
             id = TimeMomentId(1L),
-            stateSnapshot = gameState(passedTime = PassedTime(Duration.seconds(2L)))
+            stateSnapshot = gameState(passedTime = PassedTime(2L.seconds))
         )
         val viewState = mapMainViewState(
             state = gameState(
                 plot = plot,
-                passedTime = PassedTime(Duration.seconds(5L)),
+                passedTime = PassedTime(5L.seconds),
                 timeMoments = listOf(timeMoment)
             )
         )
@@ -117,6 +117,34 @@ class MainPresentationTest {
             .prop(MainViewState.Content::actions)
             .extracting(ActionModel::id, ActionModel::title)
             .containsExactly(action.id to action.title)
+    }
+
+    @Test
+    fun `should set moment parents correctly`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                timeMoments = listOf(
+                    timeMoment(id = TimeMomentId(0L), timelineParentId = null, parents = emptyList()),
+                    timeMoment(id = TimeMomentId(1L), timelineParentId = null, parents = listOf(TimeMomentId(0L))),
+                    timeMoment(id = TimeMomentId(2L), timelineParentId = null, parents = listOf(TimeMomentId(1L))),
+                    timeMoment(id = TimeMomentId(3L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(1L))),
+                    timeMoment(id = TimeMomentId(4L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(3L))),
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::timeTravel)
+            .prop(TimeTravelViewState::moments)
+            .extracting(TimeMomentModel::id, TimeMomentModel::momentParents)
+            .containsExactly(
+                TimeMomentId(0L) to emptyList<TimeMomentId>(),
+                TimeMomentId(1L) to listOf(TimeMomentId(0L)),
+                TimeMomentId(2L) to listOf(TimeMomentId(1L)),
+                TimeMomentId(3L) to listOf(TimeMomentId(1L)),
+                TimeMomentId(4L) to listOf(TimeMomentId(3L)),
+            )
     }
 
 }

@@ -24,7 +24,7 @@ data class GameState(
     val resources: List<Resource>,
     val actions: List<Action>,
     val timeMoments: List<TimeMoment>,
-    val lastTimeMomentId: TimeMomentId? = null,
+    val currentMomentId: TimeMomentId? = null,
 )
 
 fun gameState(
@@ -50,5 +50,5 @@ fun gameState(
     resources = resources,
     actions = actions,
     timeMoments = timeMoments,
-    lastTimeMomentId = lastTimeMomentId,
+    currentMomentId = lastTimeMomentId,
 )

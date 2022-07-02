@@ -13,6 +13,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceMod
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import kotlin.time.DurationUnit
@@ -30,8 +31,12 @@ fun mapMainViewState(
         ),
         actions = state.actions.map { it.toModel() },
         timeTravel = TimeTravelViewState(
-            moments = state.timeMoments.map { it.toModel() },
-            lastSelectedMomentId = state.lastTimeMomentId
+            moments = state.timeMoments.mapIndexed { _, timeMoment ->
+                timeMoment.toModel(
+                    momentParents = timeMoment.parents
+                )
+            },
+            lastSelectedMomentId = state.currentMomentId
         )
     )
 }
@@ -63,8 +68,11 @@ private fun Action.toModel() = ActionModel(
     title = title,
 )
 
-private fun TimeMoment.toModel() = TimeMomentModel(
+private fun TimeMoment.toModel(
+    momentParents: List<TimeMomentId>,
+) = TimeMomentModel(
     id = id,
     time = stateSnapshot.passedTime,
     timelineParent = timelineParentId,
+    momentParents = momentParents,
 )

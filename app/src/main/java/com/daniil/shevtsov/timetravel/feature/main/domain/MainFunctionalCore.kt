@@ -68,25 +68,44 @@ fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment
         state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
     return selectedMoment.stateSnapshot.copy(
         timeMoments = state.timeMoments,
-        lastTimeMomentId = selectedMoment.id,
+        currentMomentId = selectedMoment.id,
     )
 }
 
 fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
+    val currentTimeMoment = state.timeMoments.find { it.id == state.currentMomentId }
+    val isTheFirstMoment = state.currentMomentId == null
+    val isLastInTimeline =
+        state.timeMoments.lastOrNull { it.timelineParentId == currentTimeMoment?.timelineParentId } == currentTimeMoment
+    val isSomething =
+        state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.currentMomentId }
+
+    val newTimelineParentId = when {
+        isTheFirstMoment -> null
+        isLastInTimeline -> currentTimeMoment?.timelineParentId
+        isSomething -> state.currentMomentId
+        else -> null
+    }
+    val newParents = when {
+        isTheFirstMoment -> emptyList()
+        isLastInTimeline -> listOfNotNull(state.timeMoments.lastOrNull { it.timelineParentId == currentTimeMoment?.timelineParentId }?.id)
+        isSomething -> listOfNotNull(state.currentMomentId)
+        else -> emptyList()
+    }
+    val newMoment = TimeMoment(
+        id = TimeMomentId(
+            (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
+        ),
+        timelineParentId = newTimelineParentId,
+        parents = newParents,
+        stateSnapshot = state,
+    )
+
     return state.copy(
         timeMoments = state.timeMoments + listOf(
-            TimeMoment(
-                id = TimeMomentId(
-                    (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
-                ),
-                timelineParentId = when {
-                    state.lastTimeMomentId == null -> null
-                    state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.lastTimeMomentId } -> state.lastTimeMomentId
-                    else -> null
-                },
-                stateSnapshot = state,
-            )
-        )
+            newMoment
+        ),
+        currentMomentId = newMoment.id,
     )
 }
 

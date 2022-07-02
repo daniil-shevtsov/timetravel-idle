@@ -20,7 +20,7 @@ data class TimelineSizes(
     val canvasPadding: Float,
     val point: Float,
     val segment: Float,
-    val timelineOffset: Float,
+    val timelineSplitOffset: Offset,
 )
 
 data class TimelineViewState(
@@ -30,103 +30,88 @@ data class TimelineViewState(
 
 //TODO: Get rid of side effect
 private fun calculateMomentPositionWithSideEffect(
-    parentCenterX: Float,
-    timelineIndex: Int,
-    momentIndex: Int,
+    parentMomentPosition: Offset?,
+    parentTimelineId: TimeMomentId?,
+    currentMomentTimelineId: TimeMomentId?,
     sizes: TimelineSizes,
 ): Offset {
-    val start = when (timelineIndex) {
-        0 -> sizes.canvasPadding + sizes.point / 2
-        else -> parentCenterX + sizes.timelineOffset
+    if (parentMomentPosition == null) {
+        return Offset(
+            x = sizes.canvasPadding + sizes.point / 2,
+            y = sizes.canvasPadding + sizes.point / 2,
+        )
     }
 
-    val verticalPadding = sizes.canvasPadding + timelineIndex * (sizes.point + 10)
-    val circlePosition = start + momentIndex * sizes.segment
+    if (parentTimelineId != currentMomentTimelineId) {
+        return Offset(
+            x = parentMomentPosition.x + sizes.point / 2f + sizes.timelineSplitOffset.x,
+            y = parentMomentPosition.y + sizes.timelineSplitOffset.y,
+        )
+    }
+
     return Offset(
-        x = circlePosition,
-        y = verticalPadding + sizes.point / 2
+        x = parentMomentPosition.x + (sizes.point / 2f + sizes.segment + sizes.point / 2f),
+        y = parentMomentPosition.y
     )
 }
 
 fun timelinePresentation(
-    allTimelines: Map<TimeMomentId?, List<TimeMomentModel>>,
+    allMoments: List<TimeMomentModel>,
     sizes: TimelineSizes,
 ): TimelineViewState {
     var momentPositions: Map<TimeMomentId, Offset> = mapOf()
-    allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
-        val parentTimeline = allTimelines.entries.find { (_, moments) ->
-            moments.any { it.id == timelineId }
-        }?.value.orEmpty()
-        val parentMoment = parentTimeline
-            .find { it.id == timelineId }
-        val parentCenterX = parentMoment
-            ?.let { momentPositions[parentMoment.id]?.x } ?: 0f
 
-        moments.forEachIndexed { index, moment ->
-            val position = calculateMomentPositionWithSideEffect(
-                parentCenterX = parentCenterX,
-                timelineIndex = timelineIndex,
-                momentIndex = index,
-                sizes = sizes,
+    val allTimelines = allMoments.groupBy { it.timelineParent }
+
+    allMoments.forEach { moment ->
+        val parentMoment = allMoments.find { moment.momentParents.contains(it.id) }
+        val parentTimelineId = allTimelines.entries.find { (_, moments) ->
+            moments.any { it.id == parentMoment?.id }
+        }?.key
+        val newPosition = calculateMomentPositionWithSideEffect(
+            parentMomentPosition = momentPositions[parentMoment?.id],
+            parentTimelineId = parentTimelineId,
+            currentMomentTimelineId = moment.timelineParent,
+            sizes = sizes,
+        )
+
+        momentPositions = momentPositions.toMutableMap().apply {
+            put(
+                moment.id,
+                newPosition,
             )
-
-            momentPositions = momentPositions.toMutableMap().apply {
-                put(
-                    moment.id,
-                    position,
-                )
-            }.toMap()
-        }
+        }.toMap()
     }
 
     val lines = mutableListOf<Line>()
 
-    val momentModels = allTimelines.entries.flatMapIndexed { timelineIndex, (timelineId, moments) ->
-        val parentTimeline = allTimelines.entries.find { (_, moments) ->
-            moments.any { it.id == timelineId }
-        }?.value
-        val parentMoment = parentTimeline?.find { it.id == timelineId }
-
-        moments.flatMapIndexed { index, moment ->
-            val momentPosition = momentPositions[moments[index].id]!!
-
-            val childMoment = moments.getOrNull(index + 1)
-            val childPosition = childMoment?.id?.let {
-                momentPositions[it]
-            }
-            listOfNotNull(
-                parentMoment?.let { parentMoment ->
-                    val parentPosition = momentPositions[parentMoment.id]
-                    parentPosition?.let {
-                        Line(
-                            endMomentId = moment.id,
-                            start = parentPosition,
-                            end = momentPosition,
-                        )
-                    }.takeIf { index == 0 && timelineIndex != 0 }
-                },
-                childPosition?.let {
-                    Line(
-                        endMomentId = childMoment.id,
-                        start = momentPosition,
-                        end = childPosition
-                    )
-                }
-            )
-        }.forEach { line -> lines.add(line) }
-
-        moments.mapIndexed { index, moment ->
+    allMoments.forEach { moment ->
+        moment.momentParents.forEach { parentMoment ->
             val momentPosition = momentPositions[moment.id]!!
-            Moment(
-                id = moment.id,
-                title = moment.time.value.toString(),
-                position = momentPosition,
-            )
+            val parentPosition = momentPositions[parentMoment]
+            if (parentPosition != null) {
+                lines.add(
+                    Line(
+                        endMomentId = moment.id,
+                        start = parentPosition,
+                        end = momentPosition,
+                    )
+                )
+            }
         }
     }
 
+    val momentModels = allMoments.map { moment ->
+        val momentPosition = momentPositions[moment.id]!!
+        Moment(
+            id = moment.id,
+            title = moment.time.value.toString(),
+            position = momentPosition,
+        )
+    }
+
     return TimelineViewState(
-        lines = lines,
-        moments = momentModels,
+        lines = lines.sortedBy { it.endMomentId.value },
+        moments = momentModels.sortedBy { it.id.value },
     )
 }

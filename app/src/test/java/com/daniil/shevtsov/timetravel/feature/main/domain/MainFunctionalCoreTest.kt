@@ -21,6 +21,7 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 class MainFunctionalCoreTest {
@@ -129,12 +130,12 @@ class MainFunctionalCoreTest {
     @Test
     fun `should restore moment in the past when travelling through time`() {
         val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
+            passedTime = PassedTime(5.milliseconds),
         )
 
         val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
         val currentState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10)),
+            passedTime = PassedTime(10.milliseconds),
             timeMoments = listOf(timeMoment),
         )
 
@@ -146,9 +147,9 @@ class MainFunctionalCoreTest {
         assertThat(newState)
             .all {
                 prop(GameState::passedTime)
-                .isEqualTo(pastState.passedTime)
+                    .isEqualTo(pastState.passedTime)
 
-                prop(GameState::lastTimeMomentId)
+                prop(GameState::currentMomentId)
                     .isEqualTo(timeMoment.id)
             }
 
@@ -157,12 +158,12 @@ class MainFunctionalCoreTest {
     @Test
     fun `should keep time moments when travelling through time`() {
         val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
+            passedTime = PassedTime(5.milliseconds),
         )
 
         val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
         val futureState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10)),
+            passedTime = PassedTime(10.milliseconds),
             timeMoments = listOf(timeMoment),
         )
 
@@ -182,16 +183,17 @@ class MainFunctionalCoreTest {
     @Test
     fun `should split timeline if registering moment in the past`() {
         val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
+            passedTime = PassedTime(5.milliseconds),
         )
 
         val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
         val futureMoment = timeMoment(id = TimeMomentId(2L), stateSnapshot = pastState)
         val currentState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10)),
+            passedTime = PassedTime(10.milliseconds),
             timeMoments = listOf(timeMoment, futureMoment),
             lastTimeMomentId = timeMoment.id,
         )
+        val expectedNewMoment = timeMoment(id = TimeMomentId(3L))
 
         val newState = mainFunctionalCore(
             state = currentState,
@@ -204,8 +206,57 @@ class MainFunctionalCoreTest {
             .containsExactly(
                 timeMoment.id to null,
                 futureMoment.id to null,
-                TimeMomentId(3L) to timeMoment.id,
+                expectedNewMoment.id to timeMoment.id,
             )
+        assertThat(newState)
+            .prop(GameState::timeMoments)
+            .extracting(TimeMoment::id, TimeMoment::parents)
+            .containsExactly(
+                timeMoment.id to emptyList<TimeMomentId>(),
+                futureMoment.id to emptyList<TimeMomentId>(),
+                expectedNewMoment.id to listOf(timeMoment.id),
+            )
+    }
+
+    @Test
+    fun `should continue timeline when got back and registering time moment`() {
+        val mainTimelineMoment1 = timeMoment(id = TimeMomentId(1L))
+        val mainTimelineMoment2 =
+            timeMoment(id = TimeMomentId(2L), parents = listOf(mainTimelineMoment1.id))
+        val splitTimelineMoment =
+            timeMoment(
+                id = TimeMomentId(3L),
+                timelineParentId = mainTimelineMoment1.id,
+                parents = listOf(mainTimelineMoment1.id)
+            )
+        val expectedNewMomentId = TimeMomentId(4L)
+        val currentState = gameState(
+            passedTime = PassedTime(10.milliseconds),
+            timeMoments = listOf(mainTimelineMoment1, mainTimelineMoment2, splitTimelineMoment),
+            lastTimeMomentId = mainTimelineMoment2.id,
+        )
+
+        val stateAfterTravellingBack = mainFunctionalCore(
+            state = currentState,
+            viewAction = MainViewAction.TravelBackToMoment(id = mainTimelineMoment2.id),
+        )
+
+        val stateAfterRegisteringNewPoint =
+            mainFunctionalCore(
+                state = stateAfterTravellingBack,
+                viewAction = MainViewAction.RegisterTimePoint,
+            )
+
+        assertThat(stateAfterRegisteringNewPoint)
+            .all {
+                prop(GameState::timeMoments)
+                    .extracting(TimeMoment::id, TimeMoment::timelineParentId)
+                    .contains(expectedNewMomentId to null)
+                prop(GameState::timeMoments)
+                    .extracting(TimeMoment::id, TimeMoment::parents)
+                    .contains(expectedNewMomentId to listOf(mainTimelineMoment2.id))
+                prop(GameState::currentMomentId).isEqualTo(expectedNewMomentId)
+            }
     }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
