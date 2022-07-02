@@ -13,9 +13,6 @@ data class TimeMoment(
 @JvmInline
 value class TimeMomentId(val value: Long)
 
-@JvmInline
-value class TimeLineId(val value: Long)
-
 fun timeMoment(
     id: TimeMomentId = TimeMomentId(0L),
     timelineParentId: TimeMomentId? = null,

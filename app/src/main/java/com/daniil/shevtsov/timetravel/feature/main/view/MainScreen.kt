@@ -79,27 +79,22 @@ fun MainPreview() {
                     timeMomentModel(
                         id = TimeMomentId(1L),
                         time = PassedTime(4L.seconds),
-                        momentParent = null,
                     ),
                     timeMomentModel(
                         id = TimeMomentId(2L),
                         time = PassedTime(8L.seconds),
-                        momentParent = TimeMomentId(1),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(3L),
                         time = PassedTime(10L.seconds),
-                        momentParent = TimeMomentId(2),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(4L),
                         time = PassedTime(11L.seconds),
-                        momentParent = TimeMomentId(3),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(5L),
                         time = PassedTime(12L.seconds),
-                        momentParent = TimeMomentId(4),
                         momentParents = listOf(
                             TimeMomentId(4),
                             TimeMomentId(10),
@@ -108,31 +103,26 @@ fun MainPreview() {
                     timeMomentModel(
                         id = TimeMomentId(6L),
                         time = PassedTime(13L.seconds),
-                        momentParent = TimeMomentId(5),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(7L),
                         time = PassedTime(15L.seconds),
                         timelineParent = TimeMomentId(2L),
-                        momentParent = TimeMomentId(2),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(8L),
                         time = PassedTime(16L.seconds),
                         timelineParent = TimeMomentId(2L),
-                        momentParent = TimeMomentId(7),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(9L),
                         time = PassedTime(17L.seconds),
                         timelineParent = TimeMomentId(7L),
-                        momentParent = TimeMomentId(7L),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(10L),
                         time = PassedTime(18L.seconds),
                         timelineParent = TimeMomentId(7L),
-                        momentParent = TimeMomentId(9),
                     ),
                 ),
                 lastSelectedMomentId = TimeMomentId(1L),

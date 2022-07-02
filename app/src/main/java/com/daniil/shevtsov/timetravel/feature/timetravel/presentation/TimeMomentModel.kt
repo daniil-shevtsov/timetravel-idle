@@ -15,7 +15,6 @@ fun timeMomentModel(
     id: TimeMomentId = TimeMomentId(0L),
     time: PassedTime = PassedTime(Duration.ZERO),
     timelineParent: TimeMomentId? = null,
-    momentParent: TimeMomentId? = null,
     momentParents: List<TimeMomentId> = emptyList(),
 ) = TimeMomentModel(
     id = id,

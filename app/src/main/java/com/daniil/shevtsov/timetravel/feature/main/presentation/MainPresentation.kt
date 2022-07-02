@@ -37,10 +37,6 @@ fun mapMainViewState(
                 val isFirstInTimeline = state.timeMoments
                     .first { it.timelineParentId == timeMoment.timelineParentId } == timeMoment
                 timeMoment.toModel(
-                    parentId = when {
-                        isFirstInTimeline -> timeMoment.timelineParentId
-                        else -> timeline.getOrNull(timeline.indexOf(timeMoment) - 1)?.id
-                    },
                     momentParents = timeMoment.parents
                 )
             },
@@ -77,7 +73,6 @@ private fun Action.toModel() = ActionModel(
 )
 
 private fun TimeMoment.toModel(
-    parentId: TimeMomentId?,
     momentParents: List<TimeMomentId>,
 ) = TimeMomentModel(
     id = id,
