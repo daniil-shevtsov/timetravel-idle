@@ -128,15 +128,13 @@ fun timelinePresentation(
         }
     }
 
-    val momentModels = allTimelines.entries.flatMapIndexed { _, (timelineId, moments) ->
-        moments.mapIndexed { _, moment ->
-            val momentPosition = momentPositions[moment.id]!!
-            Moment(
-                id = moment.id,
-                title = moment.time.value.toString(),
-                position = momentPosition,
-            )
-        }
+    val momentModels = allMoments.map { moment ->
+        val momentPosition = momentPositions[moment.id]!!
+        Moment(
+            id = moment.id,
+            title = moment.time.value.toString(),
+            position = momentPosition,
+        )
     }
 
     val newMoment = allMoments.find { it.momentParents.size > 1 }
