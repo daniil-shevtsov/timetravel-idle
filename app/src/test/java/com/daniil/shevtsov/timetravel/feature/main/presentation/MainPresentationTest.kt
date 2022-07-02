@@ -120,16 +120,7 @@ class MainPresentationTest {
     }
 
     @Test
-    fun `should set moment parents correctly`() {
-        val action = action(
-            id = ActionId(1L),
-            resourceChanges = resourceChanges(
-                resourceChange(
-                    id = ResourceId.Money,
-                    change = -50f
-                )
-            )
-        )
+    fun `should set moment parent correctly`() {
         val viewState = mapMainViewState(
             state = gameState(
                 timeMoments = listOf(
@@ -153,6 +144,34 @@ class MainPresentationTest {
                 TimeMomentId(2L) to TimeMomentId(1L),
                 TimeMomentId(3L) to TimeMomentId(1L),
                 TimeMomentId(4L) to TimeMomentId(3L),
+            )
+    }
+
+    @Test
+    fun `should set moment parents correctly`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                timeMoments = listOf(
+                    timeMoment(id = TimeMomentId(0L), timelineParentId = null, parents = emptyList()),
+                    timeMoment(id = TimeMomentId(1L), timelineParentId = null, parents = listOf(TimeMomentId(0L))),
+                    timeMoment(id = TimeMomentId(2L), timelineParentId = null, parents = listOf(TimeMomentId(1L))),
+                    timeMoment(id = TimeMomentId(3L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(1L))),
+                    timeMoment(id = TimeMomentId(4L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(3L))),
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::timeTravel)
+            .prop(TimeTravelViewState::moments)
+            .extracting(TimeMomentModel::id, TimeMomentModel::momentParents)
+            .containsExactly(
+                TimeMomentId(0L) to emptyList<TimeMomentId>(),
+                TimeMomentId(1L) to listOf(TimeMomentId(0L)),
+                TimeMomentId(2L) to listOf(TimeMomentId(1L)),
+                TimeMomentId(3L) to listOf(TimeMomentId(1L)),
+                TimeMomentId(4L) to listOf(TimeMomentId(3L)),
             )
     }
 

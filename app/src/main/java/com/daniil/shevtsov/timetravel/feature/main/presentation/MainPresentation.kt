@@ -40,8 +40,8 @@ fun mapMainViewState(
                     parentId = when {
                         isFirstInTimeline -> timeMoment.timelineParentId
                         else -> timeline.getOrNull(timeline.indexOf(timeMoment) - 1)?.id
-                    }
-
+                    },
+                    momentParents = timeMoment.parents
                 )
             },
             lastSelectedMomentId = state.currentMomentId
@@ -76,9 +76,13 @@ private fun Action.toModel() = ActionModel(
     title = title,
 )
 
-private fun TimeMoment.toModel(parentId: TimeMomentId?) = TimeMomentModel(
+private fun TimeMoment.toModel(
+    parentId: TimeMomentId?,
+    momentParents: List<TimeMomentId>,
+) = TimeMomentModel(
     id = id,
     time = stateSnapshot.passedTime,
     timelineParent = timelineParentId,
     momentParent = parentId,
+    momentParents = momentParents,
 )
