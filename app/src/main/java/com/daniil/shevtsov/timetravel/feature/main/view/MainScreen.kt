@@ -83,14 +83,17 @@ fun MainPreview() {
                     timeMomentModel(
                         id = TimeMomentId(2L),
                         time = PassedTime(8L.seconds),
+                        momentParents = listOf(TimeMomentId(1L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(3L),
                         time = PassedTime(10L.seconds),
+                        momentParents = listOf(TimeMomentId(2L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(4L),
                         time = PassedTime(11L.seconds),
+                        momentParents = listOf(TimeMomentId(3L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(5L),
@@ -103,26 +106,31 @@ fun MainPreview() {
                     timeMomentModel(
                         id = TimeMomentId(6L),
                         time = PassedTime(13L.seconds),
+                        momentParents = listOf(TimeMomentId(5L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(7L),
                         time = PassedTime(15L.seconds),
                         timelineParent = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(2L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(8L),
                         time = PassedTime(16L.seconds),
                         timelineParent = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(7L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(9L),
                         time = PassedTime(17L.seconds),
                         timelineParent = TimeMomentId(7L),
+                        momentParents = listOf(TimeMomentId(7L)),
                     ),
                     timeMomentModel(
                         id = TimeMomentId(10L),
                         time = PassedTime(18L.seconds),
                         timelineParent = TimeMomentId(7L),
+                        momentParents = listOf(TimeMomentId(9L)),
                     ),
                 ),
                 lastSelectedMomentId = TimeMomentId(1L),
