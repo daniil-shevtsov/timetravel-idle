@@ -86,7 +86,8 @@ fun timelinePresentation(
 
     val lines = mutableListOf<Line>()
 
-    allTimelines.entries.forEach { (timelineId, moments) ->
+    timelines.forEach { timelineId ->
+        val moments = allMoments.filter { it.timelineParent == timelineId }
         val innerLines = moments.flatMapIndexed { index, moment ->
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
                 moments.any { it.id == timelineId }
