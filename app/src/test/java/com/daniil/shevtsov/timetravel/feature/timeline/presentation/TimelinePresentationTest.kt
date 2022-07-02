@@ -269,20 +269,20 @@ class TimelinePresentationTest {
                     .extracting(Moment::id, Moment::position)
                     .containsExactly(
                         TimeMomentId(0L) to Offset(
-                            x = sizes.canvasPadding + sizes.point / 2,
-                            y = sizes.canvasPadding + sizes.point / 2,
+                            x = 20f,
+                            y = 20f,
                         ),
                         TimeMomentId(1L) to Offset(
-                            x = (sizes.canvasPadding + sizes.point / 2) + sizes.point / 2 + sizes.segment + sizes.point / 2,
-                            y = sizes.canvasPadding + sizes.point / 2,
+                            x = 36f,
+                            y = 20f,
                         ),
                         TimeMomentId(2L) to Offset(
-                            x = sizes.canvasPadding + sizes.point / 2 + sizes.timelineSplitOffset.x + sizes.point / 2,
-                            y = sizes.canvasPadding + sizes.point / 2 + sizes.timelineSplitOffset.y,
+                            x = 28f,
+                            y = 42f,
                         ),
                         TimeMomentId(3L) to Offset(
-                            x = (sizes.canvasPadding + sizes.point / 2) + (sizes.point / 2 + sizes.segment + sizes.point / 2) * 2,
-                            y = sizes.canvasPadding + sizes.point / 2,
+                            x = 52f,
+                            y = 20f,
                         ),
                     )
 //                prop(TimelineViewState::lines)
