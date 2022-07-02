@@ -1,5 +1,6 @@
 package com.daniil.shevtsov.timetravel.feature.actions.domain
 
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.TagId
 import kotlin.time.Duration
 
 data class Action(
@@ -7,6 +8,7 @@ data class Action(
     val title: String,
     val resourceChanges: ResourceChanges,
     val requiredTime: Duration,
+    val requiredTags: List<TagId>,
 )
 
 @JvmInline
@@ -17,9 +19,11 @@ fun action(
     title: String = "",
     resourceChanges: ResourceChanges = resourceChanges(),
     requiredTime: Duration = Duration.ZERO,
+    requiredTags: List<TagId> = emptyList(),
 ) = Action(
     id = id,
     title = title,
     resourceChanges = resourceChanges,
     requiredTime = requiredTime,
+    requiredTags = requiredTags,
 )

@@ -19,6 +19,8 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.TagId
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.tag
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
@@ -95,9 +97,11 @@ class MainPresentationTest {
 
     @Test
     fun `should show available actions`() {
-        val available = action(
+        val missingTag = tag(id = TagId(1L), name = "missing")
+        val presentTag = tag(id = TagId(2L), name = "present")
+        val resourceChangeAvailableAction = action(
             id = ActionId(1L),
-            title = "available",
+            title = "available resource",
             resourceChanges = resourceChanges(
                 resourceChange(
                     id = ResourceId.Money,
@@ -105,7 +109,7 @@ class MainPresentationTest {
                 )
             )
         )
-        val tooExpensiveAction = action(
+        val resourceChangeNotAvailableAction = action(
             id = ActionId(2L),
             title = "too expensive",
             resourceChanges = resourceChanges(
@@ -115,14 +119,27 @@ class MainPresentationTest {
                 )
             )
         )
+        val tagAvailableAction = action(
+            id = ActionId(3L),
+            title = "available tag",
+            requiredTags = listOf(presentTag.id),
+        )
+        val tagNotAvailableAction = action(
+            id = ActionId(4L),
+            title = "don't have required tag",
+            requiredTags = listOf(missingTag.id),
+        )
         val viewState = mapMainViewState(
             state = gameState(
                 resources = listOf(
                     resource(id = ResourceId.Money, value = 50f),
                 ),
+                presentTags = listOf(presentTag),
                 actions = listOf(
-                    available,
-                    tooExpensiveAction,
+                    resourceChangeAvailableAction,
+                    resourceChangeNotAvailableAction,
+                    tagAvailableAction,
+                    tagNotAvailableAction,
                 ),
             )
         )
@@ -131,7 +148,10 @@ class MainPresentationTest {
             .isInstanceOf(MainViewState.Content::class)
             .prop(MainViewState.Content::actions)
             .extracting(ActionModel::id, ActionModel::title)
-            .containsExactly(available.id to available.title)
+            .containsExactly(
+                resourceChangeAvailableAction.id to resourceChangeAvailableAction.title,
+                tagAvailableAction.id to tagAvailableAction.title,
+            )
     }
 
     @Test

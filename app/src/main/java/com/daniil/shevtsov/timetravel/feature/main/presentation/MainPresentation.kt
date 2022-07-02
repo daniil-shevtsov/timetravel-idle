@@ -37,6 +37,7 @@ fun mapMainViewState(
                     resourceAfterChange >= 0f
                 }
             }
+            .filter { action -> state.presentTags.map { it.id }.containsAll(action.requiredTags) }
             .map { it.toModel() },
         timeTravel = TimeTravelViewState(
             moments = state.timeMoments.mapIndexed { _, timeMoment ->
