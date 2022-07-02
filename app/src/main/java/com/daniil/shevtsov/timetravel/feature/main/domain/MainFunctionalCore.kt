@@ -74,20 +74,28 @@ fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment
 
 fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimePoint): GameState {
     val currentTimeMoment = state.timeMoments.find { it.id == state.currentMomentId }
+    val isTheFirstMoment = state.currentMomentId == null
     val isLastInTimeline =
         state.timeMoments.lastOrNull { it.timelineParentId == currentTimeMoment?.timelineParentId } == currentTimeMoment
+    val isSomething =
+        state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.currentMomentId }
 
     val newMoment = TimeMoment(
         id = TimeMomentId(
             (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
         ),
         timelineParentId = when {
-            state.currentMomentId == null -> null
+            isTheFirstMoment -> null
             isLastInTimeline -> currentTimeMoment?.timelineParentId
-            state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.currentMomentId } -> state.currentMomentId
+            isSomething -> state.currentMomentId
             else -> null
         },
-        parents = emptyList(),
+        parents = when {
+            isTheFirstMoment -> emptyList()
+            isLastInTimeline -> listOfNotNull(currentTimeMoment?.timelineParentId)
+            isSomething -> listOfNotNull(state.currentMomentId)
+            else -> emptyList()
+        },
         stateSnapshot = state,
     )
 

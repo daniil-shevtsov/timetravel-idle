@@ -192,6 +192,7 @@ class MainFunctionalCoreTest {
             timeMoments = listOf(timeMoment, futureMoment),
             lastTimeMomentId = timeMoment.id,
         )
+        val expectedNewMoment = timeMoment(id = TimeMomentId(3L))
 
         val newState = mainFunctionalCore(
             state = currentState,
@@ -204,7 +205,15 @@ class MainFunctionalCoreTest {
             .containsExactly(
                 timeMoment.id to null,
                 futureMoment.id to null,
-                TimeMomentId(3L) to timeMoment.id,
+                expectedNewMoment.id to timeMoment.id,
+            )
+        assertThat(newState)
+            .prop(GameState::timeMoments)
+            .extracting(TimeMoment::id, TimeMoment::parents)
+            .containsExactly(
+                timeMoment.id to emptyList<TimeMomentId>(),
+                futureMoment.id to listOf(timeMoment.id),
+                expectedNewMoment.id to listOf(timeMoment.id),
             )
     }
 
