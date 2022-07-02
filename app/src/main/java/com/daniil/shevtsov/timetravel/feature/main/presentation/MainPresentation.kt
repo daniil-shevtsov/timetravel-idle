@@ -29,7 +29,15 @@ fun mapMainViewState(
                 .filter { resource -> resource.value > 0f }
                 .map { it.toModel() }
         ),
-        actions = state.actions.map { it.toModel() },
+        actions = state.actions
+            .filter { action ->
+                action.resourceChanges.all { (resourceId, change) ->
+                    val resourceToChange = state.resources.find { it.id == resourceId }?.value ?: 0f
+                    val resourceAfterChange = resourceToChange + change
+                    resourceAfterChange >= 0f
+                }
+            }
+            .map { it.toModel() },
         timeTravel = TimeTravelViewState(
             moments = state.timeMoments.mapIndexed { _, timeMoment ->
                 timeMoment.toModel(

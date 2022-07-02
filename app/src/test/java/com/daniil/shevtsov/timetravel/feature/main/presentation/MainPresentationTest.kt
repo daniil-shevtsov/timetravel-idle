@@ -95,8 +95,9 @@ class MainPresentationTest {
 
     @Test
     fun `should show available actions`() {
-        val action = action(
+        val available = action(
             id = ActionId(1L),
+            title = "available",
             resourceChanges = resourceChanges(
                 resourceChange(
                     id = ResourceId.Money,
@@ -104,10 +105,24 @@ class MainPresentationTest {
                 )
             )
         )
+        val tooExpensiveAction = action(
+            id = ActionId(2L),
+            title = "too expensive",
+            resourceChanges = resourceChanges(
+                resourceChange(
+                    id = ResourceId.Money,
+                    change = -100f
+                )
+            )
+        )
         val viewState = mapMainViewState(
             state = gameState(
+                resources = listOf(
+                    resource(id = ResourceId.Money, value = 50f),
+                ),
                 actions = listOf(
-                    action
+                    available,
+                    tooExpensiveAction,
                 ),
             )
         )
@@ -116,7 +131,7 @@ class MainPresentationTest {
             .isInstanceOf(MainViewState.Content::class)
             .prop(MainViewState.Content::actions)
             .extracting(ActionModel::id, ActionModel::title)
-            .containsExactly(action.id to action.title)
+            .containsExactly(available.id to available.title)
     }
 
     @Test
@@ -124,11 +139,31 @@ class MainPresentationTest {
         val viewState = mapMainViewState(
             state = gameState(
                 timeMoments = listOf(
-                    timeMoment(id = TimeMomentId(0L), timelineParentId = null, parents = emptyList()),
-                    timeMoment(id = TimeMomentId(1L), timelineParentId = null, parents = listOf(TimeMomentId(0L))),
-                    timeMoment(id = TimeMomentId(2L), timelineParentId = null, parents = listOf(TimeMomentId(1L))),
-                    timeMoment(id = TimeMomentId(3L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(1L))),
-                    timeMoment(id = TimeMomentId(4L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(3L))),
+                    timeMoment(
+                        id = TimeMomentId(0L),
+                        timelineParentId = null,
+                        parents = emptyList()
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(1L),
+                        timelineParentId = null,
+                        parents = listOf(TimeMomentId(0L))
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(2L),
+                        timelineParentId = null,
+                        parents = listOf(TimeMomentId(1L))
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(3L),
+                        timelineParentId = TimeMomentId(1L),
+                        parents = listOf(TimeMomentId(1L))
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(4L),
+                        timelineParentId = TimeMomentId(1L),
+                        parents = listOf(TimeMomentId(3L))
+                    ),
                 )
             )
         )
