@@ -100,6 +100,10 @@ fun MainPreview() {
                         id = TimeMomentId(5L),
                         time = PassedTime(12L.seconds),
                         momentParent = TimeMomentId(4),
+                        momentParents = listOf(
+                            TimeMomentId(4),
+                            TimeMomentId(10),
+                        )
                     ),
                     timeMomentModel(
                         id = TimeMomentId(6L),
