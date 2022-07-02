@@ -18,6 +18,7 @@ import org.koin.core.Koin
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 class TimeTravelGameApplication : Application() {
     lateinit var koin: Koin
@@ -67,7 +68,7 @@ class TimeTravelGameApplication : Application() {
     }
 
     private fun createBalanceConfig() = BalanceConfig(
-        tickRate = Duration.milliseconds(500),
+        tickRate = 500.milliseconds,
     )
 
     private fun createInitialDrawerTabs() = listOf(

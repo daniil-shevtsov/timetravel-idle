@@ -21,6 +21,7 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 class MainFunctionalCoreTest {
@@ -129,12 +130,12 @@ class MainFunctionalCoreTest {
     @Test
     fun `should restore moment in the past when travelling through time`() {
         val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
+            passedTime = PassedTime(5.milliseconds),
         )
 
         val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
         val currentState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10)),
+            passedTime = PassedTime(10.milliseconds),
             timeMoments = listOf(timeMoment),
         )
 
@@ -157,12 +158,12 @@ class MainFunctionalCoreTest {
     @Test
     fun `should keep time moments when travelling through time`() {
         val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
+            passedTime = PassedTime(5.milliseconds),
         )
 
         val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
         val futureState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10)),
+            passedTime = PassedTime(10.milliseconds),
             timeMoments = listOf(timeMoment),
         )
 
@@ -182,13 +183,13 @@ class MainFunctionalCoreTest {
     @Test
     fun `should split timeline if registering moment in the past`() {
         val pastState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(5)),
+            passedTime = PassedTime(5.milliseconds),
         )
 
         val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
         val futureMoment = timeMoment(id = TimeMomentId(2L), stateSnapshot = pastState)
         val currentState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10)),
+            passedTime = PassedTime(10.milliseconds),
             timeMoments = listOf(timeMoment, futureMoment),
             lastTimeMomentId = timeMoment.id,
         )
@@ -230,7 +231,7 @@ class MainFunctionalCoreTest {
             )
         val expectedNewMomentId = TimeMomentId(4L)
         val currentState = gameState(
-            passedTime = PassedTime(Duration.milliseconds(10)),
+            passedTime = PassedTime(10.milliseconds),
             timeMoments = listOf(mainTimelineMoment1, mainTimelineMoment2, splitTimelineMoment),
             lastTimeMomentId = mainTimelineMoment2.id,
         )

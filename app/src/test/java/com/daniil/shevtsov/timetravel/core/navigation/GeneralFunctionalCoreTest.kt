@@ -9,12 +9,13 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 internal class GeneralFunctionalCoreTest {
     @Test
     fun `should update passed time when ticked`() {
-        val tickRate = Duration.milliseconds(5)
+        val tickRate = 5.milliseconds
         val stateAfterOneTick = generalFunctionalCore(
             state = gameState(
                 balanceConfig(tickRate = tickRate),

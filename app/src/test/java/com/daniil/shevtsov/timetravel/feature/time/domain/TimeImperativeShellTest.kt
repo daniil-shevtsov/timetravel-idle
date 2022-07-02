@@ -5,7 +5,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 
 class TimeImperativeShellTest {
@@ -15,13 +15,13 @@ class TimeImperativeShellTest {
 
         imperativeShell.passedTime
             .test {
-                imperativeShell.startEmitingTime(until = Duration.milliseconds(4L), interval = Duration.milliseconds(1L))
+                imperativeShell.startEmitingTime(until = 4L.milliseconds, interval = 1L.milliseconds)
 
-                assertThat(awaitItem()).isEqualTo(Duration.milliseconds(0L))
-                assertThat(awaitItem()).isEqualTo(Duration.milliseconds(1L))
-                assertThat(awaitItem()).isEqualTo(Duration.milliseconds(2L))
-                assertThat(awaitItem()).isEqualTo(Duration.milliseconds(3L))
-                assertThat(awaitItem()).isEqualTo(Duration.milliseconds(4L))
+                assertThat(awaitItem()).isEqualTo(0L.milliseconds)
+                assertThat(awaitItem()).isEqualTo(1L.milliseconds)
+                assertThat(awaitItem()).isEqualTo(2L.milliseconds)
+                assertThat(awaitItem()).isEqualTo(3L.milliseconds)
+                assertThat(awaitItem()).isEqualTo(4L.milliseconds)
             }
     }
 }

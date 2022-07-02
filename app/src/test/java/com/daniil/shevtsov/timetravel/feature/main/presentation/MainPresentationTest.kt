@@ -24,7 +24,7 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import org.junit.jupiter.api.Test
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class MainPresentationTest {
 
@@ -37,12 +37,12 @@ class MainPresentationTest {
         )
         val timeMoment = timeMoment(
             id = TimeMomentId(1L),
-            stateSnapshot = gameState(passedTime = PassedTime(Duration.seconds(2L)))
+            stateSnapshot = gameState(passedTime = PassedTime(2L.seconds))
         )
         val viewState = mapMainViewState(
             state = gameState(
                 plot = plot,
-                passedTime = PassedTime(Duration.seconds(5L)),
+                passedTime = PassedTime(5L.seconds),
                 timeMoments = listOf(timeMoment)
             )
         )

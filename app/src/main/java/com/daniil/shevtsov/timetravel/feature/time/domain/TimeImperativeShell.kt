@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 @AppScope
 class TimeImperativeShell @Inject constructor() {
@@ -13,12 +14,12 @@ class TimeImperativeShell @Inject constructor() {
 
     suspend fun startEmitingTime(
         until: Duration = Duration.INFINITE,
-        interval: Duration = Duration.milliseconds(500L),
+        interval: Duration = 500L.milliseconds,
     ) {
         timerFlow(interval)
             .takeWhile { duration -> duration <= until }
             .map { duration ->
-                Duration.milliseconds(duration.inWholeMilliseconds / interval.inWholeMilliseconds)
+                (duration.inWholeMilliseconds / interval.inWholeMilliseconds).milliseconds
             }
             .collect { passed ->
                 _passedTime.emit(passed)
