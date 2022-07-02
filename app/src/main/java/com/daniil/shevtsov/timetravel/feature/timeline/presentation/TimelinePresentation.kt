@@ -64,26 +64,24 @@ fun timelinePresentation(
 
     val allTimelines = allMoments.groupBy { it.timelineParent }
 
-    allTimelines.entries.forEachIndexed { _, (timelineId, moments) ->
-        moments.forEachIndexed { _, moment ->
-            val parentMoment = allMoments.find { moment.momentParents.contains(it.id) }
-            val parentTimelineId = allTimelines.entries.find { (_, moments) ->
-                moments.any { it.id == parentMoment?.id }
-            }?.key
-            val newPosition = calculateMomentPositionWithSideEffect(
-                parentMomentPosition = momentPositions[parentMoment?.id],
-                parentTimelineId = parentTimelineId,
-                currentMomentTimelineId = timelineId,
-                sizes = sizes,
-            )
+    allMoments.forEach { moment ->
+        val parentMoment = allMoments.find { moment.momentParents.contains(it.id) }
+        val parentTimelineId = allTimelines.entries.find { (_, moments) ->
+            moments.any { it.id == parentMoment?.id }
+        }?.key
+        val newPosition = calculateMomentPositionWithSideEffect(
+            parentMomentPosition = momentPositions[parentMoment?.id],
+            parentTimelineId = parentTimelineId,
+            currentMomentTimelineId = moment.timelineParent,
+            sizes = sizes,
+        )
 
-            momentPositions = momentPositions.toMutableMap().apply {
-                put(
-                    moment.id,
-                    newPosition,
-                )
-            }.toMap()
-        }
+        momentPositions = momentPositions.toMutableMap().apply {
+            put(
+                moment.id,
+                newPosition,
+            )
+        }.toMap()
     }
 
     val lines = mutableListOf<Line>()
