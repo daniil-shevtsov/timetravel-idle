@@ -328,12 +328,24 @@ private fun TimelineCanvas(
         sizes = sizes
     )
 
+    val furthestMomentX = with(LocalDensity.current) {
+        timelineState.moments.maxByOrNull { it.position.x }?.position?.x?.let {
+            it + canvasPadding + pointSize / 2
+        }?.toDp()
+    }
+
+    val width = when {
+        furthestMomentX == null || furthestMomentX < 500.dp -> 500.dp
+        else -> furthestMomentX
+    }
+
+
     Canvas(
         modifier = Modifier
             .background(AppTheme.colors.backgroundDarkest)
             .horizontalScroll(rememberScrollState())
-            .width(500.dp)
-            .height(300.dp)
+            .width(width)
+            .height(300.dp) //TODO: Add vertical scroll
             .pointerInput(timelineState.moments) {
                 detectTapGestures(
                     onTap = { tapOffset ->
