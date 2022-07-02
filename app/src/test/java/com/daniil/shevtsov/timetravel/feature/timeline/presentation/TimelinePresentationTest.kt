@@ -28,6 +28,7 @@ class TimelinePresentationTest {
                     timeMomentModel(),
                 )
             ),
+            allMoments = listOf(timeMomentModel()),
             sizes = sizes,
         )
 
@@ -51,9 +52,29 @@ class TimelinePresentationTest {
         val models = timelinePresentation(
             allTimelines = mapOf(
                 null to listOf(
-                    timeMomentModel(id = TimeMomentId(0L), momentParents = emptyList()),
-                    timeMomentModel(id = TimeMomentId(1L), momentParents = listOf(TimeMomentId(0L))),
+                    timeMomentModel(
+                        id = TimeMomentId(0L),
+                        timelineParent = null,
+                        momentParents = emptyList()
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(1L),
+                        timelineParent = null,
+                        momentParents = listOf(TimeMomentId(0L))
+                    ),
                 )
+            ),
+            allMoments = listOf(
+                timeMomentModel(
+                    id = TimeMomentId(0L),
+                    timelineParent = null,
+                    momentParents = emptyList()
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(1L),
+                    timelineParent = null,
+                    momentParents = listOf(TimeMomentId(0L))
+                ),
             ),
             sizes = sizes,
         )
@@ -105,6 +126,28 @@ class TimelinePresentationTest {
                         momentParents = listOf(TimeMomentId(2L))
                     ),
                 )
+            ),
+            allMoments = listOf(
+                timeMomentModel(
+                    id = TimeMomentId(0L),
+                    timelineParent = null,
+                    momentParents = emptyList()
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(1L),
+                    timelineParent = null,
+                    momentParents = listOf(TimeMomentId(0L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(2L),
+                    timelineParent = TimeMomentId(0L),
+                    momentParents = listOf(TimeMomentId(0L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(3L),
+                    timelineParent = TimeMomentId(0L),
+                    momentParents = listOf(TimeMomentId(2L))
+                ),
             ),
             sizes = sizes,
         )
@@ -159,16 +202,71 @@ class TimelinePresentationTest {
             allTimelines = mapOf(
                 null to listOf(
                     timeMomentModel(id = TimeMomentId(0L), momentParents = emptyList()),
-                    timeMomentModel(id = TimeMomentId(1L), momentParents = listOf(TimeMomentId(0L))),
-                    timeMomentModel(id = TimeMomentId(2L), momentParents = listOf(TimeMomentId(1L))),
+                    timeMomentModel(
+                        id = TimeMomentId(1L),
+                        momentParents = listOf(TimeMomentId(0L))
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(1L))
+                    ),
                 ),
                 TimeMomentId(1L) to listOf(
-                    timeMomentModel(id = TimeMomentId(3L), momentParents = listOf(TimeMomentId(1L))),
-                    timeMomentModel(id = TimeMomentId(4L), momentParents = listOf(TimeMomentId(3L))),
+                    timeMomentModel(
+                        id = TimeMomentId(3L),
+                        momentParents = listOf(TimeMomentId(1L))
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(4L),
+                        momentParents = listOf(TimeMomentId(3L))
+                    ),
                 ),
                 TimeMomentId(3L) to listOf(
-                    timeMomentModel(id = TimeMomentId(5L), momentParents = listOf(TimeMomentId(3L))),
-                    timeMomentModel(id = TimeMomentId(6L), momentParents = listOf(TimeMomentId(5L))),
+                    timeMomentModel(
+                        id = TimeMomentId(5L),
+                        momentParents = listOf(TimeMomentId(3L))
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(6L),
+                        momentParents = listOf(TimeMomentId(5L))
+                    ),
+                ),
+            ),
+            allMoments = listOf(
+                timeMomentModel(
+                    id = TimeMomentId(0L),
+                    timelineParent = null,
+                    momentParents = emptyList()
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(1L),
+                    timelineParent = null,
+                    momentParents = listOf(TimeMomentId(0L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(2L),
+                    timelineParent = null,
+                    momentParents = listOf(TimeMomentId(1L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(3L),
+                    timelineParent = TimeMomentId(1L),
+                    momentParents = listOf(TimeMomentId(1L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(4L),
+                    timelineParent = TimeMomentId(1L),
+                    momentParents = listOf(TimeMomentId(3L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(5L),
+                    timelineParent = TimeMomentId(3L),
+                    momentParents = listOf(TimeMomentId(3L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(6L),
+                    timelineParent = TimeMomentId(3L),
+                    momentParents = listOf(TimeMomentId(5L))
                 ),
             ),
             sizes = sizes,
@@ -251,7 +349,10 @@ class TimelinePresentationTest {
             allTimelines = mapOf(
                 null to listOf(
                     timeMomentModel(id = TimeMomentId(0L), momentParents = emptyList()),
-                    timeMomentModel(id = TimeMomentId(1L), momentParents = listOf(TimeMomentId(0L))),
+                    timeMomentModel(
+                        id = TimeMomentId(1L),
+                        momentParents = listOf(TimeMomentId(0L))
+                    ),
                     timeMomentModel(
                         id = TimeMomentId(3L),
                         momentParents = listOf(
@@ -261,7 +362,35 @@ class TimelinePresentationTest {
                     ),
                 ),
                 TimeMomentId(0L) to listOf(
-                    timeMomentModel(id = TimeMomentId(2L), momentParents = listOf(TimeMomentId(0L))),
+                    timeMomentModel(
+                        id = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(0L))
+                    ),
+                ),
+            ),
+            allMoments = listOf(
+                timeMomentModel(
+                    id = TimeMomentId(0L),
+                    timelineParent = null,
+                    momentParents = emptyList()
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(1L),
+                    timelineParent = null,
+                    momentParents = listOf(TimeMomentId(0L))
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(3L),
+                    timelineParent = null,
+                    momentParents = listOf(
+                        TimeMomentId(1L),
+                        TimeMomentId(2L)
+                    )
+                ),
+                timeMomentModel(
+                    id = TimeMomentId(2L),
+                    timelineParent = TimeMomentId(0L),
+                    momentParents = listOf(TimeMomentId(0L))
                 ),
             ),
             sizes = sizes,
