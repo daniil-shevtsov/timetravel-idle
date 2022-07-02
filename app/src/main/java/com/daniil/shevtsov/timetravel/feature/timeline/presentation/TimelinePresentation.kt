@@ -63,7 +63,7 @@ fun timelinePresentation(
     var momentPositions: Map<TimeMomentId, Offset> = mapOf()
     allTimelines.entries.forEachIndexed { timelineIndex, (timelineId, moments) ->
         moments.forEachIndexed { index, moment ->
-            val parentMoment = allMoments.find { it.id == moment.momentParent }
+            val parentMoment = allMoments.find { moment.momentParents.contains(it.id) }
             val parentTimelineId = allTimelines.entries.find { (_, moments) ->
                 moments.any { it.id == parentMoment?.id }
             }?.key

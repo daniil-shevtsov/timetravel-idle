@@ -83,6 +83,5 @@ private fun TimeMoment.toModel(
     id = id,
     time = stateSnapshot.passedTime,
     timelineParent = timelineParentId,
-    momentParent = parentId,
     momentParents = momentParents,
 )

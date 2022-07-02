@@ -120,34 +120,6 @@ class MainPresentationTest {
     }
 
     @Test
-    fun `should set moment parent correctly`() {
-        val viewState = mapMainViewState(
-            state = gameState(
-                timeMoments = listOf(
-                    timeMoment(id = TimeMomentId(0L), timelineParentId = null),
-                    timeMoment(id = TimeMomentId(1L), timelineParentId = null),
-                    timeMoment(id = TimeMomentId(2L), timelineParentId = null),
-                    timeMoment(id = TimeMomentId(3L), timelineParentId = TimeMomentId(1L)),
-                    timeMoment(id = TimeMomentId(4L), timelineParentId = TimeMomentId(1L)),
-                )
-            )
-        )
-
-        assertThat(viewState)
-            .isInstanceOf(MainViewState.Content::class)
-            .prop(MainViewState.Content::timeTravel)
-            .prop(TimeTravelViewState::moments)
-            .extracting(TimeMomentModel::id, TimeMomentModel::momentParent)
-            .containsExactly(
-                TimeMomentId(0L) to null,
-                TimeMomentId(1L) to TimeMomentId(0L),
-                TimeMomentId(2L) to TimeMomentId(1L),
-                TimeMomentId(3L) to TimeMomentId(1L),
-                TimeMomentId(4L) to TimeMomentId(3L),
-            )
-    }
-
-    @Test
     fun `should set moment parents correctly`() {
         val viewState = mapMainViewState(
             state = gameState(
