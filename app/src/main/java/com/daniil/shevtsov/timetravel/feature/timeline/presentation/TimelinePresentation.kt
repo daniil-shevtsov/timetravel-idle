@@ -131,6 +131,6 @@ fun timelinePresentation(
 
     return TimelineViewState(
         lines = lines,
-        moments = momentModels,
+        moments = momentModels.sortedBy { it.id.value },
     )
 }
