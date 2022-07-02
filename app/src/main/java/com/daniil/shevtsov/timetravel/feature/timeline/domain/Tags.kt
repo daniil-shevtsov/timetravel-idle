@@ -6,3 +6,7 @@ object Tags {
         name = "Nuclear Wasteland",
     )
 }
+
+fun createAllTags() = listOf(
+    Tags.nuclearWasteland,
+)

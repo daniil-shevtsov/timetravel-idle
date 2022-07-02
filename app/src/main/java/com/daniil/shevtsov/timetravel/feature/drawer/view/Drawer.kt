@@ -1,6 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.drawer.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -65,6 +66,7 @@ fun MainDrawer(
             InfoComposable(
                 state = drawerContentState.state, modifier = modifier
                     .background(AppTheme.colors.background)
+                    .fillMaxHeight()
                     .padding(8.dp)
             )
         }

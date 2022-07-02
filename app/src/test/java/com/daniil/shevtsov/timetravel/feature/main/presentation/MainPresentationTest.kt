@@ -134,7 +134,7 @@ class MainPresentationTest {
                 resources = listOf(
                     resource(id = ResourceId.Money, value = 50f),
                 ),
-                presentTags = listOf(presentTag),
+                presentTags = listOf(presentTag.id),
                 actions = listOf(
                     resourceChangeAvailableAction,
                     resourceChangeNotAvailableAction,

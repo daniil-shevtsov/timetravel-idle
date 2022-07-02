@@ -40,8 +40,10 @@ fun selectChoice(
         state.plot.choices.find { choice -> choice.id == viewAction.id } ?: return state
     val newPlot =
         state.plots.find { plot -> plot.id == selectedChoice.destinationPlotId } ?: return state
+    val newTags = (state.presentTags + newPlot.tagsToAdd).toSet().toList()
     return state.copy(
-        plot = newPlot
+        plot = newPlot,
+        presentTags = newTags,
     )
 }
 

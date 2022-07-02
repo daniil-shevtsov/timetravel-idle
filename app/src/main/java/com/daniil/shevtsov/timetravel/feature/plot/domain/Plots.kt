@@ -1,5 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.plot.domain
 
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.Tags
+
 fun createInitialPlots() = listOf(
     plot(
         id = PlotId(0L),
@@ -33,5 +35,6 @@ fun createInitialPlots() = listOf(
     plot(
         id = PlotId(3L),
         text = "The world is a nuclear wasteland, there were no survivors.",
+        tagsToAdd = listOf(Tags.nuclearWasteland.id)
     ),
 )

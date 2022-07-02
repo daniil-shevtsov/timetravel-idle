@@ -221,7 +221,7 @@ fun Content(
         Column(
             verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
         ) {
-            (0..state.actions.size step 2)
+            (0 until state.actions.size step 2)
                 .map { index -> state.actions[index] to state.actions.getOrNull(index + 1) }
                 .forEach { (startAction, endAction) ->
                     Row(

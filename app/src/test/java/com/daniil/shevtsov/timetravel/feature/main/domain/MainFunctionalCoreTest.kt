@@ -9,6 +9,8 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.TagId
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.tag
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
@@ -78,6 +80,37 @@ class MainFunctionalCoreTest {
             .extractingPlot()
             .extractingText()
             .isEqualTo(kekPlot.text)
+    }
+
+    @Test
+    fun `should add tag when plot selected`() {
+        val tagToAdd = tag(id = TagId(1L), name = "tag")
+        val plotToSelect = plot(id = PlotId(1L), tagsToAdd = listOf(tagToAdd.id))
+        val choiceToSelect = choice(
+            id = ChoiceId(1L),
+            destinationPlotId = plotToSelect.id,
+        )
+        val initialPlot = plot(
+            id = PlotId(0L),
+            choices = listOf(
+                choiceToSelect
+            )
+        )
+        val state = mainFunctionalCore(
+            state = gameState(
+                plot = initialPlot,
+                plots = listOf(
+                    initialPlot,
+                    plotToSelect,
+                ),
+                allTags = listOf(tagToAdd),
+            ),
+            viewAction = MainViewAction.SelectChoice(id = choiceToSelect.id)
+        )
+
+        assertThat(state)
+            .prop(GameState::presentTags)
+            .containsExactly(tagToAdd.id)
     }
 
     @Test

@@ -10,6 +10,7 @@ import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timeline.domain.Tag
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.TagId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import kotlin.time.Duration
@@ -24,7 +25,8 @@ data class GameState(
     val passedTime: PassedTime,
     val resources: List<Resource>,
     val actions: List<Action>,
-    val presentTags: List<Tag>,
+    val allTags: List<Tag>,
+    val presentTags: List<TagId>,
     val timeMoments: List<TimeMoment>,
     val currentMomentId: TimeMomentId? = null,
 )
@@ -38,7 +40,8 @@ fun gameState(
     plots: List<Plot> = emptyList(),
     passedTime: PassedTime = PassedTime(Duration.ZERO),
     resources: List<Resource> = emptyList(),
-    presentTags: List<Tag> = emptyList(),
+    allTags: List<Tag> = emptyList(),
+    presentTags: List<TagId> = emptyList(),
     actions: List<Action> = emptyList(),
     timeMoments: List<TimeMoment> = emptyList(),
     lastTimeMomentId: TimeMomentId? = null,
@@ -52,6 +55,7 @@ fun gameState(
     passedTime = passedTime,
     resources = resources,
     actions = actions,
+    allTags = allTags,
     presentTags = presentTags,
     timeMoments = timeMoments,
     currentMomentId = lastTimeMomentId,
