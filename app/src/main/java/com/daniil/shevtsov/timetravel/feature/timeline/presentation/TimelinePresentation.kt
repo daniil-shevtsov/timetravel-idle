@@ -86,7 +86,7 @@ fun timelinePresentation(
 
     val lines = mutableListOf<Line>()
 
-    allTimelines.entries.flatMap { (timelineId, moments) ->
+    allTimelines.entries.forEach { (timelineId, moments) ->
         val innerLines = moments.flatMapIndexed { index, moment ->
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
                 moments.any { it.id == timelineId }
@@ -119,14 +119,6 @@ fun timelinePresentation(
             )
         }
         innerLines.forEach { line -> lines.add(line) }
-        moments.mapIndexed { _, moment ->
-            val momentPosition = momentPositions[moment.id]!!
-            Moment(
-                id = moment.id,
-                title = moment.time.value.toString(),
-                position = momentPosition,
-            )
-        }
     }
 
     val momentModels = allMoments.map { moment ->
