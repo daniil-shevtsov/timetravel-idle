@@ -80,22 +80,24 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
     val isSomething =
         state.timeMoments.size - 1 != state.timeMoments.indexOfFirst { it.id == state.currentMomentId }
 
+    val newTimelineParentId = when {
+        isTheFirstMoment -> null
+        isLastInTimeline -> currentTimeMoment?.timelineParentId
+        isSomething -> state.currentMomentId
+        else -> null
+    }
+    val newParents = when {
+        isTheFirstMoment -> emptyList()
+        isLastInTimeline -> listOfNotNull(state.timeMoments.lastOrNull { it.timelineParentId == currentTimeMoment?.timelineParentId }?.id)
+        isSomething -> listOfNotNull(state.currentMomentId)
+        else -> emptyList()
+    }
     val newMoment = TimeMoment(
         id = TimeMomentId(
             (state.timeMoments.lastOrNull()?.id?.value ?: 0L) + 1L
         ),
-        timelineParentId = when {
-            isTheFirstMoment -> null
-            isLastInTimeline -> currentTimeMoment?.timelineParentId
-            isSomething -> state.currentMomentId
-            else -> null
-        },
-        parents = when {
-            isTheFirstMoment -> emptyList()
-            isLastInTimeline -> listOfNotNull(currentTimeMoment?.timelineParentId)
-            isSomething -> listOfNotNull(state.currentMomentId)
-            else -> emptyList()
-        },
+        timelineParentId = newTimelineParentId,
+        parents = newParents,
         stateSnapshot = state,
     )
 

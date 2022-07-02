@@ -220,9 +220,15 @@ class MainFunctionalCoreTest {
     @Test
     fun `should continue timeline when got back and registering time moment`() {
         val mainTimelineMoment1 = timeMoment(id = TimeMomentId(1L))
-        val mainTimelineMoment2 = timeMoment(id = TimeMomentId(2L))
+        val mainTimelineMoment2 =
+            timeMoment(id = TimeMomentId(2L), parents = listOf(mainTimelineMoment1.id))
         val splitTimelineMoment =
-            timeMoment(id = TimeMomentId(3L), timelineParentId = mainTimelineMoment1.id)
+            timeMoment(
+                id = TimeMomentId(3L),
+                timelineParentId = mainTimelineMoment1.id,
+                parents = listOf(mainTimelineMoment1.id)
+            )
+        val expectedNewMomentId = TimeMomentId(4L)
         val currentState = gameState(
             passedTime = PassedTime(Duration.milliseconds(10)),
             timeMoments = listOf(mainTimelineMoment1, mainTimelineMoment2, splitTimelineMoment),
@@ -244,13 +250,11 @@ class MainFunctionalCoreTest {
             .all {
                 prop(GameState::timeMoments)
                     .extracting(TimeMoment::id, TimeMoment::timelineParentId)
-                    .containsExactly(
-                        mainTimelineMoment1.id to null,
-                        mainTimelineMoment2.id to null,
-                        splitTimelineMoment.id to mainTimelineMoment1.id,
-                        TimeMomentId(4L) to null,
-                    )
-                prop(GameState::currentMomentId).isEqualTo(TimeMomentId(4L))
+                    .contains(expectedNewMomentId to null)
+                prop(GameState::timeMoments)
+                    .extracting(TimeMoment::id, TimeMoment::parents)
+                    .contains(expectedNewMomentId to listOf(mainTimelineMoment2.id))
+                prop(GameState::currentMomentId).isEqualTo(expectedNewMomentId)
             }
     }
 
