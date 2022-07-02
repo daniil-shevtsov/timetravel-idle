@@ -92,7 +92,7 @@ fun timelinePresentation(
             val parentTimeline = allTimelines.entries.find { (_, moments) ->
                 moments.any { it.id == moment.timelineParent }
             }?.value
-            val timelineRootMoment = parentTimeline?.find { it.id == timelineId }
+            val timelineRootMoment = parentTimeline?.first { it.id == moment.timelineParent }
             val momentPosition = momentPositions[moments[index].id]!!
 
             val childMoment = moments.getOrNull(index + 1)
