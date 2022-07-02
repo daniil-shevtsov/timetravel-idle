@@ -1,6 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.actions.domain
 
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.Tags
 import kotlin.time.Duration.Companion.seconds
 
 fun createInitialActions() = listOf(
@@ -29,4 +30,13 @@ fun createInitialActions() = listOf(
             resourceChange(id = ResourceId.Time, change = 100f)
         )
     ),
+    action(
+        id = ActionId(3L),
+        title = "Gather nuclear waste",
+        requiredTime = 5L.seconds,
+        requiredTags = listOf(Tags.nuclearWasteland.id),
+        resourceChanges = resourceChanges(
+            resourceChange(id = ResourceId.NuclearWaste, change = 1f),
+        )
+    )
 )
