@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.dp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.debug.presentation.DebugComposable
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.*
+import com.daniil.shevtsov.timetravel.feature.info.presentation.infoViewState
+import com.daniil.shevtsov.timetravel.feature.info.view.InfoComposable
 
 @Preview(
     widthDp = 320,
@@ -25,7 +27,14 @@ fun MainDrawerDebugPreview() {
                     isSelected = true
                 ),
             ),
-            drawerContent = drawerDebugContent()
+            drawerContent = DrawerContentViewState.Info(
+                infoViewState(
+                    presentTags = listOf(
+                        "Lol",
+                        "Kek",
+                    )
+                )
+            )
         ),
         onViewAction = {},
     )
@@ -51,6 +60,13 @@ fun MainDrawer(
                 onAction = { debugAction ->
                     onViewAction(DrawerViewAction.Debug(action = debugAction))
                 })
+        }
+        is DrawerContentViewState.Info -> {
+            InfoComposable(
+                state = drawerContentState.state, modifier = modifier
+                    .background(AppTheme.colors.background)
+                    .padding(8.dp)
+            )
         }
     }
 }
