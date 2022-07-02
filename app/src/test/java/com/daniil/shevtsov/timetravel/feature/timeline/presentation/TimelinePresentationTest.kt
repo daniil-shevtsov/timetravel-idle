@@ -285,25 +285,30 @@ class TimelinePresentationTest {
                             y = 20f,
                         ),
                     )
-//                prop(TimelineViewState::lines)
-//                    .extracting(Line::endMomentId, Line::start, Line::end)
-//                    .containsExactly(
-//                        Triple(
-//                            TimeMomentId(1L),
-//                            Offset(x = 20f, y = 20f),
-//                            Offset(x = 36f, y = 20f)
-//                        ),
-//                        Triple(
-//                            TimeMomentId(3L),
-//                            Offset(x = 36f, y = 20f),
-//                            Offset(x = 52f, y = 20f)
-//                        ),
-//                        Triple(
-//                            TimeMomentId(2L),
-//                            Offset(x = 20f, y = 20f),
-//                            Offset(x = 28f, y = 42f)
-//                        ),
-//                    )
+                prop(TimelineViewState::lines)
+                    .extracting(Line::endMomentId, Line::start, Line::end)
+                    .containsExactly(
+                        Triple(
+                            TimeMomentId(1L),
+                            Offset(x = 20f, y = 20f),
+                            Offset(x = 36f, y = 20f)
+                        ),
+                        Triple(
+                            TimeMomentId(2L),
+                            Offset(x = 20f, y = 20f),
+                            Offset(x = 28f, y = 42f)
+                        ),
+                        Triple(
+                            TimeMomentId(3L),
+                            Offset(x = 36f, y = 20f),
+                            Offset(x = 52f, y = 20f)
+                        ),
+                        Triple(
+                            TimeMomentId(3L),
+                            Offset(x = 28f, y = 42f),
+                            Offset(x = 52f, y = 20f)
+                        ),
+                    )
             }
     }
 

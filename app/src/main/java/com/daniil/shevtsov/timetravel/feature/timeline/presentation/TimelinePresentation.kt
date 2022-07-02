@@ -129,8 +129,20 @@ fun timelinePresentation(
         }
     }
 
+    val newMoment = allMoments.find { it.momentParents.size > 1 }
+    if (newMoment != null) {
+        val secondParent = momentPositions[newMoment.momentParents[1]]!!
+        lines.add(
+            Line(
+                endMomentId = newMoment.id,
+                start = secondParent,
+                end = momentPositions[newMoment.id]!!
+            )
+        )
+    }
+
     return TimelineViewState(
-        lines = lines,
+        lines = lines.sortedBy { it.endMomentId.value },
         moments = momentModels.sortedBy { it.id.value },
     )
 }
