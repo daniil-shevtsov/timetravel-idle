@@ -23,11 +23,6 @@ class TimelinePresentationTest {
     @Test
     fun `should draw one point`() {
         val models = timelinePresentation(
-            allTimelines = mapOf(
-                null to listOf(
-                    timeMomentModel(),
-                )
-            ),
             allMoments = listOf(timeMomentModel()),
             sizes = sizes,
         )
@@ -50,20 +45,6 @@ class TimelinePresentationTest {
     @Test
     fun `should draw two points on the same timeline`() {
         val models = timelinePresentation(
-            allTimelines = mapOf(
-                null to listOf(
-                    timeMomentModel(
-                        id = TimeMomentId(0L),
-                        timelineParent = null,
-                        momentParents = emptyList()
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(1L),
-                        timelineParent = null,
-                        momentParents = listOf(TimeMomentId(0L))
-                    ),
-                )
-            ),
             allMoments = listOf(
                 timeMomentModel(
                     id = TimeMomentId(0L),
@@ -105,28 +86,6 @@ class TimelinePresentationTest {
     @Test
     fun `should draw timeline split`() {
         val models = timelinePresentation(
-            allTimelines = mapOf(
-                null to listOf(
-                    timeMomentModel(
-                        id = TimeMomentId(0L),
-                        momentParents = emptyList()
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(1L),
-                        momentParents = listOf(TimeMomentId(0L))
-                    ),
-                ),
-                TimeMomentId(0L) to listOf(
-                    timeMomentModel(
-                        id = TimeMomentId(2L),
-                        momentParents = listOf(TimeMomentId(0L))
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(3L),
-                        momentParents = listOf(TimeMomentId(2L))
-                    ),
-                )
-            ),
             allMoments = listOf(
                 timeMomentModel(
                     id = TimeMomentId(0L),
@@ -199,39 +158,6 @@ class TimelinePresentationTest {
     @Test
     fun `should draw two timeline splits`() {
         val models = timelinePresentation(
-            allTimelines = mapOf(
-                null to listOf(
-                    timeMomentModel(id = TimeMomentId(0L), momentParents = emptyList()),
-                    timeMomentModel(
-                        id = TimeMomentId(1L),
-                        momentParents = listOf(TimeMomentId(0L))
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(2L),
-                        momentParents = listOf(TimeMomentId(1L))
-                    ),
-                ),
-                TimeMomentId(1L) to listOf(
-                    timeMomentModel(
-                        id = TimeMomentId(3L),
-                        momentParents = listOf(TimeMomentId(1L))
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(4L),
-                        momentParents = listOf(TimeMomentId(3L))
-                    ),
-                ),
-                TimeMomentId(3L) to listOf(
-                    timeMomentModel(
-                        id = TimeMomentId(5L),
-                        momentParents = listOf(TimeMomentId(3L))
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(6L),
-                        momentParents = listOf(TimeMomentId(5L))
-                    ),
-                ),
-            ),
             allMoments = listOf(
                 timeMomentModel(
                     id = TimeMomentId(0L),
@@ -346,28 +272,6 @@ class TimelinePresentationTest {
     @Test
     fun `should connect timeline into main`() {
         val models = timelinePresentation(
-            allTimelines = mapOf(
-                null to listOf(
-                    timeMomentModel(id = TimeMomentId(0L), momentParents = emptyList()),
-                    timeMomentModel(
-                        id = TimeMomentId(1L),
-                        momentParents = listOf(TimeMomentId(0L))
-                    ),
-                    timeMomentModel(
-                        id = TimeMomentId(3L),
-                        momentParents = listOf(
-                            TimeMomentId(1L),
-                            TimeMomentId(2L)
-                        )
-                    ),
-                ),
-                TimeMomentId(0L) to listOf(
-                    timeMomentModel(
-                        id = TimeMomentId(2L),
-                        momentParents = listOf(TimeMomentId(0L))
-                    ),
-                ),
-            ),
             allMoments = listOf(
                 timeMomentModel(
                     id = TimeMomentId(0L),

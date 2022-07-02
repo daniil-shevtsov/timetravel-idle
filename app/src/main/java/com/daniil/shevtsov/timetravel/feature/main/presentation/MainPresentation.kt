@@ -31,11 +31,7 @@ fun mapMainViewState(
         ),
         actions = state.actions.map { it.toModel() },
         timeTravel = TimeTravelViewState(
-            moments = state.timeMoments.mapIndexed { index, timeMoment ->
-                val timeline =
-                    state.timeMoments.filter { it.timelineParentId == timeMoment.timelineParentId }
-                val isFirstInTimeline = state.timeMoments
-                    .first { it.timelineParentId == timeMoment.timelineParentId } == timeMoment
+            moments = state.timeMoments.mapIndexed { _, timeMoment ->
                 timeMoment.toModel(
                     momentParents = timeMoment.parents
                 )
