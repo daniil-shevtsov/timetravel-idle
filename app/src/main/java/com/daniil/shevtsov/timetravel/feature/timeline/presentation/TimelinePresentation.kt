@@ -60,7 +60,6 @@ fun timelinePresentation(
     sizes: TimelineSizes,
 ): TimelineViewState {
     var momentPositions: Map<TimeMomentId, Offset> = mapOf()
-    val timelines = allMoments.map { it.timelineParent }.toSet().toList()
 
     val allTimelines = allMoments.groupBy { it.timelineParent }
 
@@ -86,40 +85,20 @@ fun timelinePresentation(
 
     val lines = mutableListOf<Line>()
 
-    timelines.forEach { timelineId ->
-        val moments = allMoments.filter { it.timelineParent == timelineId }
-        val innerLines = moments.flatMapIndexed { index, moment ->
-            val parentTimeline = allTimelines.entries.find { (_, moments) ->
-                moments.any { it.id == moment.timelineParent }
-            }?.value
-            val timelineRootMoment = parentTimeline?.first { it.id == moment.timelineParent }
-            val momentPosition = momentPositions[moments[index].id]!!
-
-            val childMoment = moments.getOrNull(index + 1)
-            val childPosition = childMoment?.id?.let {
-                momentPositions[it]
-            }
-            listOfNotNull(
-                timelineRootMoment?.let { parentMoment ->
-                    val parentPosition = momentPositions[parentMoment.id]
-                    parentPosition?.let {
-                        Line(
-                            endMomentId = moment.id,
-                            start = parentPosition,
-                            end = momentPosition,
-                        )
-                    }.takeIf { index == 0 && timelines.indexOf(moment.timelineParent) != 0 }
-                },
-                childPosition?.let {
+    allMoments.forEach { moment ->
+        moment.momentParents.forEach { parentMoment ->
+            val momentPosition = momentPositions[moment.id]!!
+            val parentPosition = momentPositions[parentMoment]
+            if (parentPosition != null) {
+                lines.add(
                     Line(
-                        endMomentId = childMoment.id,
-                        start = momentPosition,
-                        end = childPosition
+                        endMomentId = moment.id,
+                        start = parentPosition,
+                        end = momentPosition,
                     )
-                }
-            )
+                )
+            }
         }
-        innerLines.forEach { line -> lines.add(line) }
     }
 
     val momentModels = allMoments.map { moment ->
@@ -128,18 +107,6 @@ fun timelinePresentation(
             id = moment.id,
             title = moment.time.value.toString(),
             position = momentPosition,
-        )
-    }
-
-    val newMoment = allMoments.find { it.momentParents.size > 1 }
-    if (newMoment != null) {
-        val secondParent = momentPositions[newMoment.momentParents[1]]!!
-        lines.add(
-            Line(
-                endMomentId = newMoment.id,
-                start = secondParent,
-                end = momentPositions[newMoment.id]!!
-            )
         )
     }
 
