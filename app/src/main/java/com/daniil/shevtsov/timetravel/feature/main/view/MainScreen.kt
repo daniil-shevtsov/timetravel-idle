@@ -272,16 +272,20 @@ private fun MyButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = text,
-        style = AppTheme.typography.bodyTitle,
-        textAlign = TextAlign.Center,
-        color = AppTheme.colors.textLight,
+    Box(contentAlignment = Alignment.Center,
         modifier = modifier
             .background(AppTheme.colors.background)
             .clickable { onClick() }
-            .padding(AppTheme.dimensions.paddingS)
-    )
+            .padding(AppTheme.dimensions.paddingS)) {
+        Text(
+            text = text,
+            style = AppTheme.typography.bodyTitle,
+            textAlign = TextAlign.Center,
+            color = AppTheme.colors.textLight,
+            modifier = Modifier.wrapContentSize()
+        )
+    }
+
 }
 
 @Composable
