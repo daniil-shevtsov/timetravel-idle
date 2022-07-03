@@ -10,6 +10,7 @@ import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
 import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
 import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
+import com.daniil.shevtsov.timetravel.feature.tags.domain.tagsToAdd
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -85,7 +86,10 @@ class MainFunctionalCoreTest {
     @Test
     fun `should add tag when plot selected`() {
         val tagToAdd = tag(id = TagId(1L), name = "tag")
-        val plotToSelect = plot(id = PlotId(1L), tagsToAdd = listOf(tagToAdd.id))
+        val plotToSelect = plot(
+            id = PlotId(1L),
+            tagChanges = tagsToAdd(listOf(tagToAdd.id))
+        )
         val choiceToSelect = choice(
             id = ChoiceId(1L),
             destinationPlotId = plotToSelect.id,

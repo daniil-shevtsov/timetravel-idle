@@ -6,13 +6,19 @@ data class Tag(
 )
 
 typealias TagChanges = Map<TagId, Change>
+typealias TagChange = Pair<TagId, Change>
 
 fun tagChanges(
-    vararg changes: Pair<TagId, Change> = arrayOf(),
+    vararg changes: TagChange = arrayOf(),
 ): TagChanges = changes.toMap()
 
-fun tagsToAdd(tags: List<Tag>): TagChanges = tagChanges(
-    changes = tags.map { it.id to Change.Add }.toTypedArray()
+fun tagChange(
+    id: TagId,
+    change: Change
+): TagChange = id to change
+
+fun tagsToAdd(tags: List<TagId>): TagChanges = tagChanges(
+    changes = tags.map { id -> tagChange(id = id, change = Change.Add) }.toTypedArray()
 )
 
 enum class Change {
