@@ -52,7 +52,7 @@ fun MainPreview() {
                 text = "Very important plot",
                 choices = listOf(
                     ChoiceModel(id = ChoiceId(1L), text = "Choose something smart"),
-                    ChoiceModel(id = ChoiceId(2L), text = "Choose something stupid"),
+                    ChoiceModel(id = ChoiceId(2L), text = "Choose something stupid stupid"),
                     ChoiceModel(id = ChoiceId(3L), text = "Choose something cool"),
                 )
             ),
@@ -240,15 +240,10 @@ fun Content(
                     .padding(AppTheme.dimensions.paddingS),
             )
             ButtonPane(items = state.plot.choices) { item, modifier ->
-                Text(
+                MyButton(
                     text = item.text,
-                    style = AppTheme.typography.bodyTitle,
-                    textAlign = TextAlign.Center,
-                    color = AppTheme.colors.textLight,
+                    onClick = { onViewAction(MainViewAction.SelectChoice(id = item.id)) },
                     modifier = modifier
-                        .clickable { onViewAction(MainViewAction.SelectChoice(id = item.id)) }
-                        .background(AppTheme.colors.background)
-                        .padding(AppTheme.dimensions.paddingS)
                 )
             }
         }
@@ -263,12 +258,30 @@ private fun ActionsPane(
     onViewAction: (MainViewAction) -> Unit
 ) {
     ButtonPane(items = state.actions) { item: ActionModel, modifier ->
-        ActionItem(
-            model = item,
+        MyButton(
+            text = item.title,
+            onClick = { onViewAction(MainViewAction.SelectAction(id = item.id)) },
             modifier = modifier
-                .clickable { onViewAction(MainViewAction.SelectAction(id = item.id)) },
         )
     }
+}
+
+@Composable
+private fun MyButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = AppTheme.typography.bodyTitle,
+        textAlign = TextAlign.Center,
+        color = AppTheme.colors.textLight,
+        modifier = modifier
+            .background(AppTheme.colors.background)
+            .clickable { onClick() }
+            .padding(AppTheme.dimensions.paddingS)
+    )
 }
 
 @Composable
@@ -283,19 +296,23 @@ private fun <T> ButtonPane(
             .map { index -> items[index] to items.getOrNull(index + 1) }
             .forEach { (startAction, endAction) ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+                    modifier = Modifier.height(IntrinsicSize.Min)
                 ) {
                     itemContent(startAction, Modifier.let { modifier ->
                         if (endAction == null) {
                             modifier.fillMaxWidth()
                         } else {
                             modifier
-                        }.weight(1f)
+                        }
+                            .weight(1f)
+                            .fillMaxHeight()
                     })
                     if (endAction != null) {
                         itemContent(
                             endAction, Modifier
                                 .weight(1f)
+                                .fillMaxHeight()
                         )
                     }
                 }
@@ -418,20 +435,4 @@ private fun TimelineCanvas(
             }
         }
     }
-}
-
-@Composable
-private fun ActionItem(
-    model: ActionModel,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = model.title,
-        style = AppTheme.typography.bodyTitle,
-        textAlign = TextAlign.Center,
-        color = AppTheme.colors.textLight,
-        modifier = modifier
-            .background(AppTheme.colors.background)
-            .padding(AppTheme.dimensions.paddingS)
-    )
 }
