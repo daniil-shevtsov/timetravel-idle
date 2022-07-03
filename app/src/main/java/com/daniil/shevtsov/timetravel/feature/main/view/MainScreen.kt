@@ -51,8 +51,9 @@ fun MainPreview() {
             plot = PlotViewState(
                 text = "Very important plot",
                 choices = listOf(
-                    ChoiceModel(id = ChoiceId(1L), text = "Do something smart"),
-                    ChoiceModel(id = ChoiceId(2L), text = "Do something stupid"),
+                    ChoiceModel(id = ChoiceId(1L), text = "Choose something smart"),
+                    ChoiceModel(id = ChoiceId(2L), text = "Choose something stupid"),
+                    ChoiceModel(id = ChoiceId(3L), text = "Choose something cool"),
                 )
             ),
             resources = ResourcesViewState(
@@ -238,22 +239,17 @@ fun Content(
                     .background(AppTheme.colors.backgroundLight)
                     .padding(AppTheme.dimensions.paddingS),
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS)
-            ) {
-                state.plot.choices.forEach { choice ->
-                    Text(
-                        text = choice.text,
-                        style = AppTheme.typography.bodyTitle,
-                        textAlign = TextAlign.Center,
-                        color = AppTheme.colors.textLight,
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { onViewAction(MainViewAction.SelectChoice(id = choice.id)) }
-                            .background(AppTheme.colors.background)
-                            .padding(AppTheme.dimensions.paddingS)
-                    )
-                }
+            ButtonPane(items = state.plot.choices) { item, modifier ->
+                Text(
+                    text = item.text,
+                    style = AppTheme.typography.bodyTitle,
+                    textAlign = TextAlign.Center,
+                    color = AppTheme.colors.textLight,
+                    modifier = modifier
+                        .clickable { onViewAction(MainViewAction.SelectChoice(id = item.id)) }
+                        .background(AppTheme.colors.background)
+                        .padding(AppTheme.dimensions.paddingS)
+                )
             }
         }
     }
