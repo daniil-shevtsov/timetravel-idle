@@ -10,6 +10,8 @@ enum class ResourceId {
     Time,
     TimeCrystal,
     Money,
+    NuclearWaste,
+    Caps,
 }
 
 fun resource(

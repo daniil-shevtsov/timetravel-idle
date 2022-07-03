@@ -3,6 +3,7 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.tags.domain.Change
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
@@ -40,8 +41,12 @@ fun selectChoice(
         state.plot.choices.find { choice -> choice.id == viewAction.id } ?: return state
     val newPlot =
         state.plots.find { plot -> plot.id == selectedChoice.destinationPlotId } ?: return state
+    val newTags =
+        (state.presentTags - newPlot.tagChanges.filterValues { it == Change.Remove }.keys + newPlot.tagChanges.filterValues { it == Change.Add }.keys).toSet()
+            .toList()
     return state.copy(
-        plot = newPlot
+        plot = newPlot,
+        presentTags = newTags,
     )
 }
 

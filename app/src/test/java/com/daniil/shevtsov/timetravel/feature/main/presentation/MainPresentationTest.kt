@@ -18,6 +18,8 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
+import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
@@ -95,8 +97,11 @@ class MainPresentationTest {
 
     @Test
     fun `should show available actions`() {
-        val action = action(
+        val missingTag = tag(id = TagId(1L), name = "missing")
+        val presentTag = tag(id = TagId(2L), name = "present")
+        val resourceChangeAvailableAction = action(
             id = ActionId(1L),
+            title = "available resource",
             resourceChanges = resourceChanges(
                 resourceChange(
                     id = ResourceId.Money,
@@ -104,10 +109,37 @@ class MainPresentationTest {
                 )
             )
         )
+        val resourceChangeNotAvailableAction = action(
+            id = ActionId(2L),
+            title = "too expensive",
+            resourceChanges = resourceChanges(
+                resourceChange(
+                    id = ResourceId.Money,
+                    change = -100f
+                )
+            )
+        )
+        val tagAvailableAction = action(
+            id = ActionId(3L),
+            title = "available tag",
+            requiredTags = listOf(presentTag.id),
+        )
+        val tagNotAvailableAction = action(
+            id = ActionId(4L),
+            title = "don't have required tag",
+            requiredTags = listOf(missingTag.id),
+        )
         val viewState = mapMainViewState(
             state = gameState(
+                resources = listOf(
+                    resource(id = ResourceId.Money, value = 50f),
+                ),
+                presentTags = listOf(presentTag.id),
                 actions = listOf(
-                    action
+                    resourceChangeAvailableAction,
+                    resourceChangeNotAvailableAction,
+                    tagAvailableAction,
+                    tagNotAvailableAction,
                 ),
             )
         )
@@ -116,7 +148,10 @@ class MainPresentationTest {
             .isInstanceOf(MainViewState.Content::class)
             .prop(MainViewState.Content::actions)
             .extracting(ActionModel::id, ActionModel::title)
-            .containsExactly(action.id to action.title)
+            .containsExactly(
+                resourceChangeAvailableAction.id to resourceChangeAvailableAction.title,
+                tagAvailableAction.id to tagAvailableAction.title,
+            )
     }
 
     @Test
@@ -124,11 +159,31 @@ class MainPresentationTest {
         val viewState = mapMainViewState(
             state = gameState(
                 timeMoments = listOf(
-                    timeMoment(id = TimeMomentId(0L), timelineParentId = null, parents = emptyList()),
-                    timeMoment(id = TimeMomentId(1L), timelineParentId = null, parents = listOf(TimeMomentId(0L))),
-                    timeMoment(id = TimeMomentId(2L), timelineParentId = null, parents = listOf(TimeMomentId(1L))),
-                    timeMoment(id = TimeMomentId(3L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(1L))),
-                    timeMoment(id = TimeMomentId(4L), timelineParentId = TimeMomentId(1L), parents = listOf(TimeMomentId(3L))),
+                    timeMoment(
+                        id = TimeMomentId(0L),
+                        timelineParentId = null,
+                        parents = emptyList()
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(1L),
+                        timelineParentId = null,
+                        parents = listOf(TimeMomentId(0L))
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(2L),
+                        timelineParentId = null,
+                        parents = listOf(TimeMomentId(1L))
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(3L),
+                        timelineParentId = TimeMomentId(1L),
+                        parents = listOf(TimeMomentId(1L))
+                    ),
+                    timeMoment(
+                        id = TimeMomentId(4L),
+                        timelineParentId = TimeMomentId(1L),
+                        parents = listOf(TimeMomentId(3L))
+                    ),
                 )
             )
         )

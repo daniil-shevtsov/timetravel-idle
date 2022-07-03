@@ -13,6 +13,8 @@ import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
 import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.tags.domain.createAllTags
+import com.daniil.shevtsov.timetravel.feature.tags.domain.createInitialPresentTags
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.koin.core.Koin
 import timber.log.Timber
@@ -38,6 +40,8 @@ class TimeTravelGameApplication : Application() {
                     resources = ResourceId.values().map { id ->
                         Resource(id = id, name = id.toString(), value = 0f)
                     },
+                    allTags = createAllTags(),
+                    presentTags = createInitialPresentTags(),
                     actions = createInitialActions(),
                     timeMoments = emptyList(),
                 )
@@ -72,6 +76,7 @@ class TimeTravelGameApplication : Application() {
     )
 
     private fun createInitialDrawerTabs() = listOf(
+        DrawerTab(id = DrawerTabId.Info, title = "Info", isSelected = true),
         DrawerTab(id = DrawerTabId.Debug, title = "Debug", isSelected = false),
     )
 

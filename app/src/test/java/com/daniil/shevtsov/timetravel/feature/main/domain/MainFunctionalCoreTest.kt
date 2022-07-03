@@ -4,17 +4,11 @@ import assertk.Assert
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
-import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
-import com.daniil.shevtsov.timetravel.feature.actions.domain.action
-import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
-import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChanges
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
-import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
-import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
-import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
+import com.daniil.shevtsov.timetravel.feature.tags.domain.*
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -88,28 +82,47 @@ class MainFunctionalCoreTest {
     }
 
     @Test
-    fun `should apply resource changes of selected action`() {
-        val resource = resource(id = ResourceId.Money, value = 100f)
-        val action = action(
-            id = ActionId(1L),
-            resourceChanges = resourceChanges(
-                resourceChange(id = resource.id, change = -25f)
+    fun `should update tags when plot selected`() {
+        val tagToAdd = tag(id = TagId(1L), name = "tag to add")
+        val tagToRemove = tag(id = TagId(2L), name = "tag to remove")
+        val plotToSelect = plot(
+            id = PlotId(1L),
+            tagChanges = tagChanges(
+                tagChange(id = tagToAdd.id, change = Change.Add),
+                tagChange(id = tagToRemove.id, change = Change.Remove),
             )
         )
-        val initialState = gameState(
-            actions = listOf(action),
-            resources = listOf(resource),
+        val choiceToSelect = choice(
+            id = ChoiceId(1L),
+            destinationPlotId = plotToSelect.id,
         )
-
+        val initialPlot = plot(
+            id = PlotId(0L),
+            choices = listOf(
+                choiceToSelect
+            )
+        )
         val state = mainFunctionalCore(
-            state = initialState,
-            viewAction = MainViewAction.SelectAction(id = action.id)
+            state = gameState(
+                plot = initialPlot,
+                plots = listOf(
+                    initialPlot,
+                    plotToSelect,
+                ),
+                presentTags = listOf(
+                    tagToRemove.id
+                ),
+                allTags = listOf(
+                    tagToAdd,
+                    tagToRemove,
+                ),
+            ),
+            viewAction = MainViewAction.SelectChoice(id = choiceToSelect.id)
         )
 
         assertThat(state)
-            .prop(GameState::resources)
-            .extracting(Resource::id, Resource::value)
-            .containsExactly(resource.id to 75f)
+            .prop(GameState::presentTags)
+            .containsExactly(tagToAdd.id)
     }
 
     @Test
