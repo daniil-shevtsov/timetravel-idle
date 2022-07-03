@@ -34,7 +34,7 @@ fun createInitialActions() = listOf(
         id = ActionId(3L),
         title = "Gather nuclear waste",
         requiredTime = 5L.seconds,
-        requiredTags = listOf(Tags.nuclearWasteland.id),
+        requiredTags = listOf(Tags.WorldState.NuclearWasteland.tag.id),
         resourceChanges = resourceChanges(
             resourceChange(id = ResourceId.NuclearWaste, change = 1f),
         )
