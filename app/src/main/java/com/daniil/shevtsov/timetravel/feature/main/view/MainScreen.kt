@@ -224,39 +224,10 @@ fun Content(
                 )
             }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-            ) {
-                (0 until state.actions.size step 2)
-                    .map { index -> state.actions[index] to state.actions.getOrNull(index + 1) }
-                    .forEach { (startAction, endAction) ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-                        ) {
-                            ActionItem(
-                                model = startAction,
-                                modifier = Modifier.let { modifier ->
-                                    if (endAction == null) {
-                                        modifier.fillMaxWidth()
-                                    } else {
-                                        modifier
-                                    }
-                                        .weight(1f)
-                                        .clickable { onViewAction(MainViewAction.SelectAction(id = startAction.id)) }
-                                },
-                            )
-                            if (endAction != null) {
-                                ActionItem(
-                                    model = endAction,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clickable { onViewAction(MainViewAction.SelectAction(id = endAction.id)) }
-                                )
-                            }
-
-                        }
-                    }
-            }
+            ActionsPane(
+                state = state,
+                onViewAction = onViewAction,
+            )
 
             Text(
                 text = state.plot.text,
@@ -288,6 +259,52 @@ fun Content(
     }
 
 
+}
+
+@Composable
+private fun ActionsPane(
+    state: MainViewState.Content,
+    onViewAction: (MainViewAction) -> Unit
+) {
+    ButtonPane(items = state.actions) { item: ActionModel, modifier ->
+        ActionItem(
+            model = item,
+            modifier = modifier
+                .clickable { onViewAction(MainViewAction.SelectAction(id = item.id)) },
+        )
+    }
+}
+
+@Composable
+private fun <T> ButtonPane(
+    items: List<T>,
+    itemContent: @Composable (item: T, modifier: Modifier) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+    ) {
+        (items.indices step 2)
+            .map { index -> items[index] to items.getOrNull(index + 1) }
+            .forEach { (startAction, endAction) ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+                ) {
+                    itemContent(startAction, Modifier.let { modifier ->
+                        if (endAction == null) {
+                            modifier.fillMaxWidth()
+                        } else {
+                            modifier
+                        }.weight(1f)
+                    })
+                    if (endAction != null) {
+                        itemContent(
+                            endAction, Modifier
+                                .weight(1f)
+                        )
+                    }
+                }
+            }
+    }
 }
 
 fun Offset.distanceTo(offset: Offset) = sqrt((offset.x - x).pow(2) + (offset.y - y).pow(2))
