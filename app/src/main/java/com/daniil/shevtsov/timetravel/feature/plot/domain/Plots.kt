@@ -45,6 +45,7 @@ fun createInitialPlots() = listOf(
         text = "The world is a nuclear wasteland, there were no survivors.",
         tagChanges = tagChanges(
             tagChange(id = Tags.WorldState.NuclearWasteland.tag.id, change = Change.Add),
+            tagChange(id = Tags.WorldState.OrdinaryWorld.tag.id, change = Change.Remove),
             tagChange(id = Tags.Society.Functioning.tag.id, change = Change.Remove),
         )
     ),
@@ -53,6 +54,7 @@ fun createInitialPlots() = listOf(
         text = "Most of the world population went extinct, but there are some survivors.",
         tagChanges = tagChanges(
             tagChange(id = Tags.WorldState.PostApocalypse.tag.id, change = Change.Add),
+            tagChange(id = Tags.WorldState.OrdinaryWorld.tag.id, change = Change.Remove),
             tagChange(id = Tags.Society.Functioning.tag.id, change = Change.Remove),
             tagChange(id = Tags.Society.PostApocalyptic.tag.id, change = Change.Add),
         )

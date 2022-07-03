@@ -43,4 +43,21 @@ fun createInitialActions() = listOf(
             resourceChange(id = ResourceId.NuclearWaste, change = 1f),
         )
     ),
+    action(
+        id = ActionId(4L),
+        title = "Gather caps from garbage",
+        requiredTags = listOf(Tags.WorldState.OrdinaryWorld.tag.id),
+        resourceChanges = resourceChanges(
+            resourceChange(id = ResourceId.Caps, change = 1f)
+        )
+    ),
+    action(
+        id = ActionId(5L),
+        title = "Buy time crystals for caps",
+        requiredTags = listOf(Tags.WorldState.PostApocalypse.tag.id),
+        resourceChanges = resourceChanges(
+            resourceChange(id = ResourceId.Caps, change = -5f),
+            resourceChange(id = ResourceId.TimeCrystal, change = 1f),
+        )
+    ),
 )

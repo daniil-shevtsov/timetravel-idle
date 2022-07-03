@@ -6,6 +6,12 @@ sealed interface TagSubset {
 
 object Tags {
     enum class WorldState(override val tag: Tag) : TagSubset {
+        OrdinaryWorld(
+            tag = Tag(
+                id = TagId(5L),
+                name = "Ordinary World"
+            )
+        ),
         NuclearWasteland(
             tag = Tag(
                 id = TagId(0L),
@@ -53,6 +59,7 @@ fun createAllTags(): List<Tag> = (
     .map { it.tag }
 
 fun createInitialPresentTags(): List<TagId> = listOf(
+    Tags.WorldState.OrdinaryWorld.tag.id,
     Tags.Society.Functioning.tag.id,
     Tags.PlayerJob.Employed.tag.id,
 )
