@@ -62,7 +62,7 @@ fun MainPreview() {
             ),
             actions = listOf(
                 ActionModel(id = ActionId(0L), title = "Do Lol"),
-                ActionModel(id = ActionId(1L), title = "Do Kek"),
+                ActionModel(id = ActionId(1L), title = "Do Kek multiline very long"),
                 ActionModel(id = ActionId(2L), title = "Do Cheburek"),
             ),
             timeTravel = timeTravelStatePreviewData()
