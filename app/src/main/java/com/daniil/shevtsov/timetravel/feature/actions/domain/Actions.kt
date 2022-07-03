@@ -18,6 +18,10 @@ fun createInitialActions() = listOf(
         id = ActionId(1L),
         title = "Earn money",
         requiredTime = 5L.seconds,
+        requiredTags = listOf(
+            Tags.WorldState.FunctioningSociety.tag.id,
+            Tags.PlayerJob.Employed.tag.id,
+        ),
         resourceChanges = resourceChanges(
             resourceChange(id = ResourceId.Money, change = 100f)
         )

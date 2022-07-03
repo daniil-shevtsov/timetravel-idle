@@ -39,7 +39,8 @@ fun createInitialPlots() = listOf(
         id = PlotId(3L),
         text = "The world is a nuclear wasteland, there were no survivors.",
         tagChanges = tagChanges(
-            tagChange(id = Tags.WorldState.NuclearWasteland.tag.id, change = Change.Add)
+            tagChange(id = Tags.WorldState.NuclearWasteland.tag.id, change = Change.Add),
+            tagChange(id = Tags.WorldState.FunctioningSociety.tag.id, change = Change.Remove),
         )
     ),
 )

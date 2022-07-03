@@ -12,6 +12,12 @@ object Tags {
                 name = "Nuclear Wasteland",
             )
         ),
+        FunctioningSociety(
+            tag = Tag(
+                id = TagId(1L),
+                name = "Functioning Society",
+            )
+        )
     }
 
     enum class PlayerJob(override val tag: Tag) : TagSubset {

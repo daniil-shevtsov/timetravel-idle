@@ -13,6 +13,7 @@ import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
 import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.tags.domain.Tags
 import com.daniil.shevtsov.timetravel.feature.tags.domain.createAllTags
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import org.koin.core.Koin
@@ -40,7 +41,10 @@ class TimeTravelGameApplication : Application() {
                         Resource(id = id, name = id.toString(), value = 0f)
                     },
                     allTags = createAllTags(),
-                    presentTags = emptyList(),
+                    presentTags = listOf(
+                        Tags.WorldState.FunctioningSociety.tag.id,
+                        Tags.PlayerJob.Employed.tag.id,
+                    ),
                     actions = createInitialActions(),
                     timeMoments = emptyList(),
                 )
