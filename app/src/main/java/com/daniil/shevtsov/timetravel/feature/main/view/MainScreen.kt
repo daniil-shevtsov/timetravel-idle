@@ -42,7 +42,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Preview(
     widthDp = 320,
-    heightDp = 534,
+    heightDp = 734,
 )
 @Composable
 fun MainPreview() {
@@ -169,117 +169,124 @@ fun Content(
     modifier: Modifier = Modifier,
     onViewAction: (MainViewAction) -> Unit = {},
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .background(AppTheme.colors.backgroundDark)
-            .padding(AppTheme.dimensions.paddingS)
     ) {
-        Column(modifier = Modifier.width(IntrinsicSize.Max)) {
-            (listOf(state.resources.passedTime) + state.resources.resources).forEach { resource ->
-                Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
-                    Text(
-                        text = resource.title,
-                        color = AppTheme.colors.textLight,
-                        style = AppTheme.typography.bodyTitle,
-                        modifier = Modifier,
-                    )
-                    Text(
-                        text = resource.text,
-                        textAlign = TextAlign.End,
-                        color = AppTheme.colors.textLight,
-                        style = AppTheme.typography.body,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
-        }
-
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-        ) {
-            Text(
-                text = "Register time point",
-                style = AppTheme.typography.bodyTitle,
-                textAlign = TextAlign.Center,
-                color = AppTheme.colors.textLight,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
-                    .background(AppTheme.colors.background)
-                    .padding(AppTheme.dimensions.paddingS)
-            )
-            TimelineCanvas(
-                state = state,
-                onViewAction = onViewAction,
-            )
-        }
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+            modifier = Modifier
+                .heightIn(max = maxHeight)
+                .verticalScroll(rememberScrollState())
+                .padding(AppTheme.dimensions.paddingS)
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
         ) {
-            (0 until state.actions.size step 2)
-                .map { index -> state.actions[index] to state.actions.getOrNull(index + 1) }
-                .forEach { (startAction, endAction) ->
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-                    ) {
-                        ActionItem(
-                            model = startAction,
-                            modifier = Modifier.let { modifier ->
-                                if (endAction == null) {
-                                    modifier.fillMaxWidth()
-                                } else {
-                                    modifier
-                                }
-                                    .weight(1f)
-                                    .clickable { onViewAction(MainViewAction.SelectAction(id = startAction.id)) }
-                            },
+            Column(modifier = Modifier.width(IntrinsicSize.Max)) {
+                (listOf(state.resources.passedTime) + state.resources.resources).forEach { resource ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
+                        Text(
+                            text = resource.title,
+                            color = AppTheme.colors.textLight,
+                            style = AppTheme.typography.bodyTitle,
+                            modifier = Modifier,
                         )
-                        if (endAction != null) {
-                            ActionItem(
-                                model = endAction,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable { onViewAction(MainViewAction.SelectAction(id = endAction.id)) }
-                            )
-                        }
-
+                        Text(
+                            text = resource.text,
+                            textAlign = TextAlign.End,
+                            color = AppTheme.colors.textLight,
+                            style = AppTheme.typography.body,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
-        }
+            }
 
-        Text(
-            text = state.plot.text,
-            textAlign = TextAlign.Start,
-            style = AppTheme.typography.body,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .background(AppTheme.colors.backgroundLight)
-                .padding(AppTheme.dimensions.paddingS),
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS)
-        ) {
-            state.plot.choices.forEach { choice ->
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+            ) {
                 Text(
-                    text = choice.text,
+                    text = "Register time point",
                     style = AppTheme.typography.bodyTitle,
                     textAlign = TextAlign.Center,
                     color = AppTheme.colors.textLight,
                     modifier = Modifier
-                        .weight(1f)
-                        .clickable { onViewAction(MainViewAction.SelectChoice(id = choice.id)) }
+                        .fillMaxWidth()
+                        .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
                         .background(AppTheme.colors.background)
                         .padding(AppTheme.dimensions.paddingS)
                 )
+                TimelineCanvas(
+                    state = state,
+                    onViewAction = onViewAction,
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+            ) {
+                (0 until state.actions.size step 2)
+                    .map { index -> state.actions[index] to state.actions.getOrNull(index + 1) }
+                    .forEach { (startAction, endAction) ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
+                        ) {
+                            ActionItem(
+                                model = startAction,
+                                modifier = Modifier.let { modifier ->
+                                    if (endAction == null) {
+                                        modifier.fillMaxWidth()
+                                    } else {
+                                        modifier
+                                    }
+                                        .weight(1f)
+                                        .clickable { onViewAction(MainViewAction.SelectAction(id = startAction.id)) }
+                                },
+                            )
+                            if (endAction != null) {
+                                ActionItem(
+                                    model = endAction,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { onViewAction(MainViewAction.SelectAction(id = endAction.id)) }
+                                )
+                            }
+
+                        }
+                    }
+            }
+
+            Text(
+                text = state.plot.text,
+                textAlign = TextAlign.Start,
+                style = AppTheme.typography.body,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AppTheme.colors.backgroundLight)
+                    .padding(AppTheme.dimensions.paddingS),
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS)
+            ) {
+                state.plot.choices.forEach { choice ->
+                    Text(
+                        text = choice.text,
+                        style = AppTheme.typography.bodyTitle,
+                        textAlign = TextAlign.Center,
+                        color = AppTheme.colors.textLight,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onViewAction(MainViewAction.SelectChoice(id = choice.id)) }
+                            .background(AppTheme.colors.background)
+                            .padding(AppTheme.dimensions.paddingS)
+                    )
+                }
             }
         }
     }
+
 
 }
 

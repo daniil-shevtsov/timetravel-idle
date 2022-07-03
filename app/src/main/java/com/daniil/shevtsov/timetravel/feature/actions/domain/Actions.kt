@@ -19,7 +19,7 @@ fun createInitialActions() = listOf(
         title = "Earn money",
         requiredTime = 5L.seconds,
         requiredTags = listOf(
-            Tags.WorldState.FunctioningSociety.tag.id,
+            Tags.Society.Functioning.tag.id,
             Tags.PlayerJob.Employed.tag.id,
         ),
         resourceChanges = resourceChanges(
@@ -42,5 +42,5 @@ fun createInitialActions() = listOf(
         resourceChanges = resourceChanges(
             resourceChange(id = ResourceId.NuclearWaste, change = 1f),
         )
-    )
+    ),
 )

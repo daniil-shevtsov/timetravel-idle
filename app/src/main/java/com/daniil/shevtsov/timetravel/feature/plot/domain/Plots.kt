@@ -24,7 +24,12 @@ fun createInitialPlots() = listOf(
                 id = ChoiceId(2L),
                 text = "Cause nuclear apocalypse",
                 destinationPlotId = PlotId(3L),
-            )
+            ),
+            choice(
+                id = ChoiceId(3L),
+                text = "Cause post-apocalypse",
+                destinationPlotId = PlotId(4L),
+            ),
         )
     ),
     plot(
@@ -40,7 +45,16 @@ fun createInitialPlots() = listOf(
         text = "The world is a nuclear wasteland, there were no survivors.",
         tagChanges = tagChanges(
             tagChange(id = Tags.WorldState.NuclearWasteland.tag.id, change = Change.Add),
-            tagChange(id = Tags.WorldState.FunctioningSociety.tag.id, change = Change.Remove),
+            tagChange(id = Tags.Society.Functioning.tag.id, change = Change.Remove),
+        )
+    ),
+    plot(
+        id = PlotId(4L),
+        text = "Most of the world population went extinct, but there are some survivors.",
+        tagChanges = tagChanges(
+            tagChange(id = Tags.WorldState.PostApocalypse.tag.id, change = Change.Add),
+            tagChange(id = Tags.Society.Functioning.tag.id, change = Change.Remove),
+            tagChange(id = Tags.Society.PostApocalyptic.tag.id, change = Change.Add),
         )
     ),
 )
