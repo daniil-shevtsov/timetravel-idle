@@ -8,9 +8,7 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
-import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
-import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
-import com.daniil.shevtsov.timetravel.feature.tags.domain.tagsToAdd
+import com.daniil.shevtsov.timetravel.feature.tags.domain.*
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -84,11 +82,15 @@ class MainFunctionalCoreTest {
     }
 
     @Test
-    fun `should add tag when plot selected`() {
-        val tagToAdd = tag(id = TagId(1L), name = "tag")
+    fun `should update tags when plot selected`() {
+        val tagToAdd = tag(id = TagId(1L), name = "tag to add")
+        val tagToRemove = tag(id = TagId(2L), name = "tag to remove")
         val plotToSelect = plot(
             id = PlotId(1L),
-            tagChanges = tagsToAdd(listOf(tagToAdd.id))
+            tagChanges = tagChanges(
+                tagChange(id = tagToAdd.id, change = Change.Add),
+                tagChange(id = tagToRemove.id, change = Change.Remove),
+            )
         )
         val choiceToSelect = choice(
             id = ChoiceId(1L),
@@ -107,7 +109,13 @@ class MainFunctionalCoreTest {
                     initialPlot,
                     plotToSelect,
                 ),
-                allTags = listOf(tagToAdd),
+                presentTags = listOf(
+                    tagToRemove.id
+                ),
+                allTags = listOf(
+                    tagToAdd,
+                    tagToRemove,
+                ),
             ),
             viewAction = MainViewAction.SelectChoice(id = choiceToSelect.id)
         )

@@ -42,7 +42,7 @@ fun selectChoice(
     val newPlot =
         state.plots.find { plot -> plot.id == selectedChoice.destinationPlotId } ?: return state
     val newTags =
-        (state.presentTags + newPlot.tagChanges.filterValues { it == Change.Add }.keys).toSet()
+        (state.presentTags - newPlot.tagChanges.filterValues { it == Change.Remove }.keys + newPlot.tagChanges.filterValues { it == Change.Add }.keys).toSet()
             .toList()
     return state.copy(
         plot = newPlot,
