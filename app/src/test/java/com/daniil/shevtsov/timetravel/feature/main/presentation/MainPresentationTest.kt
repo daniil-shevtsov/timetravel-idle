@@ -18,9 +18,9 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
+import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.TagId
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.tag
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel

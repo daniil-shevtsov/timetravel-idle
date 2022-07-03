@@ -1,7 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.actions.domain
 
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.Tags
+import com.daniil.shevtsov.timetravel.feature.tags.domain.Tags
 import kotlin.time.Duration.Companion.seconds
 
 fun createInitialActions() = listOf(

@@ -1,6 +1,6 @@
 package com.daniil.shevtsov.timetravel.feature.actions.domain
 
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.TagId
+import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
 import kotlin.time.Duration
 
 data class Action(

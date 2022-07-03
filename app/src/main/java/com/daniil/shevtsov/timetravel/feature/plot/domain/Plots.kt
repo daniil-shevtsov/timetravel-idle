@@ -1,6 +1,6 @@
 package com.daniil.shevtsov.timetravel.feature.plot.domain
 
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.Tags
+import com.daniil.shevtsov.timetravel.feature.tags.domain.Tags
 
 fun createInitialPlots() = listOf(
     plot(

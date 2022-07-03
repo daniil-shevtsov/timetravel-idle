@@ -13,8 +13,8 @@ import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
 import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.tags.domain.createAllTags
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.createAllTags
 import org.koin.core.Koin
 import timber.log.Timber
 import javax.inject.Inject

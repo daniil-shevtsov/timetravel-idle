@@ -8,9 +8,9 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
+import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
+import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.TagId
-import com.daniil.shevtsov.timetravel.feature.timeline.domain.tag
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.timeMoment

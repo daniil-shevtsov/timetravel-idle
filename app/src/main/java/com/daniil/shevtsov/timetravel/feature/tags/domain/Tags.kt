@@ -1,4 +1,4 @@
-package com.daniil.shevtsov.timetravel.feature.timeline.domain
+package com.daniil.shevtsov.timetravel.feature.tags.domain
 
 object Tags {
     val nuclearWasteland = Tag(
