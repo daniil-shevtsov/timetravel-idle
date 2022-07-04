@@ -10,6 +10,8 @@ import com.daniil.shevtsov.timetravel.feature.actions.domain.createInitialAction
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
+import com.daniil.shevtsov.timetravel.feature.location.domain.Locations
+import com.daniil.shevtsov.timetravel.feature.location.domain.createAllLocations
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
 import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
@@ -44,6 +46,8 @@ class TimeTravelGameApplication : Application() {
                     presentTags = createInitialPresentTags(),
                     actions = createInitialActions(),
                     timeMoments = emptyList(),
+                    allLocations = createAllLocations(),
+                    currentLocationId = Locations.researchLab.id,
                 )
             )
     }

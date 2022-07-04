@@ -5,6 +5,8 @@ import com.daniil.shevtsov.timetravel.core.domain.balanceConfig
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
+import com.daniil.shevtsov.timetravel.feature.location.domain.Location
+import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
@@ -28,6 +30,8 @@ data class GameState(
     val allTags: List<Tag>,
     val presentTags: List<TagId>,
     val timeMoments: List<TimeMoment>,
+    val allLocations: List<Location>,
+    val currentLocationId: LocationId,
     val currentMomentId: TimeMomentId? = null,
 )
 
@@ -44,6 +48,8 @@ fun gameState(
     presentTags: List<TagId> = emptyList(),
     actions: List<Action> = emptyList(),
     timeMoments: List<TimeMoment> = emptyList(),
+    allLocations: List<Location> = emptyList(),
+    currentLocationId: LocationId = LocationId(0L),
     lastTimeMomentId: TimeMomentId? = null,
 ) = GameState(
     balanceConfig = balanceConfig,
@@ -58,5 +64,7 @@ fun gameState(
     allTags = allTags,
     presentTags = presentTags,
     timeMoments = timeMoments,
+    allLocations = allLocations,
+    currentLocationId = currentLocationId,
     currentMomentId = lastTimeMomentId,
 )
