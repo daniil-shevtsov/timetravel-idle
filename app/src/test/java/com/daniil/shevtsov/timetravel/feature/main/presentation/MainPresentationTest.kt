@@ -209,7 +209,7 @@ class MainPresentationTest {
     }
 
     @Test
-    fun `should form expanded location view state`() {
+    fun `should form location view state`() {
         val selectedLocation = location(
             id = LocationId(1L),
             title = "lol",
@@ -219,7 +219,10 @@ class MainPresentationTest {
             listOf(selectedLocation) + listOf(location(id = LocationId(2L), title = "cheburek"))
 
         val viewState = mapMainViewState(
-            state = gameState()
+            state = gameState(
+                allLocations = locations,
+                currentLocationId = selectedLocation.id,
+            )
         )
 
         assertThat(viewState)
@@ -230,12 +233,14 @@ class MainPresentationTest {
                 prop(LocationViewState::selector).all {
                     prop(SelectorViewState::isExpanded).isTrue()
                     prop(SelectorViewState::selectedItem)
+                        .isNotNull()
                         .prop(SelectorModel::id)
-                        .prop(SelectorId::id)
-                        .isEqualTo(selectedLocation.id.id)
+                        .prop(SelectorId::raw)
+                        .isEqualTo(selectedLocation.id.raw)
                     prop(SelectorViewState::items)
                         .extracting(SelectorModel::id, SelectorModel::title)
-                        .containsAll(locations.map { SelectorId(it.id.id) to it.title })
+                        .containsAll(*locations.map { SelectorId(it.id.raw) to it.title }
+                            .toTypedArray())
                 }
             }
     }

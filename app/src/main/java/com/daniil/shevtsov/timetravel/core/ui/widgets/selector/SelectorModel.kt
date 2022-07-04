@@ -14,4 +14,4 @@ fun selectorModel(
 )
 
 @JvmInline
-value class SelectorId(val id: Long)
+value class SelectorId(val raw: Long)

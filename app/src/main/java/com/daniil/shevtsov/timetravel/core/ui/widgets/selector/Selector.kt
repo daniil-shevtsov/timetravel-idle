@@ -43,7 +43,7 @@ fun Selector(
         )
         Box(modifier = modifier.weight(1f)) {
             Text(
-                text = state.selectedItem.title,
+                text = state.selectedItem?.title ?: "NOT SELECTED",
                 style = AppTheme.typography.body,
                 color = AppTheme.colors.textDark,
                 modifier = modifier

@@ -17,4 +17,4 @@ fun location(
 )
 
 @JvmInline
-value class LocationId(val id: Long)
+value class LocationId(val raw: Long)

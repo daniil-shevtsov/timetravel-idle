@@ -53,13 +53,23 @@ fun mapMainViewState(
         ),
         location = LocationViewState(
             selector = SelectorViewState(
-                items = emptyList(),
-                selectedItem = SelectorModel(
-                    SelectorId(0L), ""
-                ),
+                items = state.allLocations.map {
+                    SelectorModel(
+                        id = SelectorId(it.id.raw),
+                        title = it.title,
+                    )
+                },
+                selectedItem = (state.allLocations.find { it.id == state.currentLocationId }
+                    ?: state.allLocations.firstOrNull())
+                    ?.let {
+                        SelectorModel(
+                            id = SelectorId(it.id.raw),
+                            title = it.title,
+                        )
+                    },
                 isExpanded = true,
             ),
-            description = ""
+            description = state.allLocations.find { it.id == state.currentLocationId }?.description.orEmpty(),
         )
     )
 }
