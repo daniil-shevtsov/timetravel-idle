@@ -17,6 +17,8 @@ import com.daniil.shevtsov.timetravel.core.ui.widgets.MyButton
 import com.daniil.shevtsov.timetravel.core.ui.widgets.Pane
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
+import com.daniil.shevtsov.timetravel.feature.location.view.LocationComposable
+import com.daniil.shevtsov.timetravel.feature.location.view.locationPreviewData
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
@@ -65,7 +67,8 @@ fun MainPreview() {
                 ActionModel(id = ActionId(1L), title = "Do Kek multiline very long"),
                 ActionModel(id = ActionId(2L), title = "Do Cheburek"),
             ),
-            timeTravel = timeTravelStatePreviewData()
+            timeTravel = timeTravelStatePreviewData(),
+            location = locationPreviewData(),
         ),
         onViewAction = {},
     )
@@ -138,6 +141,8 @@ fun Content(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
             ) {
+                LocationComposable(state.location)
+
                 Text(
                     text = "Register time point",
                     style = AppTheme.typography.bodyTitle,

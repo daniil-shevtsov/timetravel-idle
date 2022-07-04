@@ -1,8 +1,12 @@
 package com.daniil.shevtsov.timetravel.feature.main.presentation
 
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorId
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorModel
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorViewState
 import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
+import com.daniil.shevtsov.timetravel.feature.location.presentation.LocationViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
@@ -46,6 +50,16 @@ fun mapMainViewState(
                 )
             },
             lastSelectedMomentId = state.currentMomentId
+        ),
+        location = LocationViewState(
+            selector = SelectorViewState(
+                items = emptyList(),
+                selectedItem = SelectorModel(
+                    SelectorId(0L), ""
+                ),
+                isExpanded = true,
+            ),
+            description = ""
         )
     )
 }

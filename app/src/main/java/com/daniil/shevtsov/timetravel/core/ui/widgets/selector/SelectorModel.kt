@@ -5,5 +5,13 @@ data class SelectorModel(
     val title: String,
 )
 
+fun selectorModel(
+    id: SelectorId = SelectorId(0L),
+    title: String = "",
+) = SelectorModel(
+    id = id,
+    title = title,
+)
+
 @JvmInline
 value class SelectorId(val id: Long)

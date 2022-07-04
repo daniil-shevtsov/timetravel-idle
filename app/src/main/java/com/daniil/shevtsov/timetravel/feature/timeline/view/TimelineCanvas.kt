@@ -97,7 +97,7 @@ fun TimelineCanvas(
             .background(AppTheme.colors.backgroundDarkest)
             .horizontalScroll(rememberScrollState())
             .width(width)
-            .height(300.dp) //TODO: Add vertical scroll
+            .height(180.dp) //TODO: Add vertical scroll
             .pointerInput(timelineState.moments) {
                 detectTapGestures(
                     onTap = { tapOffset ->
