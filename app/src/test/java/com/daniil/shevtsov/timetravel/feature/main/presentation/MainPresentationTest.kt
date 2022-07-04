@@ -3,12 +3,18 @@ package com.daniil.shevtsov.timetravel.feature.main.presentation
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorId
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorModel
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorViewState
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.domain.action
 import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
 import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChanges
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
+import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
+import com.daniil.shevtsov.timetravel.feature.location.domain.location
+import com.daniil.shevtsov.timetravel.feature.location.presentation.LocationViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
@@ -200,6 +206,38 @@ class MainPresentationTest {
                 TimeMomentId(3L) to listOf(TimeMomentId(1L)),
                 TimeMomentId(4L) to listOf(TimeMomentId(3L)),
             )
+    }
+
+    @Test
+    fun `should form expanded location view state`() {
+        val selectedLocation = location(
+            id = LocationId(1L),
+            title = "lol",
+            description = "kek",
+        )
+        val locations =
+            listOf(selectedLocation) + listOf(location(id = LocationId(2L), title = "cheburek"))
+
+        val viewState = mapMainViewState(
+            state = gameState()
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::location)
+            .all {
+                prop(LocationViewState::description).isEqualTo(selectedLocation.description)
+                prop(LocationViewState::selector).all {
+                    prop(SelectorViewState::isExpanded).isTrue()
+                    prop(SelectorViewState::selectedItem)
+                        .prop(SelectorModel::id)
+                        .prop(SelectorId::id)
+                        .isEqualTo(selectedLocation.id.id)
+                    prop(SelectorViewState::items)
+                        .extracting(SelectorModel::id, SelectorModel::title)
+                        .containsAll(locations.map { SelectorId(it.id.id) to it.title })
+                }
+            }
     }
 
 }
