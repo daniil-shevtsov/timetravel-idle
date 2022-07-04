@@ -119,9 +119,6 @@ dependencies {
         testImplementation(assertk)
         testImplementation(coroutinesTest)
         testImplementation(jupiter)
-        testImplementation(mockk)
-        testImplementation(mockkAgent)
-//        testImplementation(mockkCommon)
         testImplementation(turbine)
     }
 }

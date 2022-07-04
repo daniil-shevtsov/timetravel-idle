@@ -14,7 +14,6 @@ const val dagger = "2.42"
 
 const val jupiter = "5.7.2"
 const val junit = "4.13"
-const val mockk = "1.11.0"
 
 const val kBigNum = "2.2.0"
 
@@ -117,10 +116,6 @@ object Deps {
 
         const val jupiter = "org.junit.jupiter:junit-jupiter:${Versions.jupiter}"
         const val junit = "junit:junit:${Versions.junit}"
-
-        const val mockk = "io.mockk:mockk:${Versions.mockk}"
-        const val mockkCommon = "io.mockk:mockk-common:${Versions.mockk}"
-        const val mockkAgent = "io.mockk:mockk-agent-jvm:${Versions.mockk}"
 
         const val turbine = "app.cash.turbine:turbine:${Versions.turbine}"
         const val coroutinesTest =
