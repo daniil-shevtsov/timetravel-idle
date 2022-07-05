@@ -67,7 +67,7 @@ fun Selector(
                     ) {
                         Text(
                             text = item.title,
-                            style = AppTheme.typography.title,
+                            style = AppTheme.typography.body,
                             color = AppTheme.colors.textDark
                         )
                     }

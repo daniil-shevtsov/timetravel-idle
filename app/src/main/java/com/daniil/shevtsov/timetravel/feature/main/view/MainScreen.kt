@@ -141,7 +141,10 @@ fun Content(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
             ) {
-                LocationComposable(state.location)
+                LocationComposable(
+                    state = state.location,
+                    onViewAction = onViewAction,
+                )
 
                 Text(
                     text = "Register time point",
