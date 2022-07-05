@@ -33,8 +33,18 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        is MainViewAction.SelectLocation -> selectLocation(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
+}
+
+fun selectLocation(state: GameState, viewAction: MainViewAction.SelectLocation): GameState {
+    return state.copy(
+        currentLocationId = viewAction.id,
+    )
 }
 
 fun selectChoice(

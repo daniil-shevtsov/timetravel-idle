@@ -9,6 +9,8 @@ import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedState
 import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedStates
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
+import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
+import com.daniil.shevtsov.timetravel.feature.location.domain.location
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
 import com.daniil.shevtsov.timetravel.feature.tags.domain.*
@@ -306,6 +308,25 @@ class MainFunctionalCoreTest {
         assertThat(state)
             .prop(GameState::selectorExpandedStates)
             .contains(SelectorKey.Location, false)
+    }
+
+    @Test
+    fun `should select location when clicked in selector`() {
+        val selectedLocation = location(id = LocationId(1L))
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                allLocations = listOf(
+                    selectedLocation,
+                    location(id = LocationId(2L)),
+                )
+            ),
+            viewAction = MainViewAction.SelectLocation(id = selectedLocation.id)
+        )
+
+        assertThat(state)
+            .prop(GameState::currentLocationId)
+            .isEqualTo(selectedLocation.id)
     }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
