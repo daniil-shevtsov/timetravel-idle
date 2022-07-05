@@ -109,7 +109,7 @@ fun Content(
             .background(AppTheme.colors.backgroundDark)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingM),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
             modifier = Modifier
                 .heightIn(max = maxHeight)
                 .verticalScroll(rememberScrollState())
@@ -246,7 +246,7 @@ fun WithTitle(
     ) {
         Text(
             text = title,
-            style = AppTheme.typography.title,
+            style = AppTheme.typography.subtitle,
             color = AppTheme.colors.textLight,
         )
         content()

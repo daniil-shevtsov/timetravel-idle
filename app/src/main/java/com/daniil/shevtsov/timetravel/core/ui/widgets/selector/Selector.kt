@@ -39,12 +39,12 @@ fun Selector(
         horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingM)
     ) {
         Text(
-            modifier = modifier.weight(1f),
+            modifier = Modifier,
             text = title,
-            style = AppTheme.typography.subtitle,
+            style = AppTheme.typography.bodyTitle,
             color = AppTheme.colors.textLight
         )
-        Box(modifier = modifier.weight(1f)) {
+        Box(modifier = Modifier.weight(1f).width(IntrinsicSize.Max)) {
             Text(
                 text = state.selectedItem?.title ?: "NOT SELECTED",
                 style = AppTheme.typography.body,
@@ -57,7 +57,7 @@ fun Selector(
             )
             DropdownMenu(
                 expanded = state.isExpanded,
-                modifier = modifier.wrapContentHeight(),
+                modifier = Modifier.wrapContentHeight(),
                 onDismissRequest = { onExpandChange() }) {
                 state.items.forEach { item ->
                     DropdownMenuItem(
