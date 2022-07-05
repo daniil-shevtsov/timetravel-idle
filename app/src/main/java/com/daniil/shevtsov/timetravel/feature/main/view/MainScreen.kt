@@ -174,7 +174,7 @@ fun Content(
                 style = AppTheme.typography.body,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(AppTheme.colors.backgroundLight)
+                    .background(AppTheme.colors.backgroundText)
                     .padding(AppTheme.dimensions.paddingS),
             )
             Pane(items = state.plot.choices) { item, modifier ->
