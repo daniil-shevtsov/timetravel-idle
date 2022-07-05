@@ -34,7 +34,7 @@ import kotlin.math.sqrt
 
 @Preview(
     widthDp = 320,
-    heightDp = 734,
+    heightDp = 1034,
 )
 @Composable
 fun MainPreview() {
@@ -109,7 +109,7 @@ fun Content(
             .background(AppTheme.colors.backgroundDark)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingM),
             modifier = Modifier
                 .heightIn(max = maxHeight)
                 .verticalScroll(rememberScrollState())
@@ -121,16 +121,16 @@ fun Content(
                 state = state.location,
                 onViewAction = onViewAction,
             )
-            TimelinePane(
-                state = state.timeTravel,
-                onViewAction = onViewAction,
-            )
             ActionsPane(
                 state = state,
                 onViewAction = onViewAction,
             )
             PlotPane(
                 state = state.plot,
+                onViewAction = onViewAction,
+            )
+            TimelinePane(
+                state = state.timeTravel,
                 onViewAction = onViewAction,
             )
         }
@@ -142,23 +142,34 @@ fun Content(
 @Composable
 private fun PlotPane(
     state: PlotViewState,
-    onViewAction: (MainViewAction) -> Unit
+    onViewAction: (MainViewAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = state.text,
-        textAlign = TextAlign.Start,
-        style = AppTheme.typography.body,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.backgroundText)
-            .padding(AppTheme.dimensions.paddingS),
-    )
-    Pane(items = state.choices) { item, modifier ->
-        MyButton(
-            text = item.text,
-            onClick = { onViewAction(MainViewAction.SelectChoice(id = item.id)) },
-            modifier = modifier
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
+        modifier = modifier
+    ) {
+        Text(
+            text = "Plot",
+            style = AppTheme.typography.title,
+            color = AppTheme.colors.textLight,
         )
+        Text(
+            text = state.text,
+            textAlign = TextAlign.Start,
+            style = AppTheme.typography.body,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(AppTheme.colors.backgroundText)
+                .padding(AppTheme.dimensions.paddingS),
+        )
+        Pane(items = state.choices) { item, modifier ->
+            MyButton(
+                text = item.text,
+                onClick = { onViewAction(MainViewAction.SelectChoice(id = item.id)) },
+                modifier = modifier
+            )
+        }
     }
 }
 
@@ -166,22 +177,33 @@ private fun PlotPane(
 private fun TimelinePane(
     state: TimeTravelViewState,
     onViewAction: (MainViewAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = "Register time point",
-        style = AppTheme.typography.bodyTitle,
-        textAlign = TextAlign.Center,
-        color = AppTheme.colors.textLight,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
-            .background(AppTheme.colors.background)
-            .padding(AppTheme.dimensions.paddingS)
-    )
-    TimelineCanvas(
-        state = state,
-        onViewAction = onViewAction,
-    )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
+        modifier = modifier
+    ) {
+        Text(
+            text = "Timeline",
+            style = AppTheme.typography.title,
+            color = AppTheme.colors.textLight,
+        )
+        Text(
+            text = "Register time point",
+            style = AppTheme.typography.bodyTitle,
+            textAlign = TextAlign.Center,
+            color = AppTheme.colors.textLight,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
+                .background(AppTheme.colors.background)
+                .padding(AppTheme.dimensions.paddingS)
+        )
+        TimelineCanvas(
+            state = state,
+            onViewAction = onViewAction,
+        )
+    }
 }
 
 @Composable
@@ -189,21 +211,31 @@ private fun ResourcesPane(
     state: ResourcesViewState,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.width(IntrinsicSize.Max)) {
-        (listOf(state.passedTime) + state.resources).forEach { resource ->
-            Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
-                Text(
-                    text = resource.title,
-                    color = AppTheme.colors.textLight,
-                    style = AppTheme.typography.bodyTitle,
-                )
-                Text(
-                    text = resource.text,
-                    textAlign = TextAlign.End,
-                    color = AppTheme.colors.textLight,
-                    style = AppTheme.typography.body,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
+        modifier = modifier
+    ) {
+        Text(
+            text = "Resources",
+            style = AppTheme.typography.title,
+            color = AppTheme.colors.textLight,
+        )
+        Column(modifier = modifier.width(IntrinsicSize.Max)) {
+            (listOf(state.passedTime) + state.resources).forEach { resource ->
+                Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
+                    Text(
+                        text = resource.title,
+                        color = AppTheme.colors.textLight,
+                        style = AppTheme.typography.bodyTitle,
+                    )
+                    Text(
+                        text = resource.text,
+                        textAlign = TextAlign.End,
+                        color = AppTheme.colors.textLight,
+                        style = AppTheme.typography.body,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }
@@ -212,14 +244,25 @@ private fun ResourcesPane(
 @Composable
 private fun ActionsPane(
     state: MainViewState.Content,
-    onViewAction: (MainViewAction) -> Unit
+    onViewAction: (MainViewAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Pane(items = state.actions) { item: ActionModel, modifier ->
-        MyButton(
-            text = item.title,
-            onClick = { onViewAction(MainViewAction.SelectAction(id = item.id)) },
-            modifier = modifier
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
+        modifier = modifier
+    ) {
+        Text(
+            text = "Actions",
+            style = AppTheme.typography.title,
+            color = AppTheme.colors.textLight,
         )
+        Pane(items = state.actions) { item: ActionModel, modifier ->
+            MyButton(
+                text = item.title,
+                onClick = { onViewAction(MainViewAction.SelectAction(id = item.id)) },
+                modifier = modifier
+            )
+        }
     }
 }
 
