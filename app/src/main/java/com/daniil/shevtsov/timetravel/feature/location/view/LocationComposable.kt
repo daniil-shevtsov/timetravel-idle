@@ -16,6 +16,7 @@ import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.selectorPreviewDa
 import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
 import com.daniil.shevtsov.timetravel.feature.location.presentation.LocationViewState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.main.view.WithTitle
 
 @Preview
 @Composable
@@ -32,26 +33,29 @@ fun LocationComposable(
     onViewAction: (MainViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
-        modifier = modifier,
-    ) {
-        Selector(
-            state = state.selector,
-            onSelected = { selectorId ->
-                onViewAction(MainViewAction.SelectLocation(id = LocationId(selectorId.raw)))
-            },
-            onExpandChange = { onViewAction(MainViewAction.ToggleExpanded(key = SelectorKey.Location)) }
-        )
-        Text(
-            text = state.description,
-            style = AppTheme.typography.body,
-            color = AppTheme.colors.textDark,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(AppTheme.colors.backgroundText)
-                .padding(AppTheme.dimensions.paddingXS)
-        )
+    WithTitle(title = "Location") {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
+            modifier = modifier,
+        ) {
+            Selector(
+                state = state.selector,
+                title = "Current:",
+                onSelected = { selectorId ->
+                    onViewAction(MainViewAction.SelectLocation(id = LocationId(selectorId.raw)))
+                },
+                onExpandChange = { onViewAction(MainViewAction.ToggleExpanded(key = SelectorKey.Location)) }
+            )
+            Text(
+                text = state.description,
+                style = AppTheme.typography.body,
+                color = AppTheme.colors.textDark,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AppTheme.colors.backgroundText)
+                    .padding(AppTheme.dimensions.paddingXS)
+            )
+        }
     }
 }
 

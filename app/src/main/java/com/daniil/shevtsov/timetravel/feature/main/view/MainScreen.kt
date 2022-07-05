@@ -145,15 +145,7 @@ private fun PlotPane(
     onViewAction: (MainViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
-        modifier = modifier
-    ) {
-        Text(
-            text = "Plot",
-            style = AppTheme.typography.title,
-            color = AppTheme.colors.textLight,
-        )
+    WithTitle(title = "Plot", modifier = modifier) {
         Text(
             text = state.text,
             textAlign = TextAlign.Start,
@@ -179,15 +171,7 @@ private fun TimelinePane(
     onViewAction: (MainViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
-        modifier = modifier
-    ) {
-        Text(
-            text = "Timeline",
-            style = AppTheme.typography.title,
-            color = AppTheme.colors.textLight,
-        )
+    WithTitle(title = "Timeline", modifier = modifier) {
         Text(
             text = "Register time point",
             style = AppTheme.typography.bodyTitle,
@@ -211,15 +195,7 @@ private fun ResourcesPane(
     state: ResourcesViewState,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
-        modifier = modifier
-    ) {
-        Text(
-            text = "Resources",
-            style = AppTheme.typography.title,
-            color = AppTheme.colors.textLight,
-        )
+    WithTitle(title = "Resources", modifier = modifier) {
         Column(modifier = modifier.width(IntrinsicSize.Max)) {
             (listOf(state.passedTime) + state.resources).forEach { resource ->
                 Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
@@ -247,15 +223,7 @@ private fun ActionsPane(
     onViewAction: (MainViewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
-        modifier = modifier
-    ) {
-        Text(
-            text = "Actions",
-            style = AppTheme.typography.title,
-            color = AppTheme.colors.textLight,
-        )
+    WithTitle(title = "Actions", modifier = modifier) {
         Pane(items = state.actions) { item: ActionModel, modifier ->
             MyButton(
                 text = item.title,
@@ -263,6 +231,25 @@ private fun ActionsPane(
                 modifier = modifier
             )
         }
+    }
+}
+
+@Composable
+fun WithTitle(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
+        modifier = modifier
+    ) {
+        Text(
+            text = title,
+            style = AppTheme.typography.title,
+            color = AppTheme.colors.textLight,
+        )
+        content()
     }
 }
 

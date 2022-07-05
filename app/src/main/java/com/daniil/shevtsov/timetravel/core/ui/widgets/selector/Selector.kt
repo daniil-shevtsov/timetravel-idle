@@ -18,6 +18,7 @@ import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 fun SelectorPreview() {
     Selector(
         state = selectorPreviewData(),
+        title = "Lol:",
         onSelected = {},
         onExpandChange = {},
     )
@@ -26,6 +27,7 @@ fun SelectorPreview() {
 @Composable
 fun Selector(
     state: SelectorViewState,
+    title: String,
     onSelected: (id: SelectorId) -> Unit,
     onExpandChange: () -> Unit,
     modifier: Modifier = Modifier,
@@ -38,7 +40,7 @@ fun Selector(
     ) {
         Text(
             modifier = modifier.weight(1f),
-            text = "Current location:",
+            text = title,
             style = AppTheme.typography.subtitle,
             color = AppTheme.colors.textLight
         )
