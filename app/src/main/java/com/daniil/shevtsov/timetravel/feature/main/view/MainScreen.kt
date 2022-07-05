@@ -7,7 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +28,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceMod
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.timeline.view.TimelineCanvas
 import com.daniil.shevtsov.timetravel.feature.timeline.view.timeTravelStatePreviewData
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -116,78 +116,97 @@ fun Content(
                 .padding(AppTheme.dimensions.paddingS)
 
         ) {
-            Column(modifier = Modifier.width(IntrinsicSize.Max)) {
-                (listOf(state.resources.passedTime) + state.resources.resources).forEach { resource ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
-                        Text(
-                            text = resource.title,
-                            color = AppTheme.colors.textLight,
-                            style = AppTheme.typography.bodyTitle,
-                            modifier = Modifier,
-                        )
-                        Text(
-                            text = resource.text,
-                            textAlign = TextAlign.End,
-                            color = AppTheme.colors.textLight,
-                            style = AppTheme.typography.body,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-            }
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-            ) {
-                LocationComposable(
-                    state = state.location,
-                    onViewAction = onViewAction,
-                )
-
-                Text(
-                    text = "Register time point",
-                    style = AppTheme.typography.bodyTitle,
-                    textAlign = TextAlign.Center,
-                    color = AppTheme.colors.textLight,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
-                        .background(AppTheme.colors.background)
-                        .padding(AppTheme.dimensions.paddingS)
-                )
-                TimelineCanvas(
-                    state = state.timeTravel,
-                    onViewAction = onViewAction,
-                )
-            }
-
+            ResourcesPane(state = state.resources)
+            LocationComposable(
+                state = state.location,
+                onViewAction = onViewAction,
+            )
+            TimelinePane(
+                state = state.timeTravel,
+                onViewAction = onViewAction,
+            )
             ActionsPane(
                 state = state,
                 onViewAction = onViewAction,
             )
-
-            Text(
-                text = state.plot.text,
-                textAlign = TextAlign.Start,
-                style = AppTheme.typography.body,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(AppTheme.colors.backgroundText)
-                    .padding(AppTheme.dimensions.paddingS),
+            PlotPane(
+                state = state.plot,
+                onViewAction = onViewAction,
             )
-            Pane(items = state.plot.choices) { item, modifier ->
-                MyButton(
-                    text = item.text,
-                    onClick = { onViewAction(MainViewAction.SelectChoice(id = item.id)) },
-                    modifier = modifier
-                )
-            }
         }
     }
 
 
+}
+
+@Composable
+private fun PlotPane(
+    state: PlotViewState,
+    onViewAction: (MainViewAction) -> Unit
+) {
+    Text(
+        text = state.text,
+        textAlign = TextAlign.Start,
+        style = AppTheme.typography.body,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(AppTheme.colors.backgroundText)
+            .padding(AppTheme.dimensions.paddingS),
+    )
+    Pane(items = state.choices) { item, modifier ->
+        MyButton(
+            text = item.text,
+            onClick = { onViewAction(MainViewAction.SelectChoice(id = item.id)) },
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun TimelinePane(
+    state: TimeTravelViewState,
+    onViewAction: (MainViewAction) -> Unit,
+) {
+    Text(
+        text = "Register time point",
+        style = AppTheme.typography.bodyTitle,
+        textAlign = TextAlign.Center,
+        color = AppTheme.colors.textLight,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
+            .background(AppTheme.colors.background)
+            .padding(AppTheme.dimensions.paddingS)
+    )
+    TimelineCanvas(
+        state = state,
+        onViewAction = onViewAction,
+    )
+}
+
+@Composable
+private fun ResourcesPane(
+    state: ResourcesViewState,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.width(IntrinsicSize.Max)) {
+        (listOf(state.passedTime) + state.resources).forEach { resource ->
+            Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
+                Text(
+                    text = resource.title,
+                    color = AppTheme.colors.textLight,
+                    style = AppTheme.typography.bodyTitle,
+                )
+                Text(
+                    text = resource.text,
+                    textAlign = TextAlign.End,
+                    color = AppTheme.colors.textLight,
+                    style = AppTheme.typography.body,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
 }
 
 @Composable
