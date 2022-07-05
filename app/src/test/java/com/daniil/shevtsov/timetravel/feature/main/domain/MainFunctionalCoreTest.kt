@@ -4,6 +4,9 @@ import assertk.Assert
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
+import com.daniil.shevtsov.timetravel.core.domain.SelectorKey
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedState
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedStates
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
@@ -270,6 +273,39 @@ class MainFunctionalCoreTest {
                     .contains(expectedNewMomentId to listOf(mainTimelineMoment2.id))
                 prop(GameState::currentMomentId).isEqualTo(expectedNewMomentId)
             }
+    }
+
+    @Test
+    fun `should expand locations when selector clicked and collapsed`() {
+        val state = mainFunctionalCore(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = false)
+                )
+            ),
+            viewAction = MainViewAction.ToggleExpanded(key = SelectorKey.Location)
+        )
+
+        assertThat(state)
+            .prop(GameState::selectorExpandedStates)
+            .contains(SelectorKey.Location, true)
+
+    }
+
+    @Test
+    fun `should collapse locations when selector clicked and expanded`() {
+        val state = mainFunctionalCore(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = true)
+                )
+            ),
+            viewAction = MainViewAction.ToggleExpanded(key = SelectorKey.Location)
+        )
+
+        assertThat(state)
+            .prop(GameState::selectorExpandedStates)
+            .contains(SelectorKey.Location, false)
     }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)

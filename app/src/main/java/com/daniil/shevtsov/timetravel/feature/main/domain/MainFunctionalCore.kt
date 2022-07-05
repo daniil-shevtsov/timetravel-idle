@@ -29,6 +29,10 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        is MainViewAction.ToggleExpanded -> toggleExpanded(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
 }
@@ -121,6 +125,17 @@ fun handleDrawerTabSwitched(
     return state.copy(
         drawerTabs = state.drawerTabs.map { tab ->
             tab.copy(isSelected = tab.id == viewAction.id)
+        }
+    )
+}
+
+private fun toggleExpanded(
+    state: GameState,
+    viewAction: MainViewAction.ToggleExpanded
+): GameState {
+    return state.copy(
+        selectorExpandedStates = state.selectorExpandedStates.toMutableMap().apply {
+            put(viewAction.key, state.selectorExpandedStates[viewAction.key]?.not() ?: false)
         }
     )
 }
