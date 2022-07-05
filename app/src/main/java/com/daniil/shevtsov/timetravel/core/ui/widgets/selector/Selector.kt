@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.daniil.shevtsov.timetravel.core.domain.SelectorId
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 
 @Preview

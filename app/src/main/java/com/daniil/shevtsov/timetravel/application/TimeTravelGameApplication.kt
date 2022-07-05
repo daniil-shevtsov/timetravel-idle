@@ -5,6 +5,7 @@ import com.daniil.shevtsov.timetravel.common.di.initKoin
 import com.daniil.shevtsov.timetravel.core.BalanceConfig
 import com.daniil.shevtsov.timetravel.core.di.DaggerAppComponent
 import com.daniil.shevtsov.timetravel.core.di.koin.appModule
+import com.daniil.shevtsov.timetravel.core.domain.SelectorKey
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.actions.domain.createInitialActions
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
@@ -48,6 +49,7 @@ class TimeTravelGameApplication : Application() {
                     timeMoments = emptyList(),
                     allLocations = createAllLocations(),
                     currentLocationId = Locations.researchLab.id,
+                    selectorExpandedStates = SelectorKey.values().associateWith { false }
                 )
             )
     }

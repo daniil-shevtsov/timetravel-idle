@@ -1,7 +1,9 @@
 package com.daniil.shevtsov.timetravel.feature.coreshell.domain
 
 import com.daniil.shevtsov.timetravel.core.BalanceConfig
+import com.daniil.shevtsov.timetravel.core.domain.SelectorExpandedStates
 import com.daniil.shevtsov.timetravel.core.domain.balanceConfig
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedStates
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
@@ -32,7 +34,8 @@ data class GameState(
     val timeMoments: List<TimeMoment>,
     val allLocations: List<Location>,
     val currentLocationId: LocationId,
-    val currentMomentId: TimeMomentId? = null,
+    val selectorExpandedStates: SelectorExpandedStates,
+    val currentMomentId: TimeMomentId? = null
 )
 
 fun gameState(
@@ -51,6 +54,7 @@ fun gameState(
     allLocations: List<Location> = emptyList(),
     currentLocationId: LocationId = LocationId(0L),
     lastTimeMomentId: TimeMomentId? = null,
+    selectorExpandedStates: SelectorExpandedStates = selectorExpandedStates(),
 ) = GameState(
     balanceConfig = balanceConfig,
     drawerTabs = drawerTabs,
@@ -67,4 +71,5 @@ fun gameState(
     allLocations = allLocations,
     currentLocationId = currentLocationId,
     currentMomentId = lastTimeMomentId,
+    selectorExpandedStates = selectorExpandedStates,
 )

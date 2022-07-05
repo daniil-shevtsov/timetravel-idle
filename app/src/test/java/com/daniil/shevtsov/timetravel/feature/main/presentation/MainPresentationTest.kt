@@ -3,7 +3,10 @@ package com.daniil.shevtsov.timetravel.feature.main.presentation
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
-import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorId
+import com.daniil.shevtsov.timetravel.core.domain.SelectorId
+import com.daniil.shevtsov.timetravel.core.domain.SelectorKey
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedState
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedStates
 import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorModel
 import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorViewState
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
@@ -231,7 +234,6 @@ class MainPresentationTest {
             .all {
                 prop(LocationViewState::description).isEqualTo(selectedLocation.description)
                 prop(LocationViewState::selector).all {
-                    prop(SelectorViewState::isExpanded).isTrue()
                     prop(SelectorViewState::selectedItem)
                         .isNotNull()
                         .prop(SelectorModel::id)
@@ -242,6 +244,46 @@ class MainPresentationTest {
                         .containsAll(*locations.map { SelectorId(it.id.raw) to it.title }
                             .toTypedArray())
                 }
+            }
+    }
+
+    @Test
+    fun `should show expanded location selector`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = true),
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::location)
+            .all {
+                prop(LocationViewState::selector)
+                    .prop(SelectorViewState::isExpanded)
+                    .isTrue()
+            }
+    }
+
+    @Test
+    fun `should show collapsed location selector`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = false),
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::location)
+            .all {
+                prop(LocationViewState::selector)
+                    .prop(SelectorViewState::isExpanded)
+                    .isFalse()
             }
     }
 

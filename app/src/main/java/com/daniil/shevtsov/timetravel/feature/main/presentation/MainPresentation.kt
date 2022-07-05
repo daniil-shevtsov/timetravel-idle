@@ -1,6 +1,7 @@
 package com.daniil.shevtsov.timetravel.feature.main.presentation
 
-import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorId
+import com.daniil.shevtsov.timetravel.core.domain.SelectorId
+import com.daniil.shevtsov.timetravel.core.domain.SelectorKey
 import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorModel
 import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorViewState
 import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
@@ -67,7 +68,7 @@ fun mapMainViewState(
                             title = it.title,
                         )
                     },
-                isExpanded = true,
+                isExpanded = state.selectorExpandedStates[SelectorKey.Location] ?: false,
             ),
             description = state.allLocations.find { it.id == state.currentLocationId }?.description.orEmpty(),
         )
