@@ -1,5 +1,6 @@
 package com.daniil.shevtsov.timetravel.feature.main.presentation
 
+import assertk.Assert
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
@@ -15,6 +16,7 @@ import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
 import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChanges
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
+import com.daniil.shevtsov.timetravel.feature.location.domain.Location
 import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
 import com.daniil.shevtsov.timetravel.feature.location.domain.location
 import com.daniil.shevtsov.timetravel.feature.location.presentation.LocationViewState
@@ -229,20 +231,12 @@ class MainPresentationTest {
         )
 
         assertThat(viewState)
-            .isInstanceOf(MainViewState.Content::class)
-            .prop(MainViewState.Content::location)
+            .propLocationState()
             .all {
                 prop(LocationViewState::description).isEqualTo(selectedLocation.description)
                 prop(LocationViewState::selector).all {
-                    prop(SelectorViewState::selectedItem)
-                        .isNotNull()
-                        .prop(SelectorModel::id)
-                        .prop(SelectorId::raw)
-                        .isEqualTo(selectedLocation.id.raw)
-                    prop(SelectorViewState::items)
-                        .extracting(SelectorModel::id, SelectorModel::title)
-                        .containsAll(*locations.map { SelectorId(it.id.raw) to it.title }
-                            .toTypedArray())
+                    prop(SelectorViewState::selectedItem).isEqualTo(selectedLocation)
+                    prop(SelectorViewState::items).isEqualTo(locations)
                 }
             }
     }
@@ -257,14 +251,7 @@ class MainPresentationTest {
             )
         )
 
-        assertThat(viewState)
-            .isInstanceOf(MainViewState.Content::class)
-            .prop(MainViewState.Content::location)
-            .all {
-                prop(LocationViewState::selector)
-                    .prop(SelectorViewState::isExpanded)
-                    .isTrue()
-            }
+        assertThat(viewState).assertLocationExpanded(expected = true)
     }
 
     @Test
@@ -277,14 +264,29 @@ class MainPresentationTest {
             )
         )
 
-        assertThat(viewState)
-            .isInstanceOf(MainViewState.Content::class)
-            .prop(MainViewState.Content::location)
-            .all {
-                prop(LocationViewState::selector)
-                    .prop(SelectorViewState::isExpanded)
-                    .isFalse()
-            }
+        assertThat(viewState).assertLocationExpanded(expected = false)
     }
+
+    private fun Assert<SelectorModel?>.isEqualTo(location: Location) = isNotNull()
+        .prop(SelectorModel::id)
+        .prop(SelectorId::raw)
+        .isEqualTo(location.id.raw)
+
+    private fun Assert<List<SelectorModel>>.isEqualTo(locations: List<Location>) =
+        extracting(SelectorModel::id, SelectorModel::title)
+            .containsAll(*locations.map { SelectorId(it.id.raw) to it.title }.toTypedArray())
+
+    private fun Assert<MainViewState>.assertLocationExpanded(expected: Boolean) =
+        propLocationState()
+            .prop(LocationViewState::selector)
+            .assertExpanded(expected)
+
+    private fun Assert<SelectorViewState>.assertExpanded(expected: Boolean) =
+        prop(SelectorViewState::isExpanded)
+            .isEqualTo(expected)
+
+    private fun Assert<MainViewState>.propLocationState() =
+        isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::location)
 
 }
