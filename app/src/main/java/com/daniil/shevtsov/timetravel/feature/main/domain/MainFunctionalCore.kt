@@ -4,6 +4,7 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.Change
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -47,9 +48,13 @@ fun mainFunctionalCore(
 }
 
 fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource): GameState {
+    val storageChange = when (viewAction.direction) {
+        TransferDirection.Store -> +1
+        TransferDirection.Take -> -1
+    }
     val newResources = state.resources.map { resource ->
         if (resource.id == viewAction.id) {
-            resource.copy(value = resource.value - 1)
+            resource.copy(value = resource.value - storageChange)
         } else {
             resource
         }
@@ -57,7 +62,7 @@ fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource)
 
     val newStoredResources = state.storedResources.map { storedResource ->
         if (storedResource.id == viewAction.id) {
-            storedResource.copy(current = ResourceValue(storedResource.current.raw + 1))
+            storedResource.copy(current = ResourceValue(storedResource.current.raw + storageChange))
         } else {
             storedResource
         }

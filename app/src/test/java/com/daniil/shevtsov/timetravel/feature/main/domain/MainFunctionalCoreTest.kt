@@ -332,7 +332,7 @@ class MainFunctionalCoreTest {
     }
 
     @Test
-    fun `should store resource from storage when take clicked`() {
+    fun `should store resource when store clicked`() {
         val resource = resource(id = ResourceId.Money, value = 25f)
 
         val state = mainFunctionalCore(
@@ -362,6 +362,41 @@ class MainFunctionalCoreTest {
                     .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
                     .containsExactly(
                         Triple(resource.id, ResourceValue(51f), ResourceValue(100f))
+                    )
+            }
+    }
+
+    @Test
+    fun `should take resource when take clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Take
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 26f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(49f), ResourceValue(100f))
                     )
             }
     }
