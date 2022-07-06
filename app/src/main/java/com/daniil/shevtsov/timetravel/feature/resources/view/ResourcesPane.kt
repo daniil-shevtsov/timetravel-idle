@@ -18,6 +18,7 @@ import com.daniil.shevtsov.timetravel.feature.main.view.WithTitle
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransferDirection
 
 @Preview
 @Composable
@@ -70,10 +71,11 @@ fun ResourcesPane(
                         style = AppTheme.typography.body,
                         modifier = Modifier,
                     )
-                    if(resource.stored != null) {
+                    if (resource.stored != null) {
                         IconButton(
                             onClick = { onTakeResource(resource.id) }, modifier = modifier
-                                .size(16.dp)
+                                .size(16.dp),
+                            enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
@@ -84,7 +86,8 @@ fun ResourcesPane(
                         }
                         IconButton(
                             onClick = { onStoreResource(resource.id) }, modifier = modifier
-                                .size(16.dp)
+                                .size(16.dp),
+                            enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowForward,
