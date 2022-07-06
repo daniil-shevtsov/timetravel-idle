@@ -31,6 +31,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.storedResource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
 import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
@@ -137,6 +138,62 @@ class MainPresentationTest {
             .containsExactly(
                 resourceWithoutStorage.id to null,
                 resourceWithStorage.id to "50.0 / 100.0"
+            )
+    }
+
+    @Test
+    fun `should disable take and store if source is zero`() {
+        val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
+        val validForTake = resource(id = ResourceId.Money, value = 0f)
+        val validForStore = resource(id = ResourceId.TimeCrystal, value = 1f)
+        val validForBoth = resource(id = ResourceId.NuclearWaste, value = 1f)
+        val invalidForStore = resource(id = ResourceId.Caps, value = 1f)
+
+        val viewState = mapMainViewState(
+            state = gameState(
+                resources = listOf(
+                    resourceWithoutStorage,
+                    validForTake,
+                    validForStore,
+                    validForBoth,
+                    invalidForStore,
+                ),
+                storedResources = listOf(
+                    storedResource(
+                        id = validForTake.id,
+                        current = ResourceValue(1f),
+                        max = ResourceValue(100f)
+                    ),
+                    storedResource(
+                        id = validForStore.id,
+                        current = ResourceValue(0f),
+                        max = ResourceValue(100f)
+                    ),
+                    storedResource(
+                        id = validForBoth.id,
+                        current = ResourceValue(1f),
+                        max = ResourceValue(100f)
+                    ),
+                    storedResource(
+                        id = invalidForStore.id,
+                        current = ResourceValue(100f),
+                        max = ResourceValue(100f)
+                    ),
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .extracting(ResourceModel::id, ResourceModel::enabledDirections)
+            .containsExactly(
+                resourceWithoutStorage.id to ValidTransferDirection.None,
+                validForTake.id to ValidTransferDirection.Take,
+                validForStore.id to ValidTransferDirection.Store,
+                validForBoth.id to ValidTransferDirection.Both,
+                invalidForStore.id to ValidTransferDirection.Take,
             )
     }
 

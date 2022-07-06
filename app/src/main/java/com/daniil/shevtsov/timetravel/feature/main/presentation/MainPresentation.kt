@@ -12,10 +12,10 @@ import com.daniil.shevtsov.timetravel.feature.plot.domain.Choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
-import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransferDirection
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -31,13 +31,35 @@ fun mapMainViewState(
         resources = ResourcesViewState(
             passedTime = state.passedTime.toModel(),
             resources = state.resources
-                .filter { resource -> resource.value > 0f }
+                .filter { resource ->
+                    resource.value > 0f || ((state.storedResources.find { it.id == resource.id }?.current?.raw
+                        ?: 0f) > 0f)
+                }
                 .map { resource ->
                     val storedResource = state.storedResources.find { it.id == resource.id }
                     val stored = storedResource?.let { storedResource ->
                         storedResource.current.raw.toString() + " / " + storedResource.max.raw.toString()
                     }
-                    resource.toModel(stored = stored)
+                    val validForTake = storedResource?.let {
+                        storedResource.current.raw > 0f
+                    } ?: false
+                    val validForStore = storedResource?.let {
+                        (resource.value > 0f && storedResource.current.raw < storedResource.max.raw)
+                    } ?: false
+                    with(resource) {
+                        ResourceModel(
+                            id = id,
+                            title = name,
+                            text = value.toString(),
+                            stored = stored,
+                            enabledDirections = when {
+                                validForTake && validForStore -> ValidTransferDirection.Both
+                                validForTake -> ValidTransferDirection.Take
+                                validForStore -> ValidTransferDirection.Store
+                                else -> ValidTransferDirection.None
+                            },
+                        )
+                    }
                 }
         ),
         actions = state.actions
@@ -95,13 +117,6 @@ private fun PassedTime.toModel() = ResourceModel(
     id = ResourceId.Time,
     title = "Passed Time",
     text = value.toString(DurationUnit.SECONDS, decimals = 2)
-)
-
-private fun Resource.toModel(stored: String?) = ResourceModel(
-    id = id,
-    title = name,
-    text = value.toString(),
-    stored = stored,
 )
 
 private fun Action.toModel() = ActionModel(
