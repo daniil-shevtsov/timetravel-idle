@@ -13,6 +13,8 @@ import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
 import com.daniil.shevtsov.timetravel.feature.location.domain.location
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
+import com.daniil.shevtsov.timetravel.feature.resources.domain.*
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.*
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
@@ -327,6 +329,41 @@ class MainFunctionalCoreTest {
         assertThat(state)
             .prop(GameState::currentLocationId)
             .isEqualTo(selectedLocation.id)
+    }
+
+    @Test
+    fun `should store resource from storage when take clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Store
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 24f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(51f), ResourceValue(100f))
+                    )
+            }
     }
 
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)

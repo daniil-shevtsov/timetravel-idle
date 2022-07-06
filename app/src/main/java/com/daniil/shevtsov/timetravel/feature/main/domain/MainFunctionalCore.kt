@@ -3,6 +3,7 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
 import com.daniil.shevtsov.timetravel.feature.tags.domain.Change
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -37,8 +38,34 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        is MainViewAction.TransferResource -> storeResource(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
+}
+
+fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource): GameState {
+    val newResources = state.resources.map { resource ->
+        if (resource.id == viewAction.id) {
+            resource.copy(value = resource.value - 1)
+        } else {
+            resource
+        }
+    }
+
+    val newStoredResources = state.storedResources.map { storedResource ->
+        if (storedResource.id == viewAction.id) {
+            storedResource.copy(current = ResourceValue(storedResource.current.raw + 1))
+        } else {
+            storedResource
+        }
+    }
+    return state.copy(
+        resources = newResources,
+        storedResources = newStoredResources,
+    )
 }
 
 fun selectLocation(state: GameState, viewAction: MainViewAction.SelectLocation): GameState {
