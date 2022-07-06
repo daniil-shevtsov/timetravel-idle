@@ -1,5 +1,8 @@
 package com.daniil.shevtsov.timetravel.feature.resources.domain
 
+@JvmInline
+value class ResourceValue(val raw: Float)
+
 data class Resource(
     val id: ResourceId,
     val name: String,
@@ -23,3 +26,5 @@ fun resource(
     name = name,
     value = value,
 )
+
+
