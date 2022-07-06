@@ -23,6 +23,7 @@ import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.resources.view.ResourcesPane
 import com.daniil.shevtsov.timetravel.feature.resources.view.resourcesPanePreviewData
 import com.daniil.shevtsov.timetravel.feature.timeline.view.TimelineCanvas
@@ -104,8 +105,22 @@ fun Content(
         ) {
             ResourcesPane(
                 state = state.resources,
-                onTakeResource = {},
-                onStoreResource = {},
+                onTakeResource = { resourceId ->
+                    onViewAction(
+                        MainViewAction.TransferResource(
+                            resourceId,
+                            TransferDirection.Take
+                        )
+                    )
+                },
+                onStoreResource = { resourceId ->
+                    onViewAction(
+                        MainViewAction.TransferResource(
+                            resourceId,
+                            TransferDirection.Store
+                        )
+                    )
+                },
             )
             LocationComposable(
                 state = state.location,
