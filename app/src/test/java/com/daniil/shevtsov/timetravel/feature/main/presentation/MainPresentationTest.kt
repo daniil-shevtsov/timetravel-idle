@@ -26,7 +26,9 @@ import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
+import com.daniil.shevtsov.timetravel.feature.resources.domain.storedResource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
@@ -104,6 +106,38 @@ class MainPresentationTest {
             .prop(ResourcesViewState::resources)
             .extracting(ResourceModel::id, ResourceModel::text)
             .containsExactly(ResourceId.Money to "100.0")
+    }
+
+    @Test
+    fun `should show resources storage`() {
+        val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
+        val resourceWithStorage = resource(id = ResourceId.Money, value = 6f)
+
+        val viewState = mapMainViewState(
+            state = gameState(
+                resources = listOf(
+                    resourceWithoutStorage,
+                    resourceWithStorage,
+                ),
+                storedResources = listOf(
+                    storedResource(
+                        id = resourceWithStorage.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f)
+                    )
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .extracting(ResourceModel::id, ResourceModel::stored)
+            .containsExactly(
+                resourceWithoutStorage.id to null,
+                resourceWithStorage.id to "50.0 / 100.0"
+            )
     }
 
     @Test

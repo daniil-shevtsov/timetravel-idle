@@ -32,7 +32,13 @@ fun mapMainViewState(
             passedTime = state.passedTime.toModel(),
             resources = state.resources
                 .filter { resource -> resource.value > 0f }
-                .map { it.toModel() }
+                .map { resource ->
+                    val storedResource = state.storedResources.find { it.id == resource.id }
+                    val stored = storedResource?.let { storedResource ->
+                        storedResource.current.raw.toString() + " / " + storedResource.max.raw.toString()
+                    }
+                    resource.toModel(stored = stored)
+                }
         ),
         actions = state.actions
             .filter { action ->
@@ -91,10 +97,11 @@ private fun PassedTime.toModel() = ResourceModel(
     text = value.toString(DurationUnit.SECONDS, decimals = 2)
 )
 
-private fun Resource.toModel() = ResourceModel(
+private fun Resource.toModel(stored: String?) = ResourceModel(
     id = id,
     title = name,
     text = value.toString(),
+    stored = stored,
 )
 
 private fun Action.toModel() = ActionModel(
