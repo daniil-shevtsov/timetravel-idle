@@ -23,9 +23,8 @@ import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
-import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.resources.view.ResourcesPane
+import com.daniil.shevtsov.timetravel.feature.resources.view.resourcesPanePreviewData
 import com.daniil.shevtsov.timetravel.feature.timeline.view.TimelineCanvas
 import com.daniil.shevtsov.timetravel.feature.timeline.view.timeTravelStatePreviewData
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
@@ -48,20 +47,7 @@ fun MainPreview() {
                     ChoiceModel(id = ChoiceId(3L), text = "Choose something cool"),
                 )
             ),
-            resources = ResourcesViewState(
-                passedTime = ResourceModel(
-                    id = ResourceId.Time,
-                    title = "Passed Time",
-                    text = "5.00 s"
-                ),
-                resources = listOf(
-                    ResourceModel(
-                        id = ResourceId.Money,
-                        title = "Money",
-                        text = "100 $"
-                    )
-                )
-            ),
+            resources = resourcesPanePreviewData(),
             actions = listOf(
                 ActionModel(id = ActionId(0L), title = "Do Lol"),
                 ActionModel(id = ActionId(1L), title = "Do Kek multiline very long"),
@@ -116,7 +102,11 @@ fun Content(
                 .padding(AppTheme.dimensions.paddingS)
 
         ) {
-            ResourcesPane(state = state.resources)
+            ResourcesPane(
+                state = state.resources,
+                onTakeResource = {},
+                onStoreResource = {},
+            )
             LocationComposable(
                 state = state.location,
                 onViewAction = onViewAction,
@@ -187,33 +177,6 @@ private fun TimelinePane(
             state = state,
             onViewAction = onViewAction,
         )
-    }
-}
-
-@Composable
-private fun ResourcesPane(
-    state: ResourcesViewState,
-    modifier: Modifier = Modifier,
-) {
-    WithTitle(title = "Resources", modifier = modifier) {
-        Column(modifier = modifier.width(IntrinsicSize.Max)) {
-            (listOf(state.passedTime) + state.resources).forEach { resource ->
-                Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
-                    Text(
-                        text = resource.title,
-                        color = AppTheme.colors.textLight,
-                        style = AppTheme.typography.bodyTitle,
-                    )
-                    Text(
-                        text = resource.text,
-                        textAlign = TextAlign.End,
-                        color = AppTheme.colors.textLight,
-                        style = AppTheme.typography.body,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
-        }
     }
 }
 
