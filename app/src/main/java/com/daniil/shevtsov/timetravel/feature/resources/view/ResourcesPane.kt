@@ -61,7 +61,7 @@ fun ResourcesPane(
                 ) {
                     Text(
                         text = resource.title,
-                        color =AppTheme.colors.textLight,
+                        color = AppTheme.colors.textLight,
                         style = AppTheme.typography.bodyTitle,
                     )
                     Text(
@@ -80,7 +80,7 @@ fun ResourcesPane(
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
                                 contentDescription = "Back",
-                                modifier = modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxSize(),
                                 tint = AppTheme.colors.iconLight,
                             )
                         }
@@ -92,7 +92,7 @@ fun ResourcesPane(
                             Icon(
                                 imageVector = Icons.Filled.ArrowForward,
                                 contentDescription = "Forward",
-                                modifier = modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxSize(),
                                 tint = AppTheme.colors.iconLight,
                             )
                         }

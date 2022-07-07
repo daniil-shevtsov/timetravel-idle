@@ -7,6 +7,7 @@ import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorViewState
 import com.daniil.shevtsov.timetravel.feature.actions.domain.Action
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
+import com.daniil.shevtsov.timetravel.feature.location.domain.Locations
 import com.daniil.shevtsov.timetravel.feature.location.presentation.LocationViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.Plot
@@ -36,6 +37,7 @@ fun mapMainViewState(
                         ?: 0f) > 0f)
                 }
                 .map { resource ->
+                    val isSpaceOutsideTime = state.currentLocationId == Locations.spaceOutsideTime.id
                     val storedResource = state.storedResources.find { it.id == resource.id }
                     val stored = storedResource?.let { storedResource ->
                         storedResource.current.raw.toString() + " / " + storedResource.max.raw.toString()
@@ -51,8 +53,9 @@ fun mapMainViewState(
                             id = id,
                             title = name,
                             text = value.toString(),
-                            stored = stored,
+                            stored = stored.takeIf { isSpaceOutsideTime },
                             enabledDirections = when {
+                                isSpaceOutsideTime -> ValidTransferDirection.None
                                 validForTake && validForStore -> ValidTransferDirection.Both
                                 validForTake -> ValidTransferDirection.Take
                                 validForStore -> ValidTransferDirection.Store

@@ -18,6 +18,7 @@ import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
 import com.daniil.shevtsov.timetravel.feature.location.domain.Location
 import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
+import com.daniil.shevtsov.timetravel.feature.location.domain.Locations
 import com.daniil.shevtsov.timetravel.feature.location.domain.location
 import com.daniil.shevtsov.timetravel.feature.location.presentation.LocationViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
@@ -110,12 +111,14 @@ class MainPresentationTest {
     }
 
     @Test
-    fun `should show resources storage`() {
+    fun `should show resources storage if location space outside time`() {
         val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
         val resourceWithStorage = resource(id = ResourceId.Money, value = 6f)
 
         val viewState = mapMainViewState(
             state = gameState(
+                allLocations = listOf(Locations.spaceOutsideTime),
+                currentLocationId = Locations.spaceOutsideTime.id,
                 resources = listOf(
                     resourceWithoutStorage,
                     resourceWithStorage,
@@ -141,6 +144,39 @@ class MainPresentationTest {
             )
     }
 
+    @Test
+    fun `should not show resources storage if location not space outside time`() {
+        val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
+        val resourceWithStorage = resource(id = ResourceId.Money, value = 6f)
+        val location = location(id = LocationId(123L))
+        val viewState = mapMainViewState(
+            state = gameState(
+                allLocations = listOf(),
+                currentLocationId = location.id,
+                resources = listOf(
+                    resourceWithoutStorage,
+                    resourceWithStorage,
+                ),
+                storedResources = listOf(
+                    storedResource(
+                        id = resourceWithStorage.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f)
+                    )
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .extracting(ResourceModel::id, ResourceModel::stored)
+            .containsExactly(
+                resourceWithoutStorage.id to null,
+                resourceWithStorage.id to null,
+            )
+    }
     @Test
     fun `should disable take and store if source is zero`() {
         val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
