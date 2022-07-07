@@ -1,5 +1,6 @@
 package com.daniil.shevtsov.timetravel.feature.resources.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,11 +25,30 @@ import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransf
 @Preview
 @Composable
 fun ResourcesPanePreview() {
-    ResourcesPane(
-        state = resourcesPanePreviewData(),
-        onTakeResource = {},
-        onStoreResource = {},
-    )
+    Column {
+        ResourcesPane(
+            state = resourcesPanePreviewData().let { state ->
+                state.copy(
+                    resources = state.resources.map { resource ->
+                        resource.copy(
+                            stored = null,
+                            enabledDirections = ValidTransferDirection.None,
+                        )
+                    }
+                )
+            },
+            modifier = Modifier.background(Color.Black),
+            onTakeResource = {},
+            onStoreResource = {},
+        )
+        ResourcesPane(
+            state = resourcesPanePreviewData(),
+            modifier = Modifier.background(Color.Gray),
+            onTakeResource = {},
+            onStoreResource = {},
+        )
+    }
+
 }
 
 @Composable
@@ -141,6 +162,12 @@ fun resourcesPanePreviewData() = ResourcesViewState(
             title = "Money",
             text = "100 $",
             stored = "75 / 500 $",
+        ),
+        ResourceModel(
+            id = ResourceId.TimeCrystal,
+            title = "Time Crystal",
+            text = "150",
+            stored = "200 / 500 $",
         )
     ),
 )
