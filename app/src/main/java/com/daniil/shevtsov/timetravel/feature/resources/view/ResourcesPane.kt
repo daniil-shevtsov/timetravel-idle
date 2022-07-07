@@ -59,7 +59,6 @@ fun ResourcesPane(
     modifier: Modifier = Modifier,
 ) {
     WithTitle(title = "Resources", modifier = modifier) {
-
         Column(modifier = modifier.width(IntrinsicSize.Max)) {
             Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
                 Text(
@@ -77,75 +76,113 @@ fun ResourcesPane(
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = AppTheme.dimensions.paddingS)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "Inventory",
                     color = AppTheme.colors.textLight,
                     style = AppTheme.typography.bodyTitle,
                 )
-                if (state.resources.any { it.stored != null })
+                if (state.resources.any { it.stored != null }) {
                     Text(
                         text = "Storage",
                         color = AppTheme.colors.textLight,
                         style = AppTheme.typography.bodyTitle,
                     )
-            }
-            state.resources.forEach { resource ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = resource.title,
-                        color = AppTheme.colors.textLight,
-                        style = AppTheme.typography.bodyTitle,
-                    )
-                    Text(
-                        text = resource.text,
-                        textAlign = TextAlign.End,
-                        color = AppTheme.colors.textLight,
-                        style = AppTheme.typography.body,
-                        modifier = Modifier,
-                    )
-                    if (resource.stored != null) {
-                        IconButton(
-                            onClick = { onTakeResource(resource.id) }, modifier = modifier
-                                .size(16.dp),
-                            enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                modifier = Modifier.fillMaxSize(),
-                                tint = AppTheme.colors.iconLight,
-                            )
-                        }
-                        IconButton(
-                            onClick = { onStoreResource(resource.id) }, modifier = modifier
-                                .size(16.dp),
-                            enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowForward,
-                                contentDescription = "Forward",
-                                modifier = Modifier.fillMaxSize(),
-                                tint = AppTheme.colors.iconLight,
-                            )
-                        }
-                        Text(
-                            text = resource.stored,
-                            textAlign = TextAlign.End,
-                            color = AppTheme.colors.textLight,
-                            style = AppTheme.typography.body,
-                            modifier = Modifier,
-                        )
-                    }
-
                 }
             }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.background(Color.Green)
+            ) {
+
+                Column(
+                    modifier = Modifier.background(Color.Blue).width(IntrinsicSize.Max).height(IntrinsicSize.Min),
+                ) {
+                    state.resources.forEach { resource ->
+                        Row(
+                            modifier = modifier.fillMaxWidth().background(Color.Magenta),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = resource.title,
+                                color = AppTheme.colors.textLight,
+                                style = AppTheme.typography.bodyTitle,
+                            )
+                            Text(
+                                text = resource.text,
+                                textAlign = TextAlign.End,
+                                color = AppTheme.colors.textLight,
+                                style = AppTheme.typography.body,
+                                modifier = Modifier,
+                            )
+                        }
+                    }
+                }
+
+                if (state.resources.any { it.stored != null }) {
+                    Column(
+                        modifier = Modifier
+                            .background(Color.Red)
+                            .height(IntrinsicSize.Max)
+                            .fillMaxHeight()
+
+                    ) {
+                        state.resources.forEach { resource ->
+                            if (resource.stored != null) {
+                                Row {
+                                    IconButton(
+                                        onClick = { onTakeResource(resource.id) },
+                                        modifier = modifier
+                                            .size(16.dp),
+                                        enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.ArrowBack,
+                                            contentDescription = "Back",
+                                            modifier = Modifier.fillMaxSize(),
+                                            tint = AppTheme.colors.iconLight,
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = { onStoreResource(resource.id) },
+                                        modifier = modifier
+                                            .size(16.dp),
+                                        enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.ArrowForward,
+                                            contentDescription = "Forward",
+                                            modifier = Modifier.fillMaxSize(),
+                                            tint = AppTheme.colors.iconLight,
+                                        )
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    Column(
+                        modifier = Modifier.background(Color.Cyan),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        state.resources.forEach { resource ->
+                            if (resource.stored != null) {
+                                Text(
+                                    text = resource.stored,
+                                    textAlign = TextAlign.End,
+                                    color = AppTheme.colors.textLight,
+                                    style = AppTheme.typography.body,
+                                    modifier = Modifier,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
