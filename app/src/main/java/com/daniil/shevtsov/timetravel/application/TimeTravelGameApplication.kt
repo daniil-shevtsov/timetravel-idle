@@ -49,7 +49,7 @@ class TimeTravelGameApplication : Application() {
                         StoredResource(
                             id = id,
                             current = ResourceValue(0f),
-                            max = ResourceValue(100f)
+                            max = ResourceValue(5f)
                         )
                     },
                     allTags = createAllTags(),

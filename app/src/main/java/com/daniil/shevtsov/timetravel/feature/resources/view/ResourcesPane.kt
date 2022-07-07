@@ -61,7 +61,7 @@ fun ResourcesPane(
                 ) {
                     Text(
                         text = resource.title,
-                        color = AppTheme.colors.textLight,
+                        color =AppTheme.colors.textLight,
                         style = AppTheme.typography.bodyTitle,
                     )
                     Text(

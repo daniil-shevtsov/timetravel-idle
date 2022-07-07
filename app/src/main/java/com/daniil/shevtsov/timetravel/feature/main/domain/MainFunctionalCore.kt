@@ -149,7 +149,7 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
         ),
         timelineParentId = newTimelineParentId,
         parents = newParents,
-        stateSnapshot = state,
+        stateSnapshot = state.copy(storedResources = emptyList()),
     )
 
     return state.copy(

@@ -148,6 +148,23 @@ class MainFunctionalCoreTest {
     }
 
     @Test
+    fun `should not save space outside time when register time point clicked`() {
+        val initialState = gameState(
+            storedResources = listOf(storedResource())
+        )
+        val state = mainFunctionalCore(
+            state = initialState,
+            viewAction = MainViewAction.RegisterTimePoint,
+        )
+
+        assertThat(state)
+            .prop(GameState::timeMoments)
+            .index(0)
+            .prop(TimeMoment::stateSnapshot)
+            .prop(GameState::storedResources)
+            .isEmpty()
+    }
+    @Test
     fun `should restore moment in the past when travelling through time`() {
         val pastState = gameState(
             passedTime = PassedTime(5.milliseconds),
