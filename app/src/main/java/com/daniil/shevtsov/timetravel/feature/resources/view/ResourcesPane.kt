@@ -59,7 +59,7 @@ fun ResourcesPane(
     modifier: Modifier = Modifier,
 ) {
     WithTitle(title = "Resources", modifier = modifier) {
-        Column(modifier = modifier.width(IntrinsicSize.Max)) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
                 Text(
                     text = state.passedTime.title,
@@ -94,15 +94,19 @@ fun ResourcesPane(
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.background(Color.Green)
+                modifier = Modifier.background(Color.Green).fillMaxWidth()
             ) {
 
                 Column(
-                    modifier = Modifier.background(Color.Blue).width(IntrinsicSize.Max).height(IntrinsicSize.Min),
+                    modifier = Modifier
+                        .background(Color.Blue)
+                        .weight(1f),
                 ) {
                     state.resources.forEach { resource ->
                         Row(
-                            modifier = modifier.fillMaxWidth().background(Color.Magenta),
+                            modifier = Modifier
+                                .background(Color.Magenta)
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -110,6 +114,7 @@ fun ResourcesPane(
                                 text = resource.title,
                                 color = AppTheme.colors.textLight,
                                 style = AppTheme.typography.bodyTitle,
+                                modifier = Modifier
                             )
                             Text(
                                 text = resource.text,
@@ -126,8 +131,6 @@ fun ResourcesPane(
                     Column(
                         modifier = Modifier
                             .background(Color.Red)
-                            .height(IntrinsicSize.Max)
-                            .fillMaxHeight()
 
                     ) {
                         state.resources.forEach { resource ->
@@ -202,7 +205,13 @@ fun resourcesPanePreviewData() = ResourcesViewState(
         ),
         ResourceModel(
             id = ResourceId.TimeCrystal,
-            title = "Time Crystal",
+            title = "Long Name",
+            text = "150",
+            stored = "200 / 500 $",
+        ),
+        ResourceModel(
+            id = ResourceId.NuclearWaste,
+            title = "Very Very Long Name",
             text = "150",
             stored = "200 / 500 $",
         )
