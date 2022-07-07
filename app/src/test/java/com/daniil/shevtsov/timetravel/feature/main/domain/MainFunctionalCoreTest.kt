@@ -164,6 +164,7 @@ class MainFunctionalCoreTest {
             .prop(GameState::storedResources)
             .isEmpty()
     }
+
     @Test
     fun `should restore moment in the past when travelling through time`() {
         val pastState = gameState(
@@ -189,7 +190,32 @@ class MainFunctionalCoreTest {
                 prop(GameState::currentMomentId)
                     .isEqualTo(timeMoment.id)
             }
+    }
 
+    @Test
+    fun `should keep space ouside time when travelling through time`() {
+        val pastState = gameState(
+            passedTime = PassedTime(5.milliseconds),
+        )
+
+        val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
+        val currentState = gameState(
+            passedTime = PassedTime(10.milliseconds),
+            storedResources = listOf(
+                storedResource(),
+                storedResource(),
+            ),
+            timeMoments = listOf(timeMoment),
+        )
+
+        val newState = mainFunctionalCore(
+            state = currentState,
+            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
+        )
+
+        assertThat(newState)
+            .prop(GameState::storedResources)
+            .isNotEmpty()
     }
 
     @Test

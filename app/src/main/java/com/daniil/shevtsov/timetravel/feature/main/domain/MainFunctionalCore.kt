@@ -120,6 +120,7 @@ fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment
     return selectedMoment.stateSnapshot.copy(
         timeMoments = state.timeMoments,
         currentMomentId = selectedMoment.id,
+        storedResources = state.storedResources,
     )
 }
 
