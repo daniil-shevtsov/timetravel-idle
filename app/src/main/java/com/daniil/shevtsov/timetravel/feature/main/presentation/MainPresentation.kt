@@ -55,7 +55,7 @@ fun mapMainViewState(
                             text = value.toString(),
                             stored = stored.takeIf { isSpaceOutsideTime },
                             enabledDirections = when {
-                                isSpaceOutsideTime -> ValidTransferDirection.None
+                                !isSpaceOutsideTime -> ValidTransferDirection.None
                                 validForTake && validForStore -> ValidTransferDirection.Both
                                 validForTake -> ValidTransferDirection.Take
                                 validForStore -> ValidTransferDirection.Store

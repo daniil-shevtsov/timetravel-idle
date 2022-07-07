@@ -137,11 +137,18 @@ class MainPresentationTest {
             .isInstanceOf(MainViewState.Content::class)
             .prop(MainViewState.Content::resources)
             .prop(ResourcesViewState::resources)
-            .extracting(ResourceModel::id, ResourceModel::stored)
-            .containsExactly(
-                resourceWithoutStorage.id to null,
-                resourceWithStorage.id to "50.0 / 100.0"
-            )
+            .all {
+                extracting(ResourceModel::id, ResourceModel::stored)
+                    .containsExactly(
+                        resourceWithoutStorage.id to null,
+                        resourceWithStorage.id to "50.0 / 100.0"
+                    )
+                extracting(ResourceModel::id, ResourceModel::enabledDirections)
+                    .containsExactly(
+                        resourceWithoutStorage.id to ValidTransferDirection.None,
+                        resourceWithStorage.id to ValidTransferDirection.Both,
+                    )
+            }
     }
 
     @Test
@@ -171,11 +178,19 @@ class MainPresentationTest {
             .isInstanceOf(MainViewState.Content::class)
             .prop(MainViewState.Content::resources)
             .prop(ResourcesViewState::resources)
-            .extracting(ResourceModel::id, ResourceModel::stored)
-            .containsExactly(
-                resourceWithoutStorage.id to null,
-                resourceWithStorage.id to null,
-            )
+            .all {
+                extracting(ResourceModel::id, ResourceModel::stored)
+                .containsExactly(
+                    resourceWithoutStorage.id to null,
+                    resourceWithStorage.id to null,
+                )
+                extracting(ResourceModel::id, ResourceModel::enabledDirections)
+                    .containsExactly(
+                        resourceWithoutStorage.id to ValidTransferDirection.None,
+                        resourceWithStorage.id to ValidTransferDirection.None,
+                    )
+            }
+
     }
     @Test
     fun `should disable take and store if source is zero`() {
@@ -187,6 +202,8 @@ class MainPresentationTest {
 
         val viewState = mapMainViewState(
             state = gameState(
+                allLocations = listOf(Locations.spaceOutsideTime),
+                currentLocationId = Locations.spaceOutsideTime.id,
                 resources = listOf(
                     resourceWithoutStorage,
                     validForTake,
