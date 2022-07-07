@@ -54,6 +54,21 @@ fun ResourcesPane(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().padding(top = AppTheme.dimensions.paddingS)
+            ) {
+                Text(
+                    text = "Inventory",
+                    color = AppTheme.colors.textLight,
+                    style = AppTheme.typography.bodyTitle,
+                )
+                Text(
+                    text = "Storage",
+                    color = AppTheme.colors.textLight,
+                    style = AppTheme.typography.bodyTitle,
+                )
+            }
             state.resources.forEach { resource ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
