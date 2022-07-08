@@ -107,8 +107,24 @@ fun timelinePresentation(
 
         val timeString: String = with(moment.time.value) {
             when {
-                inWholeMilliseconds <= 1000 -> toString(
+                inWholeMilliseconds < 100 -> toString(
                     unit = DurationUnit.MILLISECONDS,
+                    decimals = 1,
+                )
+                inWholeSeconds < 100 -> toString(
+                    unit = DurationUnit.SECONDS,
+                    decimals = 1,
+                )
+                inWholeMinutes < 100 -> toString(
+                    unit = DurationUnit.MINUTES,
+                    decimals = 1,
+                )
+                inWholeHours < 100 -> toString(
+                    unit = DurationUnit.HOURS,
+                    decimals = 1,
+                )
+                inWholeDays < 100 -> toString(
+                    unit = DurationUnit.DAYS,
                     decimals = 1,
                 )
                 else -> toString(
