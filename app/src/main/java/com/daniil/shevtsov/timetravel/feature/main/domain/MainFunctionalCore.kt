@@ -4,6 +4,7 @@ import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceTransferAmount
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.Change
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
@@ -48,10 +49,24 @@ fun mainFunctionalCore(
 }
 
 fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource): GameState {
-    val storageChange = when (viewAction.direction) {
+    val directionMultiplier = when (viewAction.direction) {
         TransferDirection.Store -> +1
         TransferDirection.Take -> -1
     }
+    val changeAmount: Float = when (viewAction.amount) {
+        ResourceTransferAmount.One -> 1f
+        ResourceTransferAmount.Max -> {
+            val resourceToChange = state.resources.find { it.id == viewAction.id }
+            val resourceInStorage = state.storedResources.find { it.id == viewAction.id }
+            val inInventory = resourceToChange?.value ?: 0f
+            val inStorage = resourceInStorage?.current?.raw ?: 0f
+            val storageMax = resourceInStorage?.max?.raw
+
+            inInventory
+        }
+    }
+    val storageChange = changeAmount * directionMultiplier
+
     val newResources = state.resources.map { resource ->
         if (resource.id == viewAction.id) {
             resource.copy(value = resource.value - storageChange)

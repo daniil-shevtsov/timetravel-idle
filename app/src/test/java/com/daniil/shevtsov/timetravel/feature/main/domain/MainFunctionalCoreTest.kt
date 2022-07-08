@@ -14,6 +14,7 @@ import com.daniil.shevtsov.timetravel.feature.location.domain.location
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
 import com.daniil.shevtsov.timetravel.feature.resources.domain.*
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceTransferAmount
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.*
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
@@ -375,7 +376,7 @@ class MainFunctionalCoreTest {
     }
 
     @Test
-    fun `should store resource when store clicked`() {
+    fun `should store one resource when store one clicked`() {
         val resource = resource(id = ResourceId.Money, value = 25f)
 
         val state = mainFunctionalCore(
@@ -391,7 +392,8 @@ class MainFunctionalCoreTest {
             ),
             viewAction = MainViewAction.TransferResource(
                 id = resource.id,
-                direction = TransferDirection.Store
+                direction = TransferDirection.Store,
+                amount = ResourceTransferAmount.One,
             ),
         )
         assertThat(state)
@@ -410,7 +412,7 @@ class MainFunctionalCoreTest {
     }
 
     @Test
-    fun `should take resource when take clicked`() {
+    fun `should store max resource when store max clicked`() {
         val resource = resource(id = ResourceId.Money, value = 25f)
 
         val state = mainFunctionalCore(
@@ -426,7 +428,44 @@ class MainFunctionalCoreTest {
             ),
             viewAction = MainViewAction.TransferResource(
                 id = resource.id,
-                direction = TransferDirection.Take
+                direction = TransferDirection.Store,
+                amount = ResourceTransferAmount.Max,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 0f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(75f), ResourceValue(100f))
+                    )
+            }
+    }
+
+    @Test
+    fun `should take one resource when take one clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Take,
+                amount = ResourceTransferAmount.One,
             ),
         )
         assertThat(state)
