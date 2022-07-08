@@ -82,6 +82,7 @@ fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource)
             inStorage
         }
     }
+    //TODO: Unify both cases and get rid of duplication
     val changeAmount = when (viewAction.direction) {
         TransferDirection.Store -> storeChangeAmount
         TransferDirection.Take -> takeChangeAmount
