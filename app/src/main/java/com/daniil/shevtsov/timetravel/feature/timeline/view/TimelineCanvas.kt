@@ -27,14 +27,33 @@ import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.TimelineSizes
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePresentation
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Preview
 @Composable
 fun TimelineCanvasPreview() {
     TimelineCanvas(state = timeTravelStatePreviewData(), onViewAction = {})
+}
+
+@Preview(widthDp = 500)
+@Composable
+fun TimelineTextPreview() {
+    TimelineCanvas(state = timeTravelStatePreviewData(
+        moments = listOf(
+            timeMomentModel(id = TimeMomentId(0L), time = PassedTime(5.milliseconds)),
+            timeMomentModel(id = TimeMomentId(1L), time = PassedTime(20.milliseconds)),
+            timeMomentModel(id = TimeMomentId(1L), time = PassedTime(123.milliseconds)),
+            timeMomentModel(id = TimeMomentId(2L), time = PassedTime(1234.milliseconds)),
+            timeMomentModel(id = TimeMomentId(3L), time = PassedTime(123000.milliseconds)),
+            timeMomentModel(id = TimeMomentId(4L), time = PassedTime(300000.milliseconds)),
+            timeMomentModel(id = TimeMomentId(5L), time = PassedTime(5.4e+6.milliseconds)),
+            timeMomentModel(id = TimeMomentId(7L), time = PassedTime(8.64e+7.milliseconds)),
+        )
+    ), onViewAction = {})
 }
 
 @Composable
@@ -141,19 +160,41 @@ fun TimelineCanvas(
                 )
             }
             drawIntoCanvas {
-                it.nativeCanvas.drawText(
-                    model.title,
-                    model.position.x,
-                    model.position.y + textSize / 2,
-                    textPaint
-                )
+                val lineBreakIndex = model.title.indexOf("\n")
+
+                if (lineBreakIndex == 1) {
+                    it.nativeCanvas.drawText(
+                        model.title,
+                        model.position.x,
+                        model.position.y + textSize / 2,
+                        textPaint
+                    )
+                } else {
+                    val firstLine = model.title.substring(0, lineBreakIndex)
+                    val secondLine = model.title.substring(lineBreakIndex, model.title.length)
+                    val textBlockHeight = textSize * 2
+                    it.nativeCanvas.drawText(
+                        firstLine,
+                        model.position.x,
+                        model.position.y + textSize / 2 - textSize / 2,
+                        textPaint
+                    )
+                    it.nativeCanvas.drawText(
+                        secondLine,
+                        model.position.x,
+                        model.position.y + textSize / 2 + textSize / 2,
+                        textPaint
+                    )
+                }
+
+
             }
         }
     }
 }
 
-fun timeTravelStatePreviewData(): TimeTravelViewState = TimeTravelViewState(
-    moments = listOf(
+fun timeTravelStatePreviewData(
+    moments: List<TimeMomentModel> = listOf(
         timeMomentModel(
             id = TimeMomentId(1L),
             time = PassedTime(4L.seconds),
@@ -210,6 +251,16 @@ fun timeTravelStatePreviewData(): TimeTravelViewState = TimeTravelViewState(
             timelineParent = TimeMomentId(7L),
             momentParents = listOf(TimeMomentId(9L)),
         ),
-    ),
+    )
+): TimeTravelViewState = TimeTravelViewState(
+    moments = moments.mapIndexed { index, model ->
+        if (index > 0 && model.momentParents.isEmpty()) {
+            model.copy(
+                momentParents = listOf(moments[index - 1].id)
+            )
+        } else {
+            model
+        }
+    },
     lastSelectedMomentId = TimeMomentId(1L),
 )

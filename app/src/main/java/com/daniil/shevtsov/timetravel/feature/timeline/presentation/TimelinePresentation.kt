@@ -3,6 +3,7 @@ package com.daniil.shevtsov.timetravel.feature.timeline.presentation
 import androidx.compose.ui.geometry.Offset
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
+import kotlin.time.DurationUnit
 
 data class Moment(
     val id: TimeMomentId,
@@ -103,9 +104,36 @@ fun timelinePresentation(
 
     val momentModels = allMoments.map { moment ->
         val momentPosition = momentPositions[moment.id]!!
+
+        val timeString: String = with(moment.time.value) {
+            when {
+                inWholeMilliseconds <= 1000 -> toString(
+                    unit = DurationUnit.MILLISECONDS,
+                    decimals = 1,
+                )
+                else -> toString(
+                    unit = DurationUnit.DAYS,
+                    decimals = 1,
+                )
+            }
+        }.let { timeString ->
+            val indexOfFirstLetter = if (timeString.any { it.isLetter() }) {
+                timeString
+                    .indexOfFirst { char -> char.isLetter() }
+            } else {
+                return@let timeString
+            }
+
+
+            timeString.substring(0, indexOfFirstLetter) + "\n" + timeString.substring(
+                indexOfFirstLetter,
+                timeString.length
+            )
+        }
+
         Moment(
             id = moment.id,
-            title = moment.time.value.toString(),
+            title = timeString,
             position = momentPosition,
         )
     }
