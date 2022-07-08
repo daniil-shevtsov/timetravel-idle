@@ -105,7 +105,7 @@ fun Content(
         ) {
             ResourcesPane(
                 state = state.resources,
-                onTakeResource = { resourceId ->
+                onTakeResource = { resourceId, _ ->
                     onViewAction(
                         MainViewAction.TransferResource(
                             resourceId,
@@ -113,7 +113,7 @@ fun Content(
                         )
                     )
                 },
-                onStoreResource = { resourceId ->
+                onStoreResource = { resourceId, _ ->
                     onViewAction(
                         MainViewAction.TransferResource(
                             resourceId,

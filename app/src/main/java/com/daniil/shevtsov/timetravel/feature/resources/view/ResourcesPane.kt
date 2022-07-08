@@ -1,6 +1,5 @@
 package com.daniil.shevtsov.timetravel.feature.resources.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -8,10 +7,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.outlined.DoubleArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,6 +19,7 @@ import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.main.view.WithTitle
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceTransferAmount
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransferDirection
 
@@ -37,15 +38,15 @@ fun ResourcesPanePreview() {
                     }
                 )
             },
-            modifier = Modifier.background(Color.Black),
-            onTakeResource = {},
-            onStoreResource = {},
+            modifier = Modifier,
+            onTakeResource = { _, _ -> },
+            onStoreResource = { _, _ -> },
         )
         ResourcesPane(
             state = resourcesPanePreviewData(),
-            modifier = Modifier.background(Color.Gray),
-            onTakeResource = {},
-            onStoreResource = {},
+            modifier = Modifier,
+            onTakeResource = { _, _ -> },
+            onStoreResource = { _, _ -> },
         )
     }
 
@@ -54,8 +55,8 @@ fun ResourcesPanePreview() {
 @Composable
 fun ResourcesPane(
     state: ResourcesViewState,
-    onTakeResource: (key: ResourceId) -> Unit,
-    onStoreResource: (key: ResourceId) -> Unit,
+    onTakeResource: (key: ResourceId, ResourceTransferAmount) -> Unit,
+    onStoreResource: (key: ResourceId, ResourceTransferAmount) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WithTitle(title = "Resources", modifier = modifier) {
@@ -92,23 +93,18 @@ fun ResourcesPane(
                 }
             }
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.background(Color.Green).fillMaxWidth()
-            ) {
-
-                Column(
-                    modifier = Modifier
-                        .background(Color.Blue)
-                        .weight(1f),
-                ) {
-                    state.resources.forEach { resource ->
+            Column(modifier = Modifier.fillMaxWidth()) {
+                state.resources.forEach { resource ->
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                    ) {
                         Row(
                             modifier = Modifier
-                                .background(Color.Magenta)
-                                .fillMaxWidth(),
+                                .weight(1f),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = resource.title,
@@ -122,70 +118,99 @@ fun ResourcesPane(
                                 color = AppTheme.colors.textLight,
                                 style = AppTheme.typography.body,
                                 modifier = Modifier,
+                                maxLines = 1,
+                            )
+                        }
+                        if (resource.stored != null) {
+                            Row(
+                                modifier = Modifier.weight(1f, false),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        onTakeResource(
+                                            resource.id,
+                                            ResourceTransferAmount.Max
+                                        )
+                                    },
+                                    modifier = modifier
+                                        .size(16.dp),
+                                    enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.DoubleArrow,
+                                        contentDescription = "Get max from storage",
+                                        modifier = Modifier.fillMaxSize().scale(scaleX = -1f, scaleY = 1f),
+                                        tint = AppTheme.colors.iconLight,
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        onTakeResource(
+                                            resource.id,
+                                            ResourceTransferAmount.One
+                                        )
+                                    },
+                                    modifier = modifier
+                                        .size(16.dp),
+                                    enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ArrowBack,
+                                        contentDescription = "Get one from storage",
+                                        modifier = Modifier.fillMaxSize(),
+                                        tint = AppTheme.colors.iconLight,
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        onStoreResource(
+                                            resource.id,
+                                            ResourceTransferAmount.One
+                                        )
+                                    },
+                                    modifier = modifier
+                                        .size(16.dp),
+                                    enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ArrowForward,
+                                        contentDescription = "Put one to storage",
+                                        modifier = Modifier.fillMaxSize(),
+                                        tint = AppTheme.colors.iconLight,
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        onStoreResource(
+                                            resource.id,
+                                            ResourceTransferAmount.Max
+                                        )
+                                    },
+                                    modifier = modifier
+                                        .size(16.dp),
+                                    enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.DoubleArrow,
+                                        contentDescription = "Put max to storage",
+                                        modifier = Modifier.fillMaxSize(),
+                                        tint = AppTheme.colors.iconLight,
+                                    )
+                                }
+                            }
+                            Text(
+                                text = resource.stored,
+                                textAlign = TextAlign.End,
+                                color = AppTheme.colors.textLight,
+                                style = AppTheme.typography.body,
+                                modifier = Modifier.width(100.dp),
                             )
                         }
                     }
                 }
-
-                if (state.resources.any { it.stored != null }) {
-                    Column(
-                        modifier = Modifier
-                            .background(Color.Red)
-
-                    ) {
-                        state.resources.forEach { resource ->
-                            if (resource.stored != null) {
-                                Row {
-                                    IconButton(
-                                        onClick = { onTakeResource(resource.id) },
-                                        modifier = modifier
-                                            .size(16.dp),
-                                        enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.ArrowBack,
-                                            contentDescription = "Back",
-                                            modifier = Modifier.fillMaxSize(),
-                                            tint = AppTheme.colors.iconLight,
-                                        )
-                                    }
-                                    IconButton(
-                                        onClick = { onStoreResource(resource.id) },
-                                        modifier = modifier
-                                            .size(16.dp),
-                                        enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.ArrowForward,
-                                            contentDescription = "Forward",
-                                            modifier = Modifier.fillMaxSize(),
-                                            tint = AppTheme.colors.iconLight,
-                                        )
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                    Column(
-                        modifier = Modifier.background(Color.Cyan),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        state.resources.forEach { resource ->
-                            if (resource.stored != null) {
-                                Text(
-                                    text = resource.stored,
-                                    textAlign = TextAlign.End,
-                                    color = AppTheme.colors.textLight,
-                                    style = AppTheme.typography.body,
-                                    modifier = Modifier,
-                                )
-                            }
-                        }
-                    }
-                }
             }
-
         }
     }
 }
