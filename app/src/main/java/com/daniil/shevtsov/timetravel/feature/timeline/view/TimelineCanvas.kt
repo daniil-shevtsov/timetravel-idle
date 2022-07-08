@@ -144,18 +144,18 @@ fun TimelineCanvas(
         timelineState.moments.forEach { model ->
             drawCircle(
                 color = pointColor,
-                radius = pointSize / 2,
+                radius = pointSize * 0.5f,
                 center = model.position
             )
             if (model.id == state.lastSelectedMomentId) {
                 drawCircle(
                     color = selectedPointColor,
-                    radius = pointSize * 0.5f,
+                    radius = pointSize * 0.6f,
                     center = model.position
                 )
                 drawCircle(
                     color = pointColor,
-                    radius = pointSize * 0.40f,
+                    radius = pointSize * 0.5f,
                     center = model.position
                 )
             }
