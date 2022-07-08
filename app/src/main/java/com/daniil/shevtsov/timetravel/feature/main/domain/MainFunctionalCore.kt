@@ -60,9 +60,14 @@ fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource)
             val resourceInStorage = state.storedResources.find { it.id == viewAction.id }
             val inInventory = resourceToChange?.value ?: 0f
             val inStorage = resourceInStorage?.current?.raw ?: 0f
-            val storageMax = resourceInStorage?.max?.raw
+            val storageMax = resourceInStorage?.max?.raw ?: 0f
 
-            inInventory
+            val newStored = inStorage + inInventory
+            if(newStored > storageMax) {
+                storageMax - inStorage
+            } else {
+                inInventory
+            }
         }
     }
     val storageChange = changeAmount * directionMultiplier

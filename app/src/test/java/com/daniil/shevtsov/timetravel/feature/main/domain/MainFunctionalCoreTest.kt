@@ -448,6 +448,42 @@ class MainFunctionalCoreTest {
     }
 
     @Test
+    fun `should store resource only to the max when store max clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(74f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Store,
+                amount = ResourceTransferAmount.Max,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 1f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(74f), ResourceValue(74f))
+                    )
+            }
+    }
+
+    @Test
     fun `should take one resource when take one clicked`() {
         val resource = resource(id = ResourceId.Money, value = 25f)
 
