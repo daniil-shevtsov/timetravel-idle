@@ -18,10 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.main.view.WithTitle
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceTransferAmount
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransferDirection
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.*
 
 @Preview
 @Composable
@@ -39,14 +36,12 @@ fun ResourcesPanePreview() {
                 )
             },
             modifier = Modifier,
-            onTakeResource = { _, _ -> },
-            onStoreResource = { _, _ -> },
+            onTransferResource = { _, _, _ -> }
         )
         ResourcesPane(
             state = resourcesPanePreviewData(),
             modifier = Modifier,
-            onTakeResource = { _, _ -> },
-            onStoreResource = { _, _ -> },
+            onTransferResource = { _, _, _ -> }
         )
     }
 
@@ -55,8 +50,7 @@ fun ResourcesPanePreview() {
 @Composable
 fun ResourcesPane(
     state: ResourcesViewState,
-    onTakeResource: (key: ResourceId, ResourceTransferAmount) -> Unit,
-    onStoreResource: (key: ResourceId, ResourceTransferAmount) -> Unit,
+    onTransferResource: (key: ResourceId, direction: TransferDirection, amount: ResourceTransferAmount) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WithTitle(title = "Resources", modifier = modifier) {
@@ -129,8 +123,9 @@ fun ResourcesPane(
                             ) {
                                 IconButton(
                                     onClick = {
-                                        onTakeResource(
+                                        onTransferResource(
                                             resource.id,
+                                            TransferDirection.Take,
                                             ResourceTransferAmount.Max
                                         )
                                     },
@@ -140,15 +135,18 @@ fun ResourcesPane(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.DoubleArrow,
-                                        contentDescription = "Get max from storage",
-                                        modifier = Modifier.fillMaxSize().scale(scaleX = -1f, scaleY = 1f),
+                                        contentDescription = "Take max from storage",
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .scale(scaleX = -1f, scaleY = 1f),
                                         tint = AppTheme.colors.iconLight,
                                     )
                                 }
                                 IconButton(
                                     onClick = {
-                                        onTakeResource(
+                                        onTransferResource(
                                             resource.id,
+                                            TransferDirection.Take,
                                             ResourceTransferAmount.One
                                         )
                                     },
@@ -158,16 +156,17 @@ fun ResourcesPane(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.ArrowBack,
-                                        contentDescription = "Get one from storage",
+                                        contentDescription = "Take one from storage",
                                         modifier = Modifier.fillMaxSize(),
                                         tint = AppTheme.colors.iconLight,
                                     )
                                 }
                                 IconButton(
                                     onClick = {
-                                        onStoreResource(
+                                        onTransferResource(
                                             resource.id,
-                                            ResourceTransferAmount.One
+                                            TransferDirection.Store,
+                                            ResourceTransferAmount.Max
                                         )
                                     },
                                     modifier = modifier
@@ -183,8 +182,9 @@ fun ResourcesPane(
                                 }
                                 IconButton(
                                     onClick = {
-                                        onStoreResource(
+                                        onTransferResource(
                                             resource.id,
+                                            TransferDirection.Store,
                                             ResourceTransferAmount.Max
                                         )
                                     },
