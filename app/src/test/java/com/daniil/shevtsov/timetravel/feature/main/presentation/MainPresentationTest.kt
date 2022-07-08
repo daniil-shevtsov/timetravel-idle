@@ -200,6 +200,7 @@ class MainPresentationTest {
         val validForStore = resource(id = ResourceId.TimeCrystal, value = 1f)
         val validForBoth = resource(id = ResourceId.NuclearWaste, value = 1f)
         val invalidForStore = resource(id = ResourceId.Caps, value = 1f)
+        val invalidForStoreBecauseMaxed = resource(id = ResourceId.Food, value = 1f)
 
         val viewState = mapMainViewState(
             state = gameState(
@@ -211,6 +212,7 @@ class MainPresentationTest {
                     validForStore,
                     validForBoth,
                     invalidForStore,
+                    invalidForStoreBecauseMaxed,
                 ),
                 storedResources = listOf(
                     storedResource(
@@ -233,6 +235,11 @@ class MainPresentationTest {
                         current = ResourceValue(100f),
                         max = ResourceValue(100f)
                     ),
+                    storedResource(
+                        id = invalidForStoreBecauseMaxed.id,
+                        current = ResourceValue(invalidForStoreBecauseMaxed.value),
+                        max = ResourceValue(invalidForStoreBecauseMaxed.value),
+                    )
                 )
             )
         )
@@ -248,6 +255,7 @@ class MainPresentationTest {
                 validForStore.id to validTransferDirection(store = true, storeMax = true),
                 validForBoth.id to ValidTransferDirection.All,
                 invalidForStore.id to validTransferDirection(take = true, takeMax = true),
+                invalidForStoreBecauseMaxed.id to validTransferDirection(take = true, takeMax = true),
             )
     }
 
