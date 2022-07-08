@@ -30,7 +30,7 @@ fun ResourcesPanePreview() {
                     resources = state.resources.map { resource ->
                         resource.copy(
                             stored = null,
-                            enabledDirections = ValidTransferDirection.None,
+                            enabledDirections = validTransferDirection(),
                         )
                     }
                 )
@@ -131,7 +131,7 @@ fun ResourcesPane(
                                     },
                                     modifier = modifier
                                         .size(16.dp),
-                                    enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
+                                    enabled = resource.enabledDirections.takeMax
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.DoubleArrow,
@@ -152,7 +152,7 @@ fun ResourcesPane(
                                     },
                                     modifier = modifier
                                         .size(16.dp),
-                                    enabled = resource.enabledDirections == ValidTransferDirection.Take || resource.enabledDirections == ValidTransferDirection.Both
+                                    enabled = resource.enabledDirections.take
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.ArrowBack,
@@ -171,7 +171,7 @@ fun ResourcesPane(
                                     },
                                     modifier = modifier
                                         .size(16.dp),
-                                    enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
+                                    enabled = resource.enabledDirections.store
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.ArrowForward,
@@ -190,7 +190,7 @@ fun ResourcesPane(
                                     },
                                     modifier = modifier
                                         .size(16.dp),
-                                    enabled = resource.enabledDirections == ValidTransferDirection.Store || resource.enabledDirections == ValidTransferDirection.Both
+                                    enabled = resource.enabledDirections.storeMax
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.DoubleArrow,

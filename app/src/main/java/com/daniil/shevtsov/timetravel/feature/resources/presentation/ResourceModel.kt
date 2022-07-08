@@ -7,5 +7,5 @@ data class ResourceModel(
     val title: String,
     val text: String,
     val stored: String? = null,
-    val enabledDirections: ValidTransferDirection = ValidTransferDirection.None,
+    val enabledDirections: ValidTransferDirection = validTransferDirection(),
 )

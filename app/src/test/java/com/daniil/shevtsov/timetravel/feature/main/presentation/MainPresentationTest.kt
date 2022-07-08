@@ -33,6 +33,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.storedResource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransferDirection
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.validTransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
 import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
@@ -146,7 +147,7 @@ class MainPresentationTest {
                 extracting(ResourceModel::id, ResourceModel::enabledDirections)
                     .containsExactly(
                         resourceWithoutStorage.id to ValidTransferDirection.None,
-                        resourceWithStorage.id to ValidTransferDirection.Both,
+                        resourceWithStorage.id to ValidTransferDirection.All,
                     )
             }
     }
@@ -243,10 +244,10 @@ class MainPresentationTest {
             .extracting(ResourceModel::id, ResourceModel::enabledDirections)
             .containsExactly(
                 resourceWithoutStorage.id to ValidTransferDirection.None,
-                validForTake.id to ValidTransferDirection.Take,
-                validForStore.id to ValidTransferDirection.Store,
-                validForBoth.id to ValidTransferDirection.Both,
-                invalidForStore.id to ValidTransferDirection.Take,
+                validForTake.id to validTransferDirection(take = true, takeMax = true),
+                validForStore.id to validTransferDirection(store = true, storeMax = true),
+                validForBoth.id to ValidTransferDirection.All,
+                invalidForStore.id to validTransferDirection(take = true, takeMax = true),
             )
     }
 

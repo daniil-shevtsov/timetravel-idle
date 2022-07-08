@@ -37,7 +37,8 @@ fun mapMainViewState(
                         ?: 0f) > 0f)
                 }
                 .map { resource ->
-                    val isSpaceOutsideTime = state.currentLocationId == Locations.spaceOutsideTime.id
+                    val isSpaceOutsideTime =
+                        state.currentLocationId == Locations.spaceOutsideTime.id
                     val storedResource = state.storedResources.find { it.id == resource.id }
                     val stored = storedResource?.let { storedResource ->
                         storedResource.current.raw.toString() + " / " + storedResource.max.raw.toString()
@@ -54,13 +55,12 @@ fun mapMainViewState(
                             title = name,
                             text = value.toString(),
                             stored = stored.takeIf { isSpaceOutsideTime },
-                            enabledDirections = when {
-                                !isSpaceOutsideTime -> ValidTransferDirection.None
-                                validForTake && validForStore -> ValidTransferDirection.Both
-                                validForTake -> ValidTransferDirection.Take
-                                validForStore -> ValidTransferDirection.Store
-                                else -> ValidTransferDirection.None
-                            },
+                            enabledDirections = ValidTransferDirection(
+                                takeMax = isSpaceOutsideTime && validForTake,
+                                take = isSpaceOutsideTime && validForTake,
+                                store = isSpaceOutsideTime && validForStore,
+                                storeMax = isSpaceOutsideTime && validForStore,
+                            ),
                         )
                     }
                 }
