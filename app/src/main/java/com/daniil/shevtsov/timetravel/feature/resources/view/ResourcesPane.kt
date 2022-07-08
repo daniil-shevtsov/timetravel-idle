@@ -91,6 +91,7 @@ fun ResourcesPane(
                 state.resources.forEach { resource ->
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -117,7 +118,7 @@ fun ResourcesPane(
                         }
                         if (resource.stored != null) {
                             Row(
-                                modifier = Modifier.weight(1f, false),
+                                modifier = Modifier.weight(1f, false).height(IntrinsicSize.Max),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
