@@ -1,23 +1,39 @@
 package com.daniil.shevtsov.timetravel.feature.main.presentation
 
+import assertk.Assert
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
+import com.daniil.shevtsov.timetravel.core.domain.SelectorId
+import com.daniil.shevtsov.timetravel.core.domain.SelectorKey
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedState
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedStates
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorModel
+import com.daniil.shevtsov.timetravel.core.ui.widgets.selector.SelectorViewState
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.domain.action
 import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChange
 import com.daniil.shevtsov.timetravel.feature.actions.domain.resourceChanges
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
+import com.daniil.shevtsov.timetravel.feature.location.domain.Location
+import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
+import com.daniil.shevtsov.timetravel.feature.location.domain.Locations
+import com.daniil.shevtsov.timetravel.feature.location.domain.location
+import com.daniil.shevtsov.timetravel.feature.location.presentation.LocationViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.domain.choice
 import com.daniil.shevtsov.timetravel.feature.plot.domain.plot
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
 import com.daniil.shevtsov.timetravel.feature.resources.domain.resource
+import com.daniil.shevtsov.timetravel.feature.resources.domain.storedResource
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ValidTransferDirection
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.validTransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
 import com.daniil.shevtsov.timetravel.feature.tags.domain.tag
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
@@ -93,6 +109,154 @@ class MainPresentationTest {
             .prop(ResourcesViewState::resources)
             .extracting(ResourceModel::id, ResourceModel::text)
             .containsExactly(ResourceId.Money to "100.0")
+    }
+
+    @Test
+    fun `should show resources storage if location space outside time`() {
+        val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
+        val resourceWithStorage = resource(id = ResourceId.Money, value = 6f)
+
+        val viewState = mapMainViewState(
+            state = gameState(
+                allLocations = listOf(Locations.spaceOutsideTime),
+                currentLocationId = Locations.spaceOutsideTime.id,
+                resources = listOf(
+                    resourceWithoutStorage,
+                    resourceWithStorage,
+                ),
+                storedResources = listOf(
+                    storedResource(
+                        id = resourceWithStorage.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f)
+                    )
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .all {
+                extracting(ResourceModel::id, ResourceModel::stored)
+                    .containsExactly(
+                        resourceWithoutStorage.id to null,
+                        resourceWithStorage.id to "50.0 / 100.0"
+                    )
+                extracting(ResourceModel::id, ResourceModel::enabledDirections)
+                    .containsExactly(
+                        resourceWithoutStorage.id to ValidTransferDirection.None,
+                        resourceWithStorage.id to ValidTransferDirection.All,
+                    )
+            }
+    }
+
+    @Test
+    fun `should not show resources storage if location not space outside time`() {
+        val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
+        val resourceWithStorage = resource(id = ResourceId.Money, value = 6f)
+        val location = location(id = LocationId(123L))
+        val viewState = mapMainViewState(
+            state = gameState(
+                allLocations = listOf(),
+                currentLocationId = location.id,
+                resources = listOf(
+                    resourceWithoutStorage,
+                    resourceWithStorage,
+                ),
+                storedResources = listOf(
+                    storedResource(
+                        id = resourceWithStorage.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f)
+                    )
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .all {
+                extracting(ResourceModel::id, ResourceModel::stored)
+                .containsExactly(
+                    resourceWithoutStorage.id to null,
+                    resourceWithStorage.id to null,
+                )
+                extracting(ResourceModel::id, ResourceModel::enabledDirections)
+                    .containsExactly(
+                        resourceWithoutStorage.id to ValidTransferDirection.None,
+                        resourceWithStorage.id to ValidTransferDirection.None,
+                    )
+            }
+
+    }
+    @Test
+    fun `should disable take and store if source is zero`() {
+        val resourceWithoutStorage = resource(id = ResourceId.Time, value = 5f)
+        val validForTake = resource(id = ResourceId.Money, value = 0f)
+        val validForStore = resource(id = ResourceId.TimeCrystal, value = 1f)
+        val validForBoth = resource(id = ResourceId.NuclearWaste, value = 1f)
+        val invalidForStore = resource(id = ResourceId.Caps, value = 1f)
+        val invalidForStoreBecauseMaxed = resource(id = ResourceId.Food, value = 1f)
+
+        val viewState = mapMainViewState(
+            state = gameState(
+                allLocations = listOf(Locations.spaceOutsideTime),
+                currentLocationId = Locations.spaceOutsideTime.id,
+                resources = listOf(
+                    resourceWithoutStorage,
+                    validForTake,
+                    validForStore,
+                    validForBoth,
+                    invalidForStore,
+                    invalidForStoreBecauseMaxed,
+                ),
+                storedResources = listOf(
+                    storedResource(
+                        id = validForTake.id,
+                        current = ResourceValue(1f),
+                        max = ResourceValue(100f)
+                    ),
+                    storedResource(
+                        id = validForStore.id,
+                        current = ResourceValue(0f),
+                        max = ResourceValue(100f)
+                    ),
+                    storedResource(
+                        id = validForBoth.id,
+                        current = ResourceValue(1f),
+                        max = ResourceValue(100f)
+                    ),
+                    storedResource(
+                        id = invalidForStore.id,
+                        current = ResourceValue(100f),
+                        max = ResourceValue(100f)
+                    ),
+                    storedResource(
+                        id = invalidForStoreBecauseMaxed.id,
+                        current = ResourceValue(invalidForStoreBecauseMaxed.value),
+                        max = ResourceValue(invalidForStoreBecauseMaxed.value),
+                    )
+                )
+            )
+        )
+
+        assertThat(viewState)
+            .isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::resources)
+            .prop(ResourcesViewState::resources)
+            .extracting(ResourceModel::id, ResourceModel::enabledDirections)
+            .containsExactly(
+                resourceWithoutStorage.id to ValidTransferDirection.None,
+                validForTake.id to validTransferDirection(take = true, takeMax = true),
+                validForStore.id to validTransferDirection(store = true, storeMax = true),
+                validForBoth.id to ValidTransferDirection.All,
+                invalidForStore.id to validTransferDirection(take = true, takeMax = true),
+                invalidForStoreBecauseMaxed.id to validTransferDirection(take = true, takeMax = true),
+            )
     }
 
     @Test
@@ -201,5 +365,81 @@ class MainPresentationTest {
                 TimeMomentId(4L) to listOf(TimeMomentId(3L)),
             )
     }
+
+    @Test
+    fun `should form location view state`() {
+        val selectedLocation = location(
+            id = LocationId(1L),
+            title = "lol",
+            description = "kek",
+        )
+        val locations =
+            listOf(selectedLocation) + listOf(location(id = LocationId(2L), title = "cheburek"))
+
+        val viewState = mapMainViewState(
+            state = gameState(
+                allLocations = locations,
+                currentLocationId = selectedLocation.id,
+            )
+        )
+
+        assertThat(viewState)
+            .propLocationState()
+            .all {
+                prop(LocationViewState::description).isEqualTo(selectedLocation.description)
+                prop(LocationViewState::selector).all {
+                    prop(SelectorViewState::selectedItem).isEqualTo(selectedLocation)
+                    prop(SelectorViewState::items).isEqualTo(locations)
+                }
+            }
+    }
+
+    @Test
+    fun `should show expanded location selector`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = true),
+                )
+            )
+        )
+
+        assertThat(viewState).assertLocationExpanded(expected = true)
+    }
+
+    @Test
+    fun `should show collapsed location selector`() {
+        val viewState = mapMainViewState(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = false),
+                )
+            )
+        )
+
+        assertThat(viewState).assertLocationExpanded(expected = false)
+    }
+
+    private fun Assert<SelectorModel?>.isEqualTo(location: Location) = isNotNull()
+        .prop(SelectorModel::id)
+        .prop(SelectorId::raw)
+        .isEqualTo(location.id.raw)
+
+    private fun Assert<List<SelectorModel>>.isEqualTo(locations: List<Location>) =
+        extracting(SelectorModel::id, SelectorModel::title)
+            .containsAll(*locations.map { SelectorId(it.id.raw) to it.title }.toTypedArray())
+
+    private fun Assert<MainViewState>.assertLocationExpanded(expected: Boolean) =
+        propLocationState()
+            .prop(LocationViewState::selector)
+            .assertExpanded(expected)
+
+    private fun Assert<SelectorViewState>.assertExpanded(expected: Boolean) =
+        prop(SelectorViewState::isExpanded)
+            .isEqualTo(expected)
+
+    private fun Assert<MainViewState>.propLocationState() =
+        isInstanceOf(MainViewState.Content::class)
+            .prop(MainViewState.Content::location)
 
 }

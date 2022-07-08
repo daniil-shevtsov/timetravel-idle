@@ -5,14 +5,19 @@ import com.daniil.shevtsov.timetravel.common.di.initKoin
 import com.daniil.shevtsov.timetravel.core.BalanceConfig
 import com.daniil.shevtsov.timetravel.core.di.DaggerAppComponent
 import com.daniil.shevtsov.timetravel.core.di.koin.appModule
+import com.daniil.shevtsov.timetravel.core.domain.SelectorKey
 import com.daniil.shevtsov.timetravel.core.navigation.Screen
 import com.daniil.shevtsov.timetravel.feature.actions.domain.createInitialActions
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTab
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerTabId
+import com.daniil.shevtsov.timetravel.feature.location.domain.Locations
+import com.daniil.shevtsov.timetravel.feature.location.domain.createAllLocations
 import com.daniil.shevtsov.timetravel.feature.plot.domain.createInitialPlots
 import com.daniil.shevtsov.timetravel.feature.resources.domain.Resource
 import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
+import com.daniil.shevtsov.timetravel.feature.resources.domain.StoredResource
 import com.daniil.shevtsov.timetravel.feature.tags.domain.createAllTags
 import com.daniil.shevtsov.timetravel.feature.tags.domain.createInitialPresentTags
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
@@ -40,10 +45,20 @@ class TimeTravelGameApplication : Application() {
                     resources = ResourceId.values().map { id ->
                         Resource(id = id, name = id.toString(), value = 0f)
                     },
+                    storedResources = ResourceId.values().map { id ->
+                        StoredResource(
+                            id = id,
+                            current = ResourceValue(0f),
+                            max = ResourceValue(5f)
+                        )
+                    },
                     allTags = createAllTags(),
                     presentTags = createInitialPresentTags(),
                     actions = createInitialActions(),
                     timeMoments = emptyList(),
+                    allLocations = createAllLocations(),
+                    currentLocationId = Locations.researchLab.id,
+                    selectorExpandedStates = SelectorKey.values().associateWith { false }
                 )
             )
     }

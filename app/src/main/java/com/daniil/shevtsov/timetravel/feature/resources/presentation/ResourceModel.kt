@@ -6,4 +6,6 @@ data class ResourceModel(
     val id: ResourceId,
     val title: String,
     val text: String,
+    val stored: String? = null,
+    val enabledDirections: ValidTransferDirection = validTransferDirection(),
 )

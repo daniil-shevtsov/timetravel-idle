@@ -3,6 +3,9 @@ package com.daniil.shevtsov.timetravel.feature.main.domain
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.drawer.presentation.DrawerViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
+import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceTransferAmount
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.Change
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -29,8 +32,88 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        is MainViewAction.ToggleExpanded -> toggleExpanded(
+            state = state,
+            viewAction = viewAction,
+        )
+        is MainViewAction.SelectLocation -> selectLocation(
+            state = state,
+            viewAction = viewAction,
+        )
+        is MainViewAction.TransferResource -> storeResource(
+            state = state,
+            viewAction = viewAction,
+        )
     }
     return newState
+}
+
+fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource): GameState {
+    val directionMultiplier = when (viewAction.direction) {
+        TransferDirection.Store -> +1
+        TransferDirection.Take -> -1
+    }
+    val storeChangeAmount: Float = when (viewAction.amount) {
+        ResourceTransferAmount.One -> 1f
+        ResourceTransferAmount.Max -> {
+            val resourceToChange = state.resources.find { it.id == viewAction.id }
+            val resourceInStorage = state.storedResources.find { it.id == viewAction.id }
+            val inInventory = resourceToChange?.value ?: 0f
+            val inStorage = resourceInStorage?.current?.raw ?: 0f
+            val storageMax = resourceInStorage?.max?.raw ?: 0f
+
+            val newStored = inStorage + inInventory
+            if(newStored > storageMax) {
+                storageMax - inStorage
+            } else {
+                inInventory
+            }
+        }
+    }
+    val takeChangeAmount: Float = when (viewAction.amount) {
+        ResourceTransferAmount.One -> 1f
+        ResourceTransferAmount.Max -> {
+            val resourceToChange = state.resources.find { it.id == viewAction.id }
+            val resourceInStorage = state.storedResources.find { it.id == viewAction.id }
+            val inInventory = resourceToChange?.value ?: 0f
+            val inStorage = resourceInStorage?.current?.raw ?: 0f
+            val storageMax = resourceInStorage?.max?.raw ?: 0f
+
+            inStorage
+        }
+    }
+    //TODO: Unify both cases and get rid of duplication
+    val changeAmount = when (viewAction.direction) {
+        TransferDirection.Store -> storeChangeAmount
+        TransferDirection.Take -> takeChangeAmount
+    }
+    val storageChange = changeAmount * directionMultiplier
+
+    val newResources = state.resources.map { resource ->
+        if (resource.id == viewAction.id) {
+            resource.copy(value = resource.value - storageChange)
+        } else {
+            resource
+        }
+    }
+
+    val newStoredResources = state.storedResources.map { storedResource ->
+        if (storedResource.id == viewAction.id) {
+            storedResource.copy(current = ResourceValue(storedResource.current.raw + storageChange))
+        } else {
+            storedResource
+        }
+    }
+    return state.copy(
+        resources = newResources,
+        storedResources = newStoredResources,
+    )
+}
+
+fun selectLocation(state: GameState, viewAction: MainViewAction.SelectLocation): GameState {
+    return state.copy(
+        currentLocationId = viewAction.id,
+    )
 }
 
 fun selectChoice(
@@ -74,6 +157,7 @@ fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment
     return selectedMoment.stateSnapshot.copy(
         timeMoments = state.timeMoments,
         currentMomentId = selectedMoment.id,
+        storedResources = state.storedResources,
     )
 }
 
@@ -103,7 +187,7 @@ fun registerTimePoint(state: GameState, viewAction: MainViewAction.RegisterTimeP
         ),
         timelineParentId = newTimelineParentId,
         parents = newParents,
-        stateSnapshot = state,
+        stateSnapshot = state.copy(storedResources = emptyList()),
     )
 
     return state.copy(
@@ -121,6 +205,17 @@ fun handleDrawerTabSwitched(
     return state.copy(
         drawerTabs = state.drawerTabs.map { tab ->
             tab.copy(isSelected = tab.id == viewAction.id)
+        }
+    )
+}
+
+private fun toggleExpanded(
+    state: GameState,
+    viewAction: MainViewAction.ToggleExpanded
+): GameState {
+    return state.copy(
+        selectorExpandedStates = state.selectorExpandedStates.toMutableMap().apply {
+            put(viewAction.key, state.selectorExpandedStates[viewAction.key]?.not() ?: false)
         }
     )
 }

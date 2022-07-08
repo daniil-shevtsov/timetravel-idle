@@ -95,7 +95,6 @@ kotlin {
                 implementation(kotlin("test-junit"))
                 with(Deps.UnitTest) {
                     implementation(coroutinesTest)
-                    implementation(mockk)
                     implementation(turbine)
                 }
             }

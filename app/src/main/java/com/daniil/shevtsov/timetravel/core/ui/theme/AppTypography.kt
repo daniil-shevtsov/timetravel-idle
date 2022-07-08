@@ -18,7 +18,7 @@ data class AppTypography(
     val title: TextStyle = TextStyle(
         fontFamily = default,
         fontWeight = FontWeight.Normal,
-        fontSize = 24.sp
+        fontSize = 22.sp
     ),
     val subtitle: TextStyle = TextStyle(
         fontFamily = default,

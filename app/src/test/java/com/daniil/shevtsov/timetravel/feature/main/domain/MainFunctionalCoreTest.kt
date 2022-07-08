@@ -4,10 +4,18 @@ import assertk.Assert
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
+import com.daniil.shevtsov.timetravel.core.domain.SelectorKey
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedState
+import com.daniil.shevtsov.timetravel.core.domain.selectorExpandedStates
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.GameState
 import com.daniil.shevtsov.timetravel.feature.coreshell.domain.gameState
+import com.daniil.shevtsov.timetravel.feature.location.domain.LocationId
+import com.daniil.shevtsov.timetravel.feature.location.domain.location
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.plot.domain.*
+import com.daniil.shevtsov.timetravel.feature.resources.domain.*
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceTransferAmount
+import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.*
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
@@ -141,6 +149,24 @@ class MainFunctionalCoreTest {
     }
 
     @Test
+    fun `should not save space outside time when register time point clicked`() {
+        val initialState = gameState(
+            storedResources = listOf(storedResource())
+        )
+        val state = mainFunctionalCore(
+            state = initialState,
+            viewAction = MainViewAction.RegisterTimePoint,
+        )
+
+        assertThat(state)
+            .prop(GameState::timeMoments)
+            .index(0)
+            .prop(TimeMoment::stateSnapshot)
+            .prop(GameState::storedResources)
+            .isEmpty()
+    }
+
+    @Test
     fun `should restore moment in the past when travelling through time`() {
         val pastState = gameState(
             passedTime = PassedTime(5.milliseconds),
@@ -165,7 +191,32 @@ class MainFunctionalCoreTest {
                 prop(GameState::currentMomentId)
                     .isEqualTo(timeMoment.id)
             }
+    }
 
+    @Test
+    fun `should keep space ouside time when travelling through time`() {
+        val pastState = gameState(
+            passedTime = PassedTime(5.milliseconds),
+        )
+
+        val timeMoment = timeMoment(id = TimeMomentId(1L), stateSnapshot = pastState)
+        val currentState = gameState(
+            passedTime = PassedTime(10.milliseconds),
+            storedResources = listOf(
+                storedResource(),
+                storedResource(),
+            ),
+            timeMoments = listOf(timeMoment),
+        )
+
+        val newState = mainFunctionalCore(
+            state = currentState,
+            viewAction = MainViewAction.TravelBackToMoment(id = timeMoment.id)
+        )
+
+        assertThat(newState)
+            .prop(GameState::storedResources)
+            .isNotEmpty()
     }
 
     @Test
@@ -269,6 +320,238 @@ class MainFunctionalCoreTest {
                     .extracting(TimeMoment::id, TimeMoment::parents)
                     .contains(expectedNewMomentId to listOf(mainTimelineMoment2.id))
                 prop(GameState::currentMomentId).isEqualTo(expectedNewMomentId)
+            }
+    }
+
+    @Test
+    fun `should expand locations when selector clicked and collapsed`() {
+        val state = mainFunctionalCore(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = false)
+                )
+            ),
+            viewAction = MainViewAction.ToggleExpanded(key = SelectorKey.Location)
+        )
+
+        assertThat(state)
+            .prop(GameState::selectorExpandedStates)
+            .contains(SelectorKey.Location, true)
+
+    }
+
+    @Test
+    fun `should collapse locations when selector clicked and expanded`() {
+        val state = mainFunctionalCore(
+            state = gameState(
+                selectorExpandedStates = selectorExpandedStates(
+                    selectorExpandedState(key = SelectorKey.Location, isExpanded = true)
+                )
+            ),
+            viewAction = MainViewAction.ToggleExpanded(key = SelectorKey.Location)
+        )
+
+        assertThat(state)
+            .prop(GameState::selectorExpandedStates)
+            .contains(SelectorKey.Location, false)
+    }
+
+    @Test
+    fun `should select location when clicked in selector`() {
+        val selectedLocation = location(id = LocationId(1L))
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                allLocations = listOf(
+                    selectedLocation,
+                    location(id = LocationId(2L)),
+                )
+            ),
+            viewAction = MainViewAction.SelectLocation(id = selectedLocation.id)
+        )
+
+        assertThat(state)
+            .prop(GameState::currentLocationId)
+            .isEqualTo(selectedLocation.id)
+    }
+
+    @Test
+    fun `should store one resource when store one clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Store,
+                amount = ResourceTransferAmount.One,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 24f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(51f), ResourceValue(100f))
+                    )
+            }
+    }
+
+    @Test
+    fun `should store max resource when store max clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Store,
+                amount = ResourceTransferAmount.Max,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 0f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(75f), ResourceValue(100f))
+                    )
+            }
+    }
+
+    @Test
+    fun `should store resource only to the max when store max clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(74f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Store,
+                amount = ResourceTransferAmount.Max,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 1f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(74f), ResourceValue(74f))
+                    )
+            }
+    }
+
+    @Test
+    fun `should take one resource when take one clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Take,
+                amount = ResourceTransferAmount.One,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 26f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(49f), ResourceValue(100f))
+                    )
+            }
+    }
+
+    @Test
+    fun `should take max resource when take max clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Take,
+                amount = ResourceTransferAmount.Max,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 75f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(0f), ResourceValue(100f))
+                    )
             }
     }
 

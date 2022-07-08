@@ -7,7 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextAlign
@@ -17,22 +16,24 @@ import com.daniil.shevtsov.timetravel.core.ui.widgets.MyButton
 import com.daniil.shevtsov.timetravel.core.ui.widgets.Pane
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
+import com.daniil.shevtsov.timetravel.feature.location.view.LocationComposable
+import com.daniil.shevtsov.timetravel.feature.location.view.locationPreviewData
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
-import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceId
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceModel
-import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourcesViewState
+import com.daniil.shevtsov.timetravel.feature.resources.view.ResourcesPane
+import com.daniil.shevtsov.timetravel.feature.resources.view.resourcesPanePreviewData
 import com.daniil.shevtsov.timetravel.feature.timeline.view.TimelineCanvas
 import com.daniil.shevtsov.timetravel.feature.timeline.view.timeTravelStatePreviewData
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 @Preview(
     widthDp = 320,
-    heightDp = 734,
+    heightDp = 1034,
 )
 @Composable
 fun MainPreview() {
@@ -46,26 +47,14 @@ fun MainPreview() {
                     ChoiceModel(id = ChoiceId(3L), text = "Choose something cool"),
                 )
             ),
-            resources = ResourcesViewState(
-                passedTime = ResourceModel(
-                    id = ResourceId.Time,
-                    title = "Passed Time",
-                    text = "5.00 s"
-                ),
-                resources = listOf(
-                    ResourceModel(
-                        id = ResourceId.Money,
-                        title = "Money",
-                        text = "100 $"
-                    )
-                )
-            ),
+            resources = resourcesPanePreviewData(),
             actions = listOf(
                 ActionModel(id = ActionId(0L), title = "Do Lol"),
                 ActionModel(id = ActionId(1L), title = "Do Kek multiline very long"),
                 ActionModel(id = ActionId(2L), title = "Do Cheburek"),
             ),
-            timeTravel = timeTravelStatePreviewData()
+            timeTravel = timeTravelStatePreviewData(),
+            location = locationPreviewData(),
         ),
         onViewAction = {},
     )
@@ -113,69 +102,34 @@ fun Content(
                 .padding(AppTheme.dimensions.paddingS)
 
         ) {
-            Column(modifier = Modifier.width(IntrinsicSize.Max)) {
-                (listOf(state.resources.passedTime) + state.resources.resources).forEach { resource ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)) {
-                        Text(
-                            text = resource.title,
-                            color = AppTheme.colors.textLight,
-                            style = AppTheme.typography.bodyTitle,
-                            modifier = Modifier,
+            ResourcesPane(
+                state = state.resources,
+                onTransferResource = { resourceId, direction, amount ->
+                    onViewAction(
+                        MainViewAction.TransferResource(
+                            id = resourceId,
+                            direction = direction,
+                            amount = amount,
                         )
-                        Text(
-                            text = resource.text,
-                            textAlign = TextAlign.End,
-                            color = AppTheme.colors.textLight,
-                            style = AppTheme.typography.body,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-            }
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS)
-            ) {
-                Text(
-                    text = "Register time point",
-                    style = AppTheme.typography.bodyTitle,
-                    textAlign = TextAlign.Center,
-                    color = AppTheme.colors.textLight,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
-                        .background(AppTheme.colors.background)
-                        .padding(AppTheme.dimensions.paddingS)
-                )
-                TimelineCanvas(
-                    state = state.timeTravel,
-                    onViewAction = onViewAction,
-                )
-            }
-
+                    )
+                },
+            )
+            LocationComposable(
+                state = state.location,
+                onViewAction = onViewAction,
+            )
             ActionsPane(
                 state = state,
                 onViewAction = onViewAction,
             )
-
-            Text(
-                text = state.plot.text,
-                textAlign = TextAlign.Start,
-                style = AppTheme.typography.body,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(AppTheme.colors.backgroundLight)
-                    .padding(AppTheme.dimensions.paddingS),
+            PlotPane(
+                state = state.plot,
+                onViewAction = onViewAction,
             )
-            Pane(items = state.plot.choices) { item, modifier ->
-                MyButton(
-                    text = item.text,
-                    onClick = { onViewAction(MainViewAction.SelectChoice(id = item.id)) },
-                    modifier = modifier
-                )
-            }
+            TimelinePane(
+                state = state.timeTravel,
+                onViewAction = onViewAction,
+            )
         }
     }
 
@@ -183,16 +137,89 @@ fun Content(
 }
 
 @Composable
+private fun PlotPane(
+    state: PlotViewState,
+    onViewAction: (MainViewAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WithTitle(title = "Plot", modifier = modifier) {
+        Text(
+            text = state.text,
+            textAlign = TextAlign.Start,
+            style = AppTheme.typography.body,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(AppTheme.colors.backgroundText)
+                .padding(AppTheme.dimensions.paddingS),
+        )
+        Pane(items = state.choices) { item, modifier ->
+            MyButton(
+                text = item.text,
+                onClick = { onViewAction(MainViewAction.SelectChoice(id = item.id)) },
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimelinePane(
+    state: TimeTravelViewState,
+    onViewAction: (MainViewAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WithTitle(title = "Timeline", modifier = modifier) {
+        Text(
+            text = "Register time point",
+            style = AppTheme.typography.bodyTitle,
+            textAlign = TextAlign.Center,
+            color = AppTheme.colors.textLight,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onViewAction(MainViewAction.RegisterTimePoint) }
+                .background(AppTheme.colors.background)
+                .padding(AppTheme.dimensions.paddingS)
+        )
+        TimelineCanvas(
+            state = state,
+            onViewAction = onViewAction,
+        )
+    }
+}
+
+@Composable
 private fun ActionsPane(
     state: MainViewState.Content,
-    onViewAction: (MainViewAction) -> Unit
+    onViewAction: (MainViewAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Pane(items = state.actions) { item: ActionModel, modifier ->
-        MyButton(
-            text = item.title,
-            onClick = { onViewAction(MainViewAction.SelectAction(id = item.id)) },
-            modifier = modifier
+    WithTitle(title = "Actions", modifier = modifier) {
+        Pane(items = state.actions) { item: ActionModel, modifier ->
+            MyButton(
+                text = item.title,
+                onClick = { onViewAction(MainViewAction.SelectAction(id = item.id)) },
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
+fun WithTitle(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingXS),
+        modifier = modifier
+    ) {
+        Text(
+            text = title,
+            style = AppTheme.typography.subtitle,
+            color = AppTheme.colors.textLight,
         )
+        content()
     }
 }
 
