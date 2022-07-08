@@ -53,7 +53,7 @@ fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource)
         TransferDirection.Store -> +1
         TransferDirection.Take -> -1
     }
-    val changeAmount: Float = when (viewAction.amount) {
+    val storeChangeAmount: Float = when (viewAction.amount) {
         ResourceTransferAmount.One -> 1f
         ResourceTransferAmount.Max -> {
             val resourceToChange = state.resources.find { it.id == viewAction.id }
@@ -69,6 +69,22 @@ fun storeResource(state: GameState, viewAction: MainViewAction.TransferResource)
                 inInventory
             }
         }
+    }
+    val takeChangeAmount: Float = when (viewAction.amount) {
+        ResourceTransferAmount.One -> 1f
+        ResourceTransferAmount.Max -> {
+            val resourceToChange = state.resources.find { it.id == viewAction.id }
+            val resourceInStorage = state.storedResources.find { it.id == viewAction.id }
+            val inInventory = resourceToChange?.value ?: 0f
+            val inStorage = resourceInStorage?.current?.raw ?: 0f
+            val storageMax = resourceInStorage?.max?.raw ?: 0f
+
+            inStorage
+        }
+    }
+    val changeAmount = when (viewAction.direction) {
+        TransferDirection.Store -> storeChangeAmount
+        TransferDirection.Take -> takeChangeAmount
     }
     val storageChange = changeAmount * directionMultiplier
 

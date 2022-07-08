@@ -519,6 +519,42 @@ class MainFunctionalCoreTest {
             }
     }
 
+    @Test
+    fun `should take max resource when take max clicked`() {
+        val resource = resource(id = ResourceId.Money, value = 25f)
+
+        val state = mainFunctionalCore(
+            state = gameState(
+                resources = listOf(resource),
+                storedResources = listOf(
+                    storedResource(
+                        id = resource.id,
+                        current = ResourceValue(50f),
+                        max = ResourceValue(100f),
+                    )
+                )
+            ),
+            viewAction = MainViewAction.TransferResource(
+                id = resource.id,
+                direction = TransferDirection.Take,
+                amount = ResourceTransferAmount.Max,
+            ),
+        )
+        assertThat(state)
+            .all {
+                prop(GameState::resources)
+                    .extracting(Resource::id, Resource::value)
+                    .containsExactly(
+                        resource.id to 75f
+                    )
+                prop(GameState::storedResources)
+                    .extracting(StoredResource::id, StoredResource::current, StoredResource::max)
+                    .containsExactly(
+                        Triple(resource.id, ResourceValue(0f), ResourceValue(100f))
+                    )
+            }
+    }
+
     private fun Assert<GameState>.extractingPlot() = prop(GameState::plot)
     private fun Assert<Plot>.extractingText() = prop(Plot::text)
 
