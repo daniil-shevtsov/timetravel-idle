@@ -36,8 +36,8 @@ import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePres
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
 enum class AnimationDirection {
+    Start,
     Destination,
-    Start
 }
 
 //data class TimelineAnimationState(
@@ -86,26 +86,32 @@ fun AnimationPrototype(
     )
     val animationTargetState = remember {
         mutableStateOf(
-            AnimationDirection.Destination
+            AnimationDirection.Start
         )
     }
 
 // Any state change will trigger animations which
 // are created with this transition to the new state
     val transition = updateTransition(
-        targetState = animationTargetState.value
+        targetState = animationTargetState.value, label = "main transition"
     )
 //
     val momentIndex = transition.animateInt(
         transitionSpec = { tween(durationMillis = 3000) }, label = "moment index animation"
-    ) { animateIntState ->
-        if (animateIntState == AnimationDirection.Destination) nodePath.lastIndex else 0
+    ) { targetState ->
+        when(targetState) {
+            AnimationDirection.Destination -> nodePath.lastIndex - 1
+            AnimationDirection.Start -> 0
+        }
     }
 
     val travelerPosition = transition.animateFloat(
         transitionSpec = { tween(durationMillis = 3000) }, label = "traveller position"
-    ) {
-        if (it == AnimationDirection.Destination) 0f else 1f
+    ) { targetState ->
+        when(targetState) {
+            AnimationDirection.Destination -> 1f
+            AnimationDirection.Start -> 0f
+        }
     }
     Column {
         Text(
@@ -246,9 +252,18 @@ fun AnimationPrototype(
                 }
             }
             val nodeModels = timelineState.moments.associateBy { it.id }
-            val startNode = nodeModels[nodePath.first().id]!!
-            val destinationNode = nodeModels[nodePath.last().id]!!
+            val startNode = nodeModels[nodePath[momentIndex.value].id]!!
+            val destinationNode = nodeModels[nodePath[momentIndex.value + 1].id]!!
 
+            // 0 0
+            // 0 1
+            // 1 0
+            // 1 1
+            // 2 0
+            // 2 1
+            // ...
+            // 10 0
+            // 10 1
 
             drawCircle(
                 color = Color.Red,
