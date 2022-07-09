@@ -80,9 +80,9 @@ fun AnimationPrototype(
         nodes[TimeMomentId(1L)]!!,
         nodes[TimeMomentId(2L)]!!,
         nodes[TimeMomentId(3L)]!!,
-//        nodes[TimeMomentId(4L)]!!,
-//        nodes[TimeMomentId(5L)]!!,
-//        nodes[TimeMomentId(6L)]!!,
+        nodes[TimeMomentId(4L)]!!,
+        nodes[TimeMomentId(5L)]!!,
+        nodes[TimeMomentId(6L)]!!,
     )
     val animationTargetState = remember {
         mutableStateOf(
@@ -106,8 +106,6 @@ fun AnimationPrototype(
             AnimationDirection.Start -> 0
         }
     }
-
-    val floatMap = nodePath.indices.associate { it to 1f }
 
     val time = transition.animateFloat(
         transitionSpec = { tween(durationMillis = indexDuration) }, label = "traveller position"
@@ -173,7 +171,7 @@ fun AnimationPrototype(
             timelineSplitOffset = timelineOffset,
         )
         val timelineState = timelinePresentation(
-            allMoments = allTimelines.values.flatten().filter { it.id.value <= 3L },
+            allMoments = allTimelines.values.flatten().filter { it.id.value <= 6L },
             sizes = sizes
         )
 
