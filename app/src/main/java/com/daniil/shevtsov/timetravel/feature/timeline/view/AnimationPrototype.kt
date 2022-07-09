@@ -32,11 +32,17 @@ import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.main.view.distanceTo
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.TimelineSizes
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePresentation
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
-enum class AnimationState {
-    Collapsed,
-    Expanded
+enum class AnimationDirection {
+    Destination,
+    Start
 }
+
+//data class TimelineAnimationState(
+//    val direction: AnimationDirection,
+//    val momentKeys: List<TimeMomentId>,
+//)
 
 @Preview
 @ExperimentalAnimationApi
@@ -57,8 +63,24 @@ fun AnimationPrototype(
 // Need to remember in order to prevent setting
 // the same state value to the transition during
 // recomposition.
+    val state = timeTravelStatePreviewData()
+    val allTimelines = state.moments
+        .groupBy { it.timelineParent }
+
+    val nodes = state.moments.associateBy { it.id }
+    val startingNode = state.moments.find { it.id == TimeMomentId(6L) }!!
+    val destinationNode = state.moments.find { it.id == TimeMomentId(9L) }!!
+
+    val nodePath = listOf(
+        nodes[TimeMomentId(6L)]!!,
+        nodes[TimeMomentId(5L)]!!,
+        nodes[TimeMomentId(10L)]!!,
+        nodes[TimeMomentId(9L)]!!,
+    )
     val animationTargetState = remember {
-        mutableStateOf(AnimationState.Collapsed)
+        mutableStateOf(
+            AnimationDirection.Destination
+        )
     }
 
 // Any state change will trigger animations which
@@ -66,17 +88,17 @@ fun AnimationPrototype(
     val transition = updateTransition(
         targetState = animationTargetState.value
     )
-
-    val circleAlpha = transition.animateFloat(
-        transitionSpec = { tween(durationMillis = 3000) }
-    ) {
-        if (it == AnimationState.Collapsed) 0f else 1f
-    }
+//
+//    val momentIndex = transition.animateInt(
+//        transitionSpec = { tween(durationMillis = 3000) }, label = "moment index animation"
+//    ) { animateIntState ->
+//        if (animateIntState == AnimationDirection.Destination) animateIntState.lastIndex else 0
+//    }
 
     val travelerPosition = transition.animateFloat(
-        transitionSpec = { tween(durationMillis = 3000) }
+        transitionSpec = { tween(durationMillis = 3000) }, label = "traveller position"
     ) {
-        if (it == AnimationState.Collapsed) 0f else 1f
+        if (it == AnimationDirection.Destination) 0f else 1f
     }
     Column {
         Text(
@@ -87,15 +109,12 @@ fun AnimationPrototype(
                 .fillMaxWidth()
                 .clickable {
                     animationTargetState.value = when (animationTargetState.value) {
-                        AnimationState.Collapsed -> AnimationState.Expanded
-                        AnimationState.Expanded -> AnimationState.Collapsed
+                        AnimationDirection.Destination -> AnimationDirection.Start
+                        AnimationDirection.Start -> AnimationDirection.Destination
                     }
                 }
         )
 
-        val state = timeTravelStatePreviewData()
-        val allTimelines = state.moments
-            .groupBy { it.timelineParent }
 
         val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
         val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
@@ -222,6 +241,8 @@ fun AnimationPrototype(
             val travellingLine = timelineState.moments.filter { model ->
                 state.moments.find { it.id == model.id }?.timelineParent == null
             }
+
+
             drawCircle(
                 color = Color.Red,
                 radius = pointSize * 0.2f,
