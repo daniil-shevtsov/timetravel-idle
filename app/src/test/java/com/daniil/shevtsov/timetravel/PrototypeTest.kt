@@ -2,87 +2,146 @@ package com.daniil.shevtsov.timetravel
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 
 class PrototypeTest {
 
-    @Test
-    fun `should time 0`() {
-        test(
-            time = 0f,
-            duration = 3000f,
-            nodes = listOf(0, 1, 2),
-            expectedMomentIndex = 0,
-            expectedSegmentFraction = 0f
-        )
+//    @Test
+//    fun `should time 0`() {
+//        test(
+//            time = 0f,
+//            duration = 3000f,
+//            nodes = listOf(0, 1, 2),
+//            expectedMomentIndex = 0,
+//            expectedSegmentFraction = 0f
+//        )
+//    }
+//
+//    @Test
+//    fun `should time 750`() {
+//        test(
+//            time = 750f,
+//            duration = 3000f,
+//            nodes = listOf(0, 1, 2),
+//            expectedMomentIndex = 0,
+//            expectedSegmentFraction = 0.5f
+//        )
+//    }
+//
+//    @Test
+//    fun `should time 1500`() {
+//        test(
+//            time = 1500f,
+//            duration = 3000f,
+//            nodes = listOf(0, 1, 2),
+//            expectedMomentIndex = 0,
+//            expectedSegmentFraction = 1f
+//        )
+//    }
+//
+//    @Test
+//    fun `should time 2250`() {
+//        test(
+//            time = 2250f,
+//            duration = 3000f,
+//            nodes = listOf(0, 1, 2),
+//            expectedMomentIndex = 1,
+//            expectedSegmentFraction = 0.5f
+//        )
+//    }
+//
+//    @Test
+//    fun `should time 3000`() {
+//        test(
+//            time = 3000f,
+//            duration = 3000f,
+//            nodes = listOf(0, 1, 2),
+//            expectedMomentIndex = 1,
+//            expectedSegmentFraction = 1f
+//        )
+//    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getData")
+    fun `Addition works as expected`(testState: TestState) {
+        test(testState)
     }
 
-    @Test
-    fun `should time 750`() {
-        test(
-            time = 750f,
-            duration = 3000f,
-            nodes = listOf(0, 1, 2),
-            expectedMomentIndex = 0,
-            expectedSegmentFraction = 0.5f
-        )
+    companion object {
+        @JvmStatic
+        fun getData(): List<Arguments> {
+            return listOf(
+                TestState(
+                    time = 0f,
+                    nodes = listOf(0, 1, 2),
+                    duration = 3000f,
+                    expectedMomentIndex = 0,
+                    expectedSegmentFraction = 0f
+                ),
+                TestState(
+                    time = 750f,
+                    nodes = listOf(0, 1, 2),
+                    duration = 3000f,
+                    expectedMomentIndex = 0,
+                    expectedSegmentFraction = 0.5f
+                ),
+                TestState(
+                    time = 1500f,
+                    nodes = listOf(0, 1, 2),
+                    duration = 3000f,
+                    expectedMomentIndex = 0,
+                    expectedSegmentFraction = 1f
+                ),
+                TestState(
+                    time = 2250f,
+                    nodes = listOf(0, 1, 2),
+                    duration = 3000f,
+                    expectedMomentIndex = 1,
+                    expectedSegmentFraction = 0.5f
+                ),
+                TestState(
+                    time = 3000f,
+                    nodes = listOf(0, 1, 2),
+                    duration = 3000f,
+                    expectedMomentIndex = 1,
+                    expectedSegmentFraction = 1f
+                ),
+            ).map { state ->
+                Arguments.of(state)
+            }
+        }
     }
 
-    @Test
-    fun `should time 1500`() {
-        test(
-            time = 1500f,
-            duration = 3000f,
-            nodes = listOf(0, 1, 2),
-            expectedMomentIndex = 0,
-            expectedSegmentFraction = 1f
-        )
-    }
-
-    @Test
-    fun `should time 2250`() {
-        test(
-            time = 2250f,
-            duration = 3000f,
-            nodes = listOf(0, 1, 2),
-            expectedMomentIndex = 1,
-            expectedSegmentFraction = 0.5f
-        )
-    }
-
-    @Test
-    fun `should time 3000`() {
-        test(
-            time = 3000f,
-            duration = 3000f,
-            nodes = listOf(0, 1, 2),
-            expectedMomentIndex = 1,
-            expectedSegmentFraction = 1f
-        )
-    }
+    data class TestState(
+        val time: Float,
+        val nodes: List<Int>,
+        val duration: Float,
+        val expectedMomentIndex: Int,
+        val expectedSegmentFraction: Float,
+    )
 
     private fun test(
-        time: Float,
-        nodes: List<Int>,
-        duration: Float,
-        expectedMomentIndex: Int,
-        expectedSegmentFraction: Float,
+        state: TestState,
     ) {
-        val momentIndex = calculateIndex(
-            time = time,
-            duration = duration,
-            nodes = nodes,
-        )
-        assertThat(momentIndex).isEqualTo(expectedMomentIndex)
-
-        assertThat(
-            calculateSegmentFraction(
-                momentIndex = momentIndex,
+        with(state) {
+            val momentIndex = calculateIndex(
                 time = time,
                 duration = duration,
                 nodes = nodes,
             )
-        ).isEqualTo(expectedSegmentFraction)
+            assertThat(momentIndex).isEqualTo(expectedMomentIndex)
+
+            assertThat(
+                calculateSegmentFraction(
+                    momentIndex = momentIndex,
+                    time = time,
+                    duration = duration,
+                    nodes = nodes,
+                )
+            ).isEqualTo(expectedSegmentFraction)
+        }
     }
 
     private fun calculateIndex(
