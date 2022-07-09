@@ -3,6 +3,7 @@ package com.daniil.shevtsov.timetravel.feature.timeline.view
 import android.graphics.Typeface
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateInt
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.*
@@ -68,14 +69,20 @@ fun AnimationPrototype(
         .groupBy { it.timelineParent }
 
     val nodes = state.moments.associateBy { it.id }
-    val startingNode = state.moments.find { it.id == TimeMomentId(6L) }!!
-    val destinationNode = state.moments.find { it.id == TimeMomentId(9L) }!!
 
+//    val nodePath = listOf(
+//        nodes[TimeMomentId(6L)]!!,
+//        nodes[TimeMomentId(5L)]!!,
+//        nodes[TimeMomentId(10L)]!!,
+//        nodes[TimeMomentId(9L)]!!,
+//    )
     val nodePath = listOf(
-        nodes[TimeMomentId(6L)]!!,
+        nodes[TimeMomentId(1L)]!!,
+        nodes[TimeMomentId(2L)]!!,
+        nodes[TimeMomentId(3L)]!!,
+        nodes[TimeMomentId(4L)]!!,
         nodes[TimeMomentId(5L)]!!,
-        nodes[TimeMomentId(10L)]!!,
-        nodes[TimeMomentId(9L)]!!,
+        nodes[TimeMomentId(6L)]!!,
     )
     val animationTargetState = remember {
         mutableStateOf(
@@ -89,11 +96,11 @@ fun AnimationPrototype(
         targetState = animationTargetState.value
     )
 //
-//    val momentIndex = transition.animateInt(
-//        transitionSpec = { tween(durationMillis = 3000) }, label = "moment index animation"
-//    ) { animateIntState ->
-//        if (animateIntState == AnimationDirection.Destination) animateIntState.lastIndex else 0
-//    }
+    val momentIndex = transition.animateInt(
+        transitionSpec = { tween(durationMillis = 3000) }, label = "moment index animation"
+    ) { animateIntState ->
+        if (animateIntState == AnimationDirection.Destination) nodePath.lastIndex else 0
+    }
 
     val travelerPosition = transition.animateFloat(
         transitionSpec = { tween(durationMillis = 3000) }, label = "traveller position"
@@ -238,17 +245,17 @@ fun AnimationPrototype(
                     }
                 }
             }
-            val travellingLine = timelineState.moments.filter { model ->
-                state.moments.find { it.id == model.id }?.timelineParent == null
-            }
+            val nodeModels = timelineState.moments.associateBy { it.id }
+            val startNode = nodeModels[nodePath.first().id]!!
+            val destinationNode = nodeModels[nodePath.last().id]!!
 
 
             drawCircle(
                 color = Color.Red,
                 radius = pointSize * 0.2f,
                 center = lerp(
-                    start = travellingLine.first().position,
-                    stop = travellingLine.last().position,
+                    start = startNode.position,
+                    stop = destinationNode.position,
                     fraction = travelerPosition.value
                 )
             )
