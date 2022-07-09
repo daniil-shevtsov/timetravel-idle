@@ -60,13 +60,20 @@ class PrototypeTest {
                     expectedMomentIndex = 0,
                     expectedSegmentFraction = 0f
                 ),
-//                TestState(
-//                    time = 750f,
-//                    nodes = listOf(0, 1, 2, 3),
-//                    duration = 3000f,
-//                    expectedMomentIndex = 0,
-//                    expectedSegmentFraction = 0.5f
-//                ),
+                TestState(
+                    time = 500f,
+                    nodes = listOf(0, 1, 2, 3),
+                    duration = 3000f,
+                    expectedMomentIndex = 0,
+                    expectedSegmentFraction = 0.5f
+                ),
+                TestState(
+                    time = 1000f,
+                    nodes = listOf(0, 1, 2, 3),
+                    duration = 3000f,
+                    expectedMomentIndex = 0,
+                    expectedSegmentFraction = 1.0f
+                ),
             ).map { state ->
                 Arguments.of(state)
             }
@@ -108,6 +115,8 @@ class PrototypeTest {
         duration: Float,
         nodes: List<Int>
     ): Int {
+        val segments = nodes.size - 1
+        val segmentDuration = duration / segments
         //node size -> 0,1,2
         val timeProgress = time / duration
         //0.00 -> 0
@@ -115,10 +124,8 @@ class PrototypeTest {
         //0.51 -> 1
         //0.75 -> 1
         //1.0  -> 1
-        return when {
-            timeProgress <= 0.50f -> 0
-            else -> 1
-        }
+        val kek = time / segmentDuration
+        return (kek - 0.0001).toInt()
     }
 
     private fun calculateSegmentFraction(
