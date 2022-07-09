@@ -1,24 +1,37 @@
 package com.daniil.shevtsov.timetravel.feature.timeline.view
 
+import android.graphics.Typeface
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.lerp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
+import com.daniil.shevtsov.timetravel.feature.main.view.distanceTo
+import com.daniil.shevtsov.timetravel.feature.timeline.presentation.TimelineSizes
+import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePresentation
 
 enum class AnimationState {
     Collapsed,
@@ -60,43 +73,164 @@ fun AnimationPrototype(
         if (it == AnimationState.Collapsed) 0f else 1f
     }
 
-    val circleRadius = transition.animateFloat(
+    val travelerPosition = transition.animateFloat(
         transitionSpec = { tween(durationMillis = 3000) }
     ) {
         if (it == AnimationState.Collapsed) 0f else 1f
     }
     Column {
-        Button(onClick = {
-            animationTargetState.value = when (animationTargetState.value) {
-                AnimationState.Collapsed -> AnimationState.Expanded
-                AnimationState.Expanded -> AnimationState.Collapsed
-            }
-        }, colors = ButtonColors()) {
-            Text(
-                "Launch animation",
-                color = AppTheme.colors.textLight,
-                modifier = Modifier
+        Text(
+            "Launch animation",
+            color = AppTheme.colors.textLight,
+            modifier = Modifier
+                .background(AppTheme.colors.background)
+                .fillMaxWidth()
+                .clickable {
+                    animationTargetState.value = when (animationTargetState.value) {
+                        AnimationState.Collapsed -> AnimationState.Expanded
+                        AnimationState.Expanded -> AnimationState.Collapsed
+                    }
+                }
+        )
+
+        val state = timeTravelStatePreviewData()
+        val allTimelines = state.moments
+            .groupBy { it.timelineParent }
+
+        val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
+        val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
+        val segmentLength = with(LocalDensity.current) { 20.dp.toPx() }
+        val timelineOffset = with(LocalDensity.current) {
+            Offset(
+                x = 10.dp.toPx(),
+                y = pointSize + 10,
             )
+        }
+        val canvasPadding = with(LocalDensity.current) { 25.dp.toPx() }
+        val textSize = with(LocalDensity.current) { 12.sp.toPx() }
+
+        val lineColor = AppTheme.colors.textLight
+        val pointColor = AppTheme.colors.background
+        val selectedPointColor = AppTheme.colors.backgroundLight
+        val textColor = AppTheme.colors.textLight
+
+        val textPaint = Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            this.textSize = textSize
+            color = textColor.toArgb()
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+            textAlign = android.graphics.Paint.Align.CENTER
+        }
+        val sizes = TimelineSizes(
+            canvasPadding = canvasPadding,
+            point = pointSize,
+            segment = segmentLength,
+            timelineSplitOffset = timelineOffset,
+        )
+        val timelineState = timelinePresentation(
+            allMoments = allTimelines.values.flatten(),
+            sizes = sizes
+        )
+
+        val furthestMomentX = with(LocalDensity.current) {
+            timelineState.moments.maxByOrNull { it.position.x }?.position?.x?.let {
+                it + canvasPadding + pointSize / 2
+            }?.toDp()
+        }
+
+        val width = when {
+            furthestMomentX == null || furthestMomentX < 500.dp -> 500.dp
+            else -> furthestMomentX
         }
 
         Canvas(
-            modifier = modifier
-                .background(backgroundColor)
-                .size(300.dp)
-        ) {
-            val canvasSize = size
-            val canvasWidth = size.width
-            val canvasHeight = size.height
+            modifier = Modifier
+                .background(AppTheme.colors.backgroundDarkest)
+                .horizontalScroll(rememberScrollState())
+                .width(width)
+                .height(180.dp) //TODO: Add vertical scroll
+                .pointerInput(timelineState.moments) {
+                    detectTapGestures(
+                        onTap = { tapOffset ->
+                            val nearestMoment =
+                                timelineState.moments.minByOrNull { model ->
+                                    tapOffset.distanceTo(model.position)
+                                }
+                            if (nearestMoment != null
+                                && nearestMoment.position.distanceTo(tapOffset) <= pointSize
+                            ) {
+                            }
+                        })
+                }) {
 
-            drawRoundRect(
-                size = (canvasSize / 2f) * circleRadius.value,
-                color = lineColor.copy(alpha = circleAlpha.value),
-                topLeft = Offset(
-                    x = canvasWidth / 4F,
-                    y = canvasHeight / 3F
+            timelineState.lines.forEach { line ->
+                drawLine(
+                    color = lineColor,
+                    strokeWidth = lineHeight,
+                    start = line.start,
+                    end = line.end,
+                )
+            }
+
+            timelineState.moments.forEach { model ->
+                drawCircle(
+                    color = pointColor,
+                    radius = pointSize * 0.5f,
+                    center = model.position
+                )
+                if (model.id == state.lastSelectedMomentId) {
+                    drawCircle(
+                        color = selectedPointColor,
+                        radius = pointSize * 0.6f,
+                        center = model.position
+                    )
+                    drawCircle(
+                        color = pointColor,
+                        radius = pointSize * 0.5f,
+                        center = model.position
+                    )
+                }
+                drawIntoCanvas {
+                    val lineBreakIndex = model.title.indexOf("\n")
+
+                    if (lineBreakIndex == 1) {
+                        it.nativeCanvas.drawText(
+                            model.title,
+                            model.position.x,
+                            model.position.y + textSize / 2,
+                            textPaint
+                        )
+                    } else {
+                        val firstLine = model.title.substring(0, lineBreakIndex)
+                        val secondLine = model.title.substring(lineBreakIndex, model.title.length)
+                        val textBlockHeight = textSize * 2
+                        it.nativeCanvas.drawText(
+                            firstLine,
+                            model.position.x,
+                            model.position.y + textSize / 2 - textSize / 2,
+                            textPaint
+                        )
+                        it.nativeCanvas.drawText(
+                            secondLine,
+                            model.position.x,
+                            model.position.y + textSize / 2 + textSize / 2,
+                            textPaint
+                        )
+                    }
+                }
+            }
+            val travellingLine = timelineState.moments.filter { model ->
+                state.moments.find { it.id == model.id }?.timelineParent == null
+            }
+            drawCircle(
+                color = Color.Red,
+                radius = pointSize * 0.2f,
+                center = lerp(
+                    start = travellingLine.first().position,
+                    stop = travellingLine.last().position,
+                    fraction = travelerPosition.value
                 )
             )
-
         }
     }
 
