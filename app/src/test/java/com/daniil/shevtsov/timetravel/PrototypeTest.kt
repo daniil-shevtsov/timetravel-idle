@@ -144,10 +144,11 @@ class PrototypeTest {
     ): Float {
         val segments = nodes.size - 1
         val segmentDuration = duration / segments
+        val fullSegmentsPassed = time / segmentDuration
         val timeProgress = time / duration
 
         return when {
-            momentIndex == 0 -> time / segmentDuration
+            momentIndex == 0 -> fullSegmentsPassed
             timeProgress == 0.75f -> timeProgress - timeProgress / 3f
             else -> timeProgress
         }
