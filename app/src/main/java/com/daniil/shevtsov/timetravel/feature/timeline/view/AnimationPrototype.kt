@@ -80,9 +80,9 @@ fun AnimationPrototype(
         nodes[TimeMomentId(1L)]!!,
         nodes[TimeMomentId(2L)]!!,
         nodes[TimeMomentId(3L)]!!,
-        nodes[TimeMomentId(4L)]!!,
-        nodes[TimeMomentId(5L)]!!,
-        nodes[TimeMomentId(6L)]!!,
+//        nodes[TimeMomentId(4L)]!!,
+//        nodes[TimeMomentId(5L)]!!,
+//        nodes[TimeMomentId(6L)]!!,
     )
     val animationTargetState = remember {
         mutableStateOf(
@@ -162,7 +162,7 @@ fun AnimationPrototype(
             timelineSplitOffset = timelineOffset,
         )
         val timelineState = timelinePresentation(
-            allMoments = allTimelines.values.flatten(),
+            allMoments = allTimelines.values.flatten().filter { it.id.value <= 3L },
             sizes = sizes
         )
 
