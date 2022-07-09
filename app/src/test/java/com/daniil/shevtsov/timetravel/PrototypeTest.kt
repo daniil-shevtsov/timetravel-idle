@@ -50,16 +50,16 @@ class PrototypeTest {
         )
     }
 
-//    @Test
-//    fun `should time 3000`() {
-//        test(
-//            time = 3000f,
-//            duration = 3000f,
-//            nodes = listOf(0, 1, 2),
-//            expectedMomentIndex = 1,
-//            expectedSegmentFraction = 1f
-//        )
-//    }
+    @Test
+    fun `should time 3000`() {
+        test(
+            time = 3000f,
+            duration = 3000f,
+            nodes = listOf(0, 1, 2),
+            expectedMomentIndex = 1,
+            expectedSegmentFraction = 1f
+        )
+    }
 
     private fun test(
         time: Float,
@@ -116,10 +116,11 @@ class PrototypeTest {
         // 0.51 -> 0f
         // 0.75 -> 0.5f
         // 1f   -> 1f
-
-        return when(val kek = segments - momentIndex) {
-            2 -> timeProgress * segments
-            else -> timeProgress - timeProgress / 3f
+        val kek = segments - momentIndex
+        return when {
+            kek == 2 -> timeProgress * segments
+            timeProgress == 0.75f -> timeProgress - timeProgress / 3f
+            else -> timeProgress
         }
     }
 
