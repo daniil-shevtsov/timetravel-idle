@@ -101,7 +101,7 @@ fun AnimationPrototype(
     val momentIndex = transition.animateInt(
         transitionSpec = { tween(durationMillis = indexDuration) }, label = "moment index animation"
     ) { targetState ->
-        when(targetState) {
+        when (targetState) {
             AnimationDirection.Destination -> nodePath.lastIndex - 1
             AnimationDirection.Start -> 0
         }
@@ -109,14 +109,23 @@ fun AnimationPrototype(
 
     val floatMap = nodePath.indices.associate { it to 1f }
 
-    val travelerPosition = transition.animateFloat(
-        transitionSpec = { tween(durationMillis = segmentDuration) }, label = "traveller position"
+    val time = transition.animateFloat(
+        transitionSpec = { tween(durationMillis = indexDuration) }, label = "traveller position"
     ) { targetState ->
-        when(targetState) {
-            AnimationDirection.Destination -> 1f
+        when (targetState) {
+            AnimationDirection.Destination -> indexDuration.toFloat()
             AnimationDirection.Start -> 0f
         }
     }
+
+//    val travelerPosition = transition.animateFloat(
+//        transitionSpec = { tween(durationMillis = segmentDuration) }, label = "traveller position"
+//    ) { targetState ->
+//        when (targetState) {
+//            AnimationDirection.Destination -> 1f
+//            AnimationDirection.Start -> 0f
+//        }
+//    }
     Column {
         Text(
             "Launch animation",
@@ -268,6 +277,12 @@ fun AnimationPrototype(
             // ...
             // 10 0
             // 10 1
+            val travelerPosition = calculateSegmentFraction(
+                momentIndex = momentIndex.value,
+                time = time.value,
+                duration = indexDuration.toFloat(),
+                nodes = nodePath.indices.toList(),
+            )
 
             drawCircle(
                 color = Color.Red,
@@ -275,10 +290,22 @@ fun AnimationPrototype(
                 center = lerp(
                     start = startNode.position,
                     stop = destinationNode.position,
-                    fraction = travelerPosition.value
+                    fraction = travelerPosition
                 )
             )
         }
     }
 
+}
+
+fun calculateSegmentFraction(
+    momentIndex: Int,
+    time: Float,
+    duration: Float,
+    nodes: List<Int>
+): Float {
+    val segments = nodes.size - 1
+    val segmentDuration = duration / segments
+
+    return time / segmentDuration - momentIndex
 }
