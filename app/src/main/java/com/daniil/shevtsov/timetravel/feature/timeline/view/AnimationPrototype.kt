@@ -31,6 +31,7 @@ import com.daniil.shevtsov.timetravel.feature.main.view.distanceTo
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.TimelineSizes
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePresentation
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import timber.log.Timber
 
 enum class AnimationDirection {
@@ -74,14 +75,19 @@ fun AnimationPrototype(
 //        nodes[TimeMomentId(7L)]!!,
 //        nodes[TimeMomentId(8L)]!!,
 //    )
-    val nodePath = listOf(
-        nodes[TimeMomentId(8L)]!!,
-        nodes[TimeMomentId(7L)]!!,
-        nodes[TimeMomentId(9L)]!!,
-        nodes[TimeMomentId(10L)]!!,
-        nodes[TimeMomentId(5L)]!!,
-        nodes[TimeMomentId(6L)]!!,
+    val nodePath = formTimelinePath(
+        moments = allTimelines.values.flatten(),
+        start = TimeMomentId(1L),
+        destination = TimeMomentId(8L),
     )
+//    val nodePath = listOf(
+//        nodes[TimeMomentId(8L)]!!,
+//        nodes[TimeMomentId(7L)]!!,
+//        nodes[TimeMomentId(9L)]!!,
+//        nodes[TimeMomentId(10L)]!!,
+//        nodes[TimeMomentId(5L)]!!,
+//        nodes[TimeMomentId(6L)]!!,
+//    )
 //    val nodePath = listOf(
 //        nodes[TimeMomentId(1L)]!!,
 //        nodes[TimeMomentId(2L)]!!,
@@ -268,8 +274,8 @@ fun AnimationPrototype(
             )
 
             val nodeModels = timelineState.moments.associateBy { it.id }
-            val startNode = nodeModels[nodePath[momentIndex].id]!!
-            val destinationNode = nodeModels[nodePath[momentIndex + 1].id]!!
+            val startNode = nodeModels[nodePath[momentIndex]]!!
+            val destinationNode = nodeModels[nodePath[momentIndex + 1]]!!
 
             // 0 0
             // 0 1
@@ -286,13 +292,15 @@ fun AnimationPrototype(
                 duration = indexDuration.toFloat(),
                 nodes = nodePath.indices.toList(),
             )
-            Timber.d("""
+            Timber.d(
+                """
                 Moment index: ${momentIndex}
                 Time: ${time.value}
                 Fraction: ${travelerPosition}
                 Start position: ${startNode.position}
                 End position: ${destinationNode.position}
-            """.trimIndent())
+            """.trimIndent()
+            )
 
             drawCircle(
                 color = Color.Red,
@@ -330,4 +338,17 @@ fun calculateSegmentFraction(
     val segmentDuration = duration / segments
 
     return time / segmentDuration - momentIndex
+}
+
+fun formTimelinePath(
+    moments: List<TimeMomentModel>,
+    start: TimeMomentId,
+    destination: TimeMomentId,
+): List<TimeMomentId> {
+    val destinationMoment = moments.find { it.id == destination }!!
+    val startMoment = moments.find { it.id == start }!!
+
+    val relatives = moments.map { it.id to it.momentParents.firstOrNull() }
+
+    return moments.filter { it.timelineParent == null }.reversed().map { it.id }
 }

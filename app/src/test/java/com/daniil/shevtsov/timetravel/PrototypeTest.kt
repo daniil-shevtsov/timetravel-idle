@@ -133,6 +133,27 @@ class PrototypeTest {
         }
     }
 
+//    @Test
+//    fun `should`() {
+//        assertThat(formTimelinePath(
+//            timelineViewState = TimelineViewState(
+//                moments = emptyList(),
+//                lines = listOf(
+//                    Line(
+//                        endMomentId = TimeMomentId(0L),
+//
+//                    )
+//                )
+//            )
+//        ))
+//        val nodePath = listOf(
+//            TimeMomentId(1L),
+//            TimeMomentId(2L),
+//            TimeMomentId(7L),
+//            TimeMomentId(8L),
+//        )
+//    }
+
 
 
 }
