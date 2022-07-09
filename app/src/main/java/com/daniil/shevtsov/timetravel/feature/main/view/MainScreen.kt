@@ -3,8 +3,6 @@ package com.daniil.shevtsov.timetravel.feature.main.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,15 +14,14 @@ import com.daniil.shevtsov.timetravel.core.ui.widgets.MyButton
 import com.daniil.shevtsov.timetravel.core.ui.widgets.Pane
 import com.daniil.shevtsov.timetravel.feature.actions.domain.ActionId
 import com.daniil.shevtsov.timetravel.feature.actions.presentation.ActionModel
-import com.daniil.shevtsov.timetravel.feature.location.view.LocationComposable
 import com.daniil.shevtsov.timetravel.feature.location.view.locationPreviewData
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewState
 import com.daniil.shevtsov.timetravel.feature.plot.domain.ChoiceId
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.ChoiceModel
 import com.daniil.shevtsov.timetravel.feature.plot.presentation.PlotViewState
-import com.daniil.shevtsov.timetravel.feature.resources.view.ResourcesPane
 import com.daniil.shevtsov.timetravel.feature.resources.view.resourcesPanePreviewData
+import com.daniil.shevtsov.timetravel.feature.timeline.view.AnimationPrototype
 import com.daniil.shevtsov.timetravel.feature.timeline.view.TimelineCanvas
 import com.daniil.shevtsov.timetravel.feature.timeline.view.timeTravelStatePreviewData
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
@@ -94,43 +91,44 @@ fun Content(
             .fillMaxSize()
             .background(AppTheme.colors.backgroundDark)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
-            modifier = Modifier
-                .heightIn(max = maxHeight)
-                .verticalScroll(rememberScrollState())
-                .padding(AppTheme.dimensions.paddingS)
-
-        ) {
-            ResourcesPane(
-                state = state.resources,
-                onTransferResource = { resourceId, direction, amount ->
-                    onViewAction(
-                        MainViewAction.TransferResource(
-                            id = resourceId,
-                            direction = direction,
-                            amount = amount,
-                        )
-                    )
-                },
-            )
-            LocationComposable(
-                state = state.location,
-                onViewAction = onViewAction,
-            )
-            ActionsPane(
-                state = state,
-                onViewAction = onViewAction,
-            )
-            PlotPane(
-                state = state.plot,
-                onViewAction = onViewAction,
-            )
-            TimelinePane(
-                state = state.timeTravel,
-                onViewAction = onViewAction,
-            )
-        }
+        AnimationPrototype()
+//        Column(
+//            verticalArrangement = Arrangement.spacedBy(AppTheme.dimensions.paddingS),
+//            modifier = Modifier
+//                .heightIn(max = maxHeight)
+//                .verticalScroll(rememberScrollState())
+//                .padding(AppTheme.dimensions.paddingS)
+//
+//        ) {
+//            ResourcesPane(
+//                state = state.resources,
+//                onTransferResource = { resourceId, direction, amount ->
+//                    onViewAction(
+//                        MainViewAction.TransferResource(
+//                            id = resourceId,
+//                            direction = direction,
+//                            amount = amount,
+//                        )
+//                    )
+//                },
+//            )
+//            LocationComposable(
+//                state = state.location,
+//                onViewAction = onViewAction,
+//            )
+//            ActionsPane(
+//                state = state,
+//                onViewAction = onViewAction,
+//            )
+//            PlotPane(
+//                state = state.plot,
+//                onViewAction = onViewAction,
+//            )
+//            TimelinePane(
+//                state = state.timeTravel,
+//                onViewAction = onViewAction,
+//            )
+//        }
     }
 
 
