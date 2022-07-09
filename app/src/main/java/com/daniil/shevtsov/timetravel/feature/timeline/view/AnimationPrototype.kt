@@ -2,10 +2,7 @@ package com.daniil.shevtsov.timetravel.feature.timeline.view
 
 import android.graphics.Typeface
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateInt
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -70,20 +67,20 @@ fun AnimationPrototype(
 
     val nodes = state.moments.associateBy { it.id }
 
-//    val nodePath = listOf(
-//        nodes[TimeMomentId(6L)]!!,
-//        nodes[TimeMomentId(5L)]!!,
-//        nodes[TimeMomentId(10L)]!!,
-//        nodes[TimeMomentId(9L)]!!,
-//    )
     val nodePath = listOf(
         nodes[TimeMomentId(1L)]!!,
         nodes[TimeMomentId(2L)]!!,
-        nodes[TimeMomentId(3L)]!!,
-        nodes[TimeMomentId(4L)]!!,
-        nodes[TimeMomentId(5L)]!!,
-        nodes[TimeMomentId(6L)]!!,
+        nodes[TimeMomentId(7L)]!!,
+        nodes[TimeMomentId(8L)]!!,
     )
+//    val nodePath = listOf(
+//        nodes[TimeMomentId(1L)]!!,
+//        nodes[TimeMomentId(2L)]!!,
+//        nodes[TimeMomentId(3L)]!!,
+//        nodes[TimeMomentId(4L)]!!,
+//        nodes[TimeMomentId(5L)]!!,
+//        nodes[TimeMomentId(6L)]!!,
+//    )
     val animationTargetState = remember {
         mutableStateOf(
             AnimationDirection.Start
@@ -99,7 +96,7 @@ fun AnimationPrototype(
     )
 //
     val momentIndex = transition.animateInt(
-        transitionSpec = { tween(durationMillis = indexDuration) }, label = "moment index animation"
+        transitionSpec = { tween(durationMillis = indexDuration, easing = LinearEasing) }, label = "moment index animation"
     ) { targetState ->
         when (targetState) {
             AnimationDirection.Destination -> nodePath.lastIndex - 1
@@ -108,7 +105,7 @@ fun AnimationPrototype(
     }
 
     val time = transition.animateFloat(
-        transitionSpec = { tween(durationMillis = indexDuration) }, label = "traveller position"
+        transitionSpec = { tween(durationMillis = indexDuration, easing = LinearEasing) }, label = "traveller position"
     ) { targetState ->
         when (targetState) {
             AnimationDirection.Destination -> indexDuration.toFloat()
@@ -116,14 +113,6 @@ fun AnimationPrototype(
         }
     }
 
-//    val travelerPosition = transition.animateFloat(
-//        transitionSpec = { tween(durationMillis = segmentDuration) }, label = "traveller position"
-//    ) { targetState ->
-//        when (targetState) {
-//            AnimationDirection.Destination -> 1f
-//            AnimationDirection.Start -> 0f
-//        }
-//    }
     Column {
         MyButton(
             text = "Launch Animation",
@@ -135,21 +124,6 @@ fun AnimationPrototype(
             },
             modifier = modifier.fillMaxWidth().padding(AppTheme.dimensions.paddingS)
         )
-//        Text(
-//            text = "Launch Animation",
-//            style = AppTheme.typography.button,
-//            color = AppTheme.colors.textLight,
-//            modifier = Modifier
-//                .background(AppTheme.colors.background)
-//                .fillMaxWidth()
-//                .clickable {
-//                    animationTargetState.value = when (animationTargetState.value) {
-//                        AnimationDirection.Destination -> AnimationDirection.Start
-//                        AnimationDirection.Start -> AnimationDirection.Destination
-//                    }
-//                }
-//        )
-
 
         val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
         val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
@@ -182,7 +156,7 @@ fun AnimationPrototype(
             timelineSplitOffset = timelineOffset,
         )
         val timelineState = timelinePresentation(
-            allMoments = allTimelines.values.flatten().filter { it.id.value <= 6L },
+            allMoments = allTimelines.values.flatten().filter { it.id in nodePath.map { it.id } },
             sizes = sizes
         )
 
