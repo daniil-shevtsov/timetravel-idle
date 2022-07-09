@@ -347,22 +347,15 @@ fun formTimelinePath(
     val destinationMoment = moments.find { it.id == destination }!!
     val startMoment = moments.find { it.id == start }!!
 
-    return when {
-        startMoment.timelineParent == null && destinationMoment.timelineParent == null -> {
-            moments.filter { it.timelineParent == null }.map { it.id }
+    var currentMoment = destinationMoment
+    val momentIds = mutableListOf<TimeMomentId>()
+    repeat(moments.size) {
+        if (!momentIds.contains(currentMoment.id)) {
+            momentIds.add(currentMoment.id)
         }
-        else -> {
-            var currentMoment = destinationMoment
-            var momentIds = mutableListOf<TimeMomentId>()
-            repeat(moments.size) {
-                if (!momentIds.contains(currentMoment.id)) {
-                    momentIds.add(currentMoment.id)
-                }
-                if (currentMoment.momentParents.isNotEmpty()) {
-                    currentMoment = moments.find { it.id == currentMoment.momentParents.first() }!!
-                }
-            }
-            momentIds.reversed()
+        if (currentMoment.momentParents.isNotEmpty()) {
+            currentMoment = moments.find { it.id == currentMoment.momentParents.first() }!!
         }
     }
+    return momentIds.reversed()
 }
