@@ -39,6 +39,17 @@ class PrototypeTest {
         )
     }
 
+    @Test
+    fun `should time 2250`() {
+        test(
+            time = 2250f,
+            duration = 3000f,
+            nodes = listOf(0, 1, 2),
+            expectedMomentIndex = 1,
+            expectedSegmentFraction = 0.5f
+        )
+    }
+
 //    @Test
 //    fun `should time 3000`() {
 //        test(
@@ -79,7 +90,17 @@ class PrototypeTest {
         duration: Float,
         nodes: List<Int>
     ): Int {
-        return ((nodes.lastIndex - 1) * (time / duration)).toInt()
+        //node size -> 0,1,2
+        val timeProgress = time / duration
+        //0.00 -> 0
+        //0.50 -> 0
+        //0.51 -> 1
+        //0.75 -> 1
+        //1.0  -> 1
+        return when {
+            timeProgress <= 0.50f -> 0
+            else -> 1
+        }
     }
 
     private fun calculateSegmentFraction(
@@ -96,8 +117,10 @@ class PrototypeTest {
         // 0.75 -> 0.5f
         // 1f   -> 1f
 
-
-        return timeProgress * segments
+        return when(val kek = segments - momentIndex) {
+            2 -> timeProgress * segments
+            else -> timeProgress - timeProgress / 3f
+        }
     }
 
 }
