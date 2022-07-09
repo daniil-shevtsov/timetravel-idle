@@ -75,26 +75,18 @@ fun AnimationPrototype(
 //        destination = TimeMomentId(8L),
 //    )
     val nodePath = listOf(
-        nodes[TimeMomentId(1L)]!!,
-        nodes[TimeMomentId(2L)]!!,
-        nodes[TimeMomentId(7L)]!!,
-        nodes[TimeMomentId(8L)]!!,
-
-//        nodes[TimeMomentId(8L)]!!,
-//        nodes[TimeMomentId(7L)]!!,
-//        nodes[TimeMomentId(9L)]!!,
-//        nodes[TimeMomentId(10L)]!!,
-//        nodes[TimeMomentId(5L)]!!,
-//        nodes[TimeMomentId(6L)]!!,
-    ).map { it.id }
-//    val nodePath = listOf(
 //        nodes[TimeMomentId(1L)]!!,
 //        nodes[TimeMomentId(2L)]!!,
-//        nodes[TimeMomentId(3L)]!!,
-//        nodes[TimeMomentId(4L)]!!,
-//        nodes[TimeMomentId(5L)]!!,
-//        nodes[TimeMomentId(6L)]!!,
-//    )
+//        nodes[TimeMomentId(7L)]!!,
+//        nodes[TimeMomentId(8L)]!!,
+
+        nodes[TimeMomentId(8L)]!!,
+        nodes[TimeMomentId(7L)]!!,
+        nodes[TimeMomentId(9L)]!!,
+        nodes[TimeMomentId(10L)]!!,
+        nodes[TimeMomentId(5L)]!!,
+        nodes[TimeMomentId(6L)]!!,
+    ).map { it.id }
     val animationTargetState = remember {
         mutableStateOf(
             AnimationDirection.Start

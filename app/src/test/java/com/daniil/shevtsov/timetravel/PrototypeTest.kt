@@ -8,6 +8,7 @@ import com.daniil.shevtsov.timetravel.feature.timeline.view.calculateSegmentFrac
 import com.daniil.shevtsov.timetravel.feature.timeline.view.formTimelinePath
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -202,6 +203,72 @@ class PrototypeTest {
             TimeMomentId(2L),
             TimeMomentId(7L),
             TimeMomentId(8L),
+        )
+    }
+
+    @Test
+    @Disabled("This behavior is not needed until there is working timeline pruning")
+    fun `should form path for the most compplex case`() {
+        assertThat(
+            formTimelinePath(
+                moments = listOf(
+                    timeMomentModel(
+                        id = TimeMomentId(1L),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(1L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(3L),
+                        momentParents = listOf(TimeMomentId(2L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(4L),
+                        momentParents = listOf(TimeMomentId(3L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(5L),
+                        momentParents = listOf(
+                            TimeMomentId(4),
+                            TimeMomentId(10),
+                        )
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(6L),
+                        momentParents = listOf(TimeMomentId(5L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(7L),
+                        timelineParent = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(2L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(8L),
+                        timelineParent = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(7L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(9L),
+                        timelineParent = TimeMomentId(7L),
+                        momentParents = listOf(TimeMomentId(7L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(10L),
+                        timelineParent = TimeMomentId(7L),
+                        momentParents = listOf(TimeMomentId(9L)),
+                    ),
+                ),
+                start = TimeMomentId(8L),
+                destination = TimeMomentId(6L),
+            )
+        ).containsExactly(
+            TimeMomentId(8L),
+            TimeMomentId(7L),
+            TimeMomentId(9L),
+            TimeMomentId(10L),
+            TimeMomentId(5L),
+            TimeMomentId(6L),
         )
     }
 
