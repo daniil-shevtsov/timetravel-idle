@@ -2,6 +2,7 @@ package com.daniil.shevtsov.timetravel
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.daniil.shevtsov.timetravel.feature.timeline.view.calculateIndex
 import com.daniil.shevtsov.timetravel.feature.timeline.view.calculateSegmentFraction
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -76,6 +77,13 @@ class PrototypeTest {
                     expectedSegmentFraction = 1.0f
                 ),
                 TestState(
+                    time = 1499.99999f,
+                    nodes = listOf(0, 1, 2, 3),
+                    duration = 3000f,
+                    expectedMomentIndex = 0,
+                    expectedSegmentFraction = 0.49f
+                ),
+                TestState(
                     time = 1500f,
                     nodes = listOf(0, 1, 2, 3),
                     duration = 3000f,
@@ -125,16 +133,6 @@ class PrototypeTest {
         }
     }
 
-    private fun calculateIndex(
-        time: Float,
-        duration: Float,
-        nodes: List<Int>
-    ): Int {
-        val segments = nodes.size - 1
-        val segmentDuration = duration / segments
 
-        val kek = time / segmentDuration
-        return (kek - 0.0001).toInt()
-    }
 
 }
