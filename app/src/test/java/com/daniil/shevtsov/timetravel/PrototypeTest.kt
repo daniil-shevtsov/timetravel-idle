@@ -153,7 +153,6 @@ class PrototypeTest {
 
         return when {
             momentIndex == 0 -> time / segmentDuration
-            momentIndex == 1 && timeProgress == 0.75f -> (duration - time) / segmentDuration
             momentIndex == 1 -> time / segmentDuration - 1
             else -> timeProgress
         }
