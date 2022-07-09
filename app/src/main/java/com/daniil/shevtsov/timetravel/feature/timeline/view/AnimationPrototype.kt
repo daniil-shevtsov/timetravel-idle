@@ -2,7 +2,10 @@ package com.daniil.shevtsov.timetravel.feature.timeline.view
 
 import android.graphics.Typeface
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -55,31 +58,13 @@ fun AnimationPrototypePreview() {
 fun AnimationPrototype(
     modifier: Modifier = Modifier,
 ) {
-    val lineColor = AppTheme.colors.textLight
-    val pointColor = AppTheme.colors.background
-    val selectedPointColor = AppTheme.colors.backgroundLight
-    val backgroundColor = AppTheme.colors.backgroundDarkest
-
-// Need to remember in order to prevent setting
-// the same state value to the transition during
-// recomposition.
     val state = timeTravelStatePreviewData()
     val allTimelines = state.moments
         .groupBy { it.timelineParent }
 
     val nodes = state.moments.associateBy { it.id }
 
-//    val nodePath = formTimelinePath(
-//        moments = allTimelines.values.flatten(),
-//        start = TimeMomentId(1L),
-//        destination = TimeMomentId(8L),
-//    )
     val nodePath = listOf(
-//        nodes[TimeMomentId(1L)]!!,
-//        nodes[TimeMomentId(2L)]!!,
-//        nodes[TimeMomentId(7L)]!!,
-//        nodes[TimeMomentId(8L)]!!,
-
         nodes[TimeMomentId(8L)]!!,
         nodes[TimeMomentId(7L)]!!,
         nodes[TimeMomentId(9L)]!!,
@@ -93,23 +78,10 @@ fun AnimationPrototype(
         )
     }
     val indexDuration = 3000
-    val segmentDuration = 3000
 
-// Any state change will trigger animations which
-// are created with this transition to the new state
     val transition = updateTransition(
         targetState = animationTargetState.value, label = "main transition"
     )
-//
-    val momentIndex = transition.animateInt(
-        transitionSpec = { tween(durationMillis = indexDuration, easing = LinearEasing) },
-        label = "moment index animation"
-    ) { targetState ->
-        when (targetState) {
-            AnimationDirection.Destination -> nodePath.lastIndex - 1
-            AnimationDirection.Start -> 0
-        }
-    }
 
     val time = transition.animateFloat(
         transitionSpec = {
