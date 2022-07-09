@@ -100,7 +100,7 @@ fun AnimationPrototype(
         transitionSpec = { tween(durationMillis = 3000) }, label = "moment index animation"
     ) { targetState ->
         when(targetState) {
-            AnimationDirection.Destination -> nodePath.lastIndex
+            AnimationDirection.Destination -> nodePath.lastIndex - 1
             AnimationDirection.Start -> 0
         }
     }

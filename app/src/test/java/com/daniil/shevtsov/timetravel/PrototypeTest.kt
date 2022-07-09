@@ -21,13 +21,13 @@ class PrototypeTest {
     @Test
     fun `should 3000`() {
         val time = 3000f
-        val start = calculateSegmentFraction(momentIndex = 5, time = time)
+        val start = calculateSegmentFraction(momentIndex = 4, time = time)
 
         assertThat(start).isEqualTo(1f)
     }
 
     private fun calculateSegmentFraction(momentIndex: Int, time: Float): Float {
-        return momentIndex.toFloat() / (indices.size - 1)
+        return (momentIndex.toFloat()) / (indices.size - 2)
     }
 
 }
