@@ -100,10 +100,12 @@ fun AnimationPrototype(
         transitionSpec = { tween(durationMillis = 3000) }, label = "moment index animation"
     ) { targetState ->
         when(targetState) {
-            AnimationDirection.Destination -> nodePath.lastIndex - 1
+            AnimationDirection.Destination -> nodePath.lastIndex
             AnimationDirection.Start -> 0
         }
     }
+
+    val floatMap = nodePath.indices.associate { it to 1f }
 
     val travelerPosition = transition.animateFloat(
         transitionSpec = { tween(durationMillis = 3000) }, label = "traveller position"
