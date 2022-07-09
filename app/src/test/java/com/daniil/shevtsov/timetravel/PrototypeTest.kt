@@ -8,61 +8,6 @@ import org.junit.jupiter.params.provider.MethodSource
 
 class PrototypeTest {
 
-//    @Test
-//    fun `should time 0`() {
-//        test(
-//            time = 0f,
-//            duration = 3000f,
-//            nodes = listOf(0, 1, 2),
-//            expectedMomentIndex = 0,
-//            expectedSegmentFraction = 0f
-//        )
-//    }
-//
-//    @Test
-//    fun `should time 750`() {
-//        test(
-//            time = 750f,
-//            duration = 3000f,
-//            nodes = listOf(0, 1, 2),
-//            expectedMomentIndex = 0,
-//            expectedSegmentFraction = 0.5f
-//        )
-//    }
-//
-//    @Test
-//    fun `should time 1500`() {
-//        test(
-//            time = 1500f,
-//            duration = 3000f,
-//            nodes = listOf(0, 1, 2),
-//            expectedMomentIndex = 0,
-//            expectedSegmentFraction = 1f
-//        )
-//    }
-//
-//    @Test
-//    fun `should time 2250`() {
-//        test(
-//            time = 2250f,
-//            duration = 3000f,
-//            nodes = listOf(0, 1, 2),
-//            expectedMomentIndex = 1,
-//            expectedSegmentFraction = 0.5f
-//        )
-//    }
-//
-//    @Test
-//    fun `should time 3000`() {
-//        test(
-//            time = 3000f,
-//            duration = 3000f,
-//            nodes = listOf(0, 1, 2),
-//            expectedMomentIndex = 1,
-//            expectedSegmentFraction = 1f
-//        )
-//    }
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("getData")
     fun `Addition works as expected`(testState: TestState) {
@@ -108,6 +53,20 @@ class PrototypeTest {
                     expectedMomentIndex = 1,
                     expectedSegmentFraction = 1f
                 ),
+                TestState(
+                    time = 0f,
+                    nodes = listOf(0, 1, 2, 3),
+                    duration = 3000f,
+                    expectedMomentIndex = 0,
+                    expectedSegmentFraction = 0f
+                ),
+//                TestState(
+//                    time = 750f,
+//                    nodes = listOf(0, 1, 2, 3),
+//                    duration = 3000f,
+//                    expectedMomentIndex = 0,
+//                    expectedSegmentFraction = 0.5f
+//                ),
             ).map { state ->
                 Arguments.of(state)
             }
@@ -169,6 +128,7 @@ class PrototypeTest {
         nodes: List<Int>
     ): Float {
         val segments = nodes.size - 1
+        val segmentDuration = duration / segments
         val timeProgress = time / duration
         // 0    -> 0
         // 0.5f -> 1f
@@ -177,7 +137,7 @@ class PrototypeTest {
         // 1f   -> 1f
         val kek = segments - momentIndex
         return when {
-            kek == 2 -> timeProgress * segments
+            momentIndex == 0 -> time / segmentDuration
             timeProgress == 0.75f -> timeProgress - timeProgress / 3f
             else -> timeProgress
         }
