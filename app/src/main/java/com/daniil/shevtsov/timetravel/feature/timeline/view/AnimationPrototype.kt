@@ -89,6 +89,8 @@ fun AnimationPrototype(
             AnimationDirection.Start
         )
     }
+    val indexDuration = 3000
+    val segmentDuration = 3000
 
 // Any state change will trigger animations which
 // are created with this transition to the new state
@@ -97,7 +99,7 @@ fun AnimationPrototype(
     )
 //
     val momentIndex = transition.animateInt(
-        transitionSpec = { tween(durationMillis = 3000) }, label = "moment index animation"
+        transitionSpec = { tween(durationMillis = indexDuration) }, label = "moment index animation"
     ) { targetState ->
         when(targetState) {
             AnimationDirection.Destination -> nodePath.lastIndex - 1
@@ -108,7 +110,7 @@ fun AnimationPrototype(
     val floatMap = nodePath.indices.associate { it to 1f }
 
     val travelerPosition = transition.animateFloat(
-        transitionSpec = { tween(durationMillis = 3000) }, label = "traveller position"
+        transitionSpec = { tween(durationMillis = segmentDuration) }, label = "traveller position"
     ) { targetState ->
         when(targetState) {
             AnimationDirection.Destination -> 1f
