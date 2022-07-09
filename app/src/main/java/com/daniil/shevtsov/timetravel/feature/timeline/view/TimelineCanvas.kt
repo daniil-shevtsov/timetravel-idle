@@ -190,6 +190,32 @@ fun TimelineCanvas(
 
             }
         }
+
+//        val momentIndex = calculateIndex(
+//            time = time.value,
+//            duration = indexDuration.toFloat(),
+//            nodes = nodePath.indices.toList(),
+//        )
+//
+//        val nodeModels = timelineState.moments.associateBy { it.id }
+//        val startNode = nodeModels[nodePath[momentIndex]]!!
+//        val destinationNode = nodeModels[nodePath[momentIndex + 1]]!!
+//
+//        val travelerPosition = calculateSegmentFraction(
+//            momentIndex = momentIndex,
+//            time = time.value,
+//            duration = indexDuration.toFloat(),
+//            nodes = nodePath.indices.toList(),
+//        )
+//        drawCircle(
+//            color = Color.Red,
+//            radius = pointSize * 0.2f,
+//            center = lerp(
+//                start = startNode.position,
+//                stop = destinationNode.position,
+//                fraction = travelerPosition
+//            )
+//        )
     }
 }
 

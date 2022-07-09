@@ -163,8 +163,9 @@ private fun PlotPane(
 @Composable
 private fun TimelinePane(
     state: TimeTravelViewState,
-    onViewAction: (MainViewAction) -> Unit,
     modifier: Modifier = Modifier,
+    travellerPosition: Float? = null,
+    onViewAction: (MainViewAction) -> Unit,
 ) {
     WithTitle(title = "Timeline", modifier = modifier) {
         Text(

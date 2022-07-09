@@ -108,6 +108,11 @@ fun AnimationPrototype(
                 .padding(AppTheme.dimensions.paddingS)
         )
 
+        TimelineCanvas(
+            state = timeTravelStatePreviewData(),
+            onViewAction = {},
+        )
+
         val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
         val lineHeight = with(LocalDensity.current) { 8.dp.toPx() }
         val segmentLength = with(LocalDensity.current) { 20.dp.toPx() }
@@ -240,15 +245,6 @@ fun AnimationPrototype(
             val startNode = nodeModels[nodePath[momentIndex]]!!
             val destinationNode = nodeModels[nodePath[momentIndex + 1]]!!
 
-            // 0 0
-            // 0 1
-            // 1 0
-            // 1 1
-            // 2 0
-            // 2 1
-            // ...
-            // 10 0
-            // 10 1
             val travelerPosition = calculateSegmentFraction(
                 momentIndex = momentIndex,
                 time = time.value,
