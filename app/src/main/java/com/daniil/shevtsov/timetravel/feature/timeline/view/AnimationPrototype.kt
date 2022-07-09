@@ -6,13 +6,12 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateInt
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Text
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
+import com.daniil.shevtsov.timetravel.core.ui.widgets.MyButton
 import com.daniil.shevtsov.timetravel.feature.main.view.distanceTo
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.TimelineSizes
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePresentation
@@ -125,19 +125,30 @@ fun AnimationPrototype(
 //        }
 //    }
     Column {
-        Text(
-            "Launch animation",
-            color = AppTheme.colors.textLight,
-            modifier = Modifier
-                .background(AppTheme.colors.background)
-                .fillMaxWidth()
-                .clickable {
-                    animationTargetState.value = when (animationTargetState.value) {
-                        AnimationDirection.Destination -> AnimationDirection.Start
-                        AnimationDirection.Start -> AnimationDirection.Destination
-                    }
+        MyButton(
+            text = "Launch Animation",
+            onClick = {
+                animationTargetState.value = when (animationTargetState.value) {
+                    AnimationDirection.Destination -> AnimationDirection.Start
+                    AnimationDirection.Start -> AnimationDirection.Destination
                 }
+            },
+            modifier = modifier.fillMaxWidth().padding(AppTheme.dimensions.paddingS)
         )
+//        Text(
+//            text = "Launch Animation",
+//            style = AppTheme.typography.button,
+//            color = AppTheme.colors.textLight,
+//            modifier = Modifier
+//                .background(AppTheme.colors.background)
+//                .fillMaxWidth()
+//                .clickable {
+//                    animationTargetState.value = when (animationTargetState.value) {
+//                        AnimationDirection.Destination -> AnimationDirection.Start
+//                        AnimationDirection.Start -> AnimationDirection.Destination
+//                    }
+//                }
+//        )
 
 
         val pointSize = with(LocalDensity.current) { 40.dp.toPx() }
