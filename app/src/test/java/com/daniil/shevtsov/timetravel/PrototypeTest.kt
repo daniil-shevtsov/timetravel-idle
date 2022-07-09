@@ -146,13 +146,15 @@ class PrototypeTest {
         val segmentDuration = duration / segments
         //1500 -> 3000
         //     (3000 - 1500) * 0.5 = 750
+        //  0  750  1500 | 1500.01 2250 3000
+        // 0.0 0.5  1.0  |   0.0   0.5   1.0
         val fullSegmentsPassed = time / segmentDuration // 2250 / 1500 = 1.50
         val timeProgress = time / duration // 2250 / 3000 = 0.75
 
         return when {
             momentIndex == 0 -> time / segmentDuration
-            momentIndex == 1 && timeProgress == 0.75f -> (duration - time) / segmentDuration // 0.75 - 0.25 = 0.5
-            momentIndex == 1 -> time / duration //
+            momentIndex == 1 && timeProgress == 0.75f -> (duration - time) / segmentDuration
+            momentIndex == 1 -> time / segmentDuration - 1
             else -> timeProgress
         }
     }
