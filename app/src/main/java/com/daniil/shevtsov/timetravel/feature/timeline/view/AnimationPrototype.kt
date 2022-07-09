@@ -350,5 +350,5 @@ fun formTimelinePath(
 
     val relatives = moments.map { it.id to it.momentParents.firstOrNull() }
 
-    return moments.filter { it.timelineParent == null }.reversed().map { it.id }
+    return moments.filter { it.timelineParent == null }.map { it.id }
 }

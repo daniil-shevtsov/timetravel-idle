@@ -4,6 +4,10 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.daniil.shevtsov.timetravel.feature.timeline.view.calculateIndex
 import com.daniil.shevtsov.timetravel.feature.timeline.view.calculateSegmentFraction
+import com.daniil.shevtsov.timetravel.feature.timeline.view.formTimelinePath
+import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
+import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -77,13 +81,6 @@ class PrototypeTest {
                     expectedSegmentFraction = 1.0f
                 ),
                 TestState(
-                    time = 1499.99999f,
-                    nodes = listOf(0, 1, 2, 3),
-                    duration = 3000f,
-                    expectedMomentIndex = 0,
-                    expectedSegmentFraction = 0.49f
-                ),
-                TestState(
                     time = 1500f,
                     nodes = listOf(0, 1, 2, 3),
                     duration = 3000f,
@@ -133,27 +130,39 @@ class PrototypeTest {
         }
     }
 
-//    @Test
-//    fun `should`() {
-//        assertThat(formTimelinePath(
-//            timelineViewState = TimelineViewState(
-//                moments = emptyList(),
-//                lines = listOf(
-//                    Line(
-//                        endMomentId = TimeMomentId(0L),
-//
-//                    )
-//                )
-//            )
-//        ))
-//        val nodePath = listOf(
-//            TimeMomentId(1L),
-//            TimeMomentId(2L),
-//            TimeMomentId(7L),
-//            TimeMomentId(8L),
-//        )
-//    }
-
+    @Test
+    fun `should form path for simple case`() {
+        assertThat(
+            formTimelinePath(
+                moments = listOf(
+                    timeMomentModel(
+                        id = TimeMomentId(1L),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(1L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(3L),
+                        momentParents = listOf(TimeMomentId(2L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(4L),
+                        momentParents = listOf(TimeMomentId(3L)),
+                    ),
+                ),
+                start = TimeMomentId(1L),
+                destination = TimeMomentId(4L),
+            )
+        ).isEqualTo(
+            listOf(
+                TimeMomentId(1L),
+                TimeMomentId(2L),
+                TimeMomentId(3L),
+                TimeMomentId(4L),
+            )
+        )
+    }
 
 
 }
