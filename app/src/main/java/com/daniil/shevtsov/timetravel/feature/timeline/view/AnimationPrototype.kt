@@ -69,25 +69,24 @@ fun AnimationPrototype(
 
     val nodes = state.moments.associateBy { it.id }
 
-//    val nodePath = listOf(
-//        nodes[TimeMomentId(1L)]!!,
-//        nodes[TimeMomentId(2L)]!!,
-//        nodes[TimeMomentId(7L)]!!,
-//        nodes[TimeMomentId(8L)]!!,
+//    val nodePath = formTimelinePath(
+//        moments = allTimelines.values.flatten(),
+//        start = TimeMomentId(1L),
+//        destination = TimeMomentId(8L),
 //    )
-    val nodePath = formTimelinePath(
-        moments = allTimelines.values.flatten(),
-        start = TimeMomentId(1L),
-        destination = TimeMomentId(8L),
-    )
-//    val nodePath = listOf(
+    val nodePath = listOf(
+        nodes[TimeMomentId(1L)]!!,
+        nodes[TimeMomentId(2L)]!!,
+        nodes[TimeMomentId(7L)]!!,
+        nodes[TimeMomentId(8L)]!!,
+
 //        nodes[TimeMomentId(8L)]!!,
 //        nodes[TimeMomentId(7L)]!!,
 //        nodes[TimeMomentId(9L)]!!,
 //        nodes[TimeMomentId(10L)]!!,
 //        nodes[TimeMomentId(5L)]!!,
 //        nodes[TimeMomentId(6L)]!!,
-//    )
+    ).map { it.id }
 //    val nodePath = listOf(
 //        nodes[TimeMomentId(1L)]!!,
 //        nodes[TimeMomentId(2L)]!!,
@@ -350,5 +349,23 @@ fun formTimelinePath(
 
     val relatives = moments.map { it.id to it.momentParents.firstOrNull() }
 
-    return moments.filter { it.timelineParent == null }.map { it.id }
+    return when {
+        startMoment.timelineParent == null && destinationMoment.timelineParent == null -> {
+            moments.filter { it.timelineParent == null }.map { it.id }
+        }
+        else -> listOf(
+            startMoment.id,
+            moments.find { moment ->
+                val parent = moments.find { it.id == destinationMoment.momentParents.first() }!!
+                val grandParent = moments.find { it.id == parent.momentParents.first() }!!
+                grandParent.id == moment.id
+            }!!.id,
+            moments.find { moment ->
+                val parent = moments.find { it.id == destinationMoment.momentParents.first() }!!
+                parent.id == moment.id
+            }!!.id,
+            destinationMoment.id,
+        )
+    }
+
 }
