@@ -18,6 +18,17 @@ class PrototypeTest {
     }
 
     @Test
+    fun `should time 750`() {
+        test(
+            time = 750f,
+            duration = 3000f,
+            nodes = listOf(0, 1, 2),
+            expectedMomentIndex = 0,
+            expectedSegmentFraction = 0.5f
+        )
+    }
+
+    @Test
     fun `should time 1500`() {
         test(
             time = 1500f,
