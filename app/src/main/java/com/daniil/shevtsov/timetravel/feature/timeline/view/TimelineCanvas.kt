@@ -1,6 +1,10 @@
 package com.daniil.shevtsov.timetravel.feature.timeline.view
 
 import android.graphics.Typeface
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -9,8 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.lerp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
@@ -110,6 +118,27 @@ fun TimelineCanvas(
         else -> furthestMomentX
     }
 
+    val animationTargetState = remember {
+        mutableStateOf(
+            AnimationDirection.Start
+        )
+    }
+    val indexDuration = 3000
+
+    val transition = updateTransition(
+        targetState = animationTargetState.value, label = "main transition"
+    )
+
+    val time = transition.animateFloat(
+        transitionSpec = {
+            tween(durationMillis = indexDuration, easing = LinearEasing)
+        }, label = "traveller position"
+    ) { targetState ->
+        when (targetState) {
+            AnimationDirection.Destination -> indexDuration.toFloat()
+            AnimationDirection.Start -> 0f
+        }
+    }
 
     Canvas(
         modifier = Modifier
@@ -191,31 +220,49 @@ fun TimelineCanvas(
             }
         }
 
-//        val momentIndex = calculateIndex(
-//            time = time.value,
-//            duration = indexDuration.toFloat(),
-//            nodes = nodePath.indices.toList(),
+        if(state.moments.size >= 2) {
+            val nodePath = formTimelinePath(
+                moments = state.moments,
+                start = state.moments.first().id,
+                destination = state.moments.last().id,
+            )
+
+            val momentIndex = calculateIndex(
+                time = time.value,
+                duration = indexDuration.toFloat(),
+                nodes = nodePath.indices.toList(),
+            )
+
+            val nodeModels = timelineState.moments.associateBy { it.id }
+            val startNode = nodeModels[nodePath[momentIndex]]!!
+            val destinationNode = nodeModels[nodePath[momentIndex + 1]]!!
+
+            val travelerPosition = calculateSegmentFraction(
+                momentIndex = momentIndex,
+                time = time.value,
+                duration = indexDuration.toFloat(),
+                nodes = nodePath.indices.toList(),
+            )
+//        Timber.d(
+//            """
+//                Moment index: ${momentIndex}
+//                Time: ${time.value}
+//                Fraction: ${travelerPosition}
+//                Start position: ${startNode.position}
+//                End position: ${destinationNode.position}
+//            """.trimIndent()
 //        )
-//
-//        val nodeModels = timelineState.moments.associateBy { it.id }
-//        val startNode = nodeModels[nodePath[momentIndex]]!!
-//        val destinationNode = nodeModels[nodePath[momentIndex + 1]]!!
-//
-//        val travelerPosition = calculateSegmentFraction(
-//            momentIndex = momentIndex,
-//            time = time.value,
-//            duration = indexDuration.toFloat(),
-//            nodes = nodePath.indices.toList(),
-//        )
-//        drawCircle(
-//            color = Color.Red,
-//            radius = pointSize * 0.2f,
-//            center = lerp(
-//                start = startNode.position,
-//                stop = destinationNode.position,
-//                fraction = travelerPosition
-//            )
-//        )
+
+            drawCircle(
+                color = Color.Red,
+                radius = pointSize * 0.2f,
+                center = lerp(
+                    start = startNode.position,
+                    stop = destinationNode.position,
+                    fraction = travelerPosition
+                )
+            )
+        }
     }
 }
 
@@ -288,5 +335,6 @@ fun timeTravelStatePreviewData(
             model
         }
     },
+    isAnimating = false,
     lastSelectedMomentId = TimeMomentId(1L),
 )

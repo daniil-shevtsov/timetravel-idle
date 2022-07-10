@@ -81,7 +81,8 @@ fun mapMainViewState(
                     momentParents = timeMoment.parents
                 )
             },
-            lastSelectedMomentId = state.currentMomentId
+            lastSelectedMomentId = state.currentMomentId,
+            isAnimating = false,
         ),
         location = LocationViewState(
             selector = SelectorViewState(

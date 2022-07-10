@@ -22,4 +22,6 @@ sealed class MainViewAction {
         val direction: TransferDirection,
         val amount: ResourceTransferAmount = ResourceTransferAmount.One,
     ) : MainViewAction()
+
+    object FinishedAnimation : MainViewAction()
 }

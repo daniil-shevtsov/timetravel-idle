@@ -44,6 +44,7 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
+        MainViewAction.FinishedAnimation -> state
     }
     return newState
 }
