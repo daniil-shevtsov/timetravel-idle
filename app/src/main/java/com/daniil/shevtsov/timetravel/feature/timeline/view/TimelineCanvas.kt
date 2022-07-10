@@ -121,12 +121,12 @@ fun TimelineCanvas(
 
     val animationTargetState = remember {
         mutableStateOf(
-            AnimationDirection.Start
+            state.lastSelectedMomentId
         )
     }
     if (state.isAnimating) {
         LaunchedEffect(key1 = state.isAnimating) {
-            animationTargetState.value = AnimationDirection.Destination
+            animationTargetState.value = state.lastSelectedMomentId
         }
     }
     val indexDuration = 3000
@@ -140,15 +140,16 @@ fun TimelineCanvas(
             tween(durationMillis = indexDuration, easing = LinearEasing)
         }, label = "traveller position"
     ) { targetState ->
-        when (targetState) {
-            AnimationDirection.Destination -> indexDuration.toFloat()
-            AnimationDirection.Start -> 0f
+        if(targetState == state.lastSelectedMomentId) {
+            0f
+        } else {
+            indexDuration.toFloat()
         }
+
     }
     LaunchedEffect(time.value) {
         if (time.value >= indexDuration) {
             onViewAction(MainViewAction.FinishedAnimation)
-
         }
     }
 
