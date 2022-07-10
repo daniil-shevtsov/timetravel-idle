@@ -44,7 +44,9 @@ fun mainFunctionalCore(
             state = state,
             viewAction = viewAction,
         )
-        MainViewAction.FinishedAnimation -> state
+        MainViewAction.FinishedAnimation -> state.copy(
+            isAnimating = false,
+        )
     }
     return newState
 }
@@ -159,6 +161,7 @@ fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment
         timeMoments = state.timeMoments,
         currentMomentId = selectedMoment.id,
         storedResources = state.storedResources,
+        isAnimating = true,
     )
 }
 

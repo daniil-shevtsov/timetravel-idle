@@ -37,7 +37,8 @@ data class GameState(
     val allLocations: List<Location>,
     val currentLocationId: LocationId,
     val selectorExpandedStates: SelectorExpandedStates,
-    val currentMomentId: TimeMomentId? = null
+    val currentMomentId: TimeMomentId? = null,
+    val isAnimating: Boolean = false,
 )
 
 fun gameState(

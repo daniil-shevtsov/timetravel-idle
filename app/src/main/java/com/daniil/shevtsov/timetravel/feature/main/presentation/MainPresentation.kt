@@ -82,7 +82,7 @@ fun mapMainViewState(
                 )
             },
             lastSelectedMomentId = state.currentMomentId,
-            isAnimating = false,
+            isAnimating = state.isAnimating,
         ),
         location = LocationViewState(
             selector = SelectorViewState(

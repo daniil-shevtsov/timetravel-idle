@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -123,6 +124,11 @@ fun TimelineCanvas(
             AnimationDirection.Start
         )
     }
+    if (state.isAnimating) {
+        LaunchedEffect(key1 = state.isAnimating) {
+            animationTargetState.value = AnimationDirection.Destination
+        }
+    }
     val indexDuration = 3000
 
     val transition = updateTransition(
@@ -137,6 +143,12 @@ fun TimelineCanvas(
         when (targetState) {
             AnimationDirection.Destination -> indexDuration.toFloat()
             AnimationDirection.Start -> 0f
+        }
+    }
+    LaunchedEffect(time) {
+
+        if (time.value >= indexDuration) {
+            onViewAction(MainViewAction.FinishedAnimation)
         }
     }
 
@@ -220,7 +232,7 @@ fun TimelineCanvas(
             }
         }
 
-        if(state.moments.size >= 2) {
+        if (state.moments.size >= 2 && state.isAnimating) {
             val nodePath = formTimelinePath(
                 moments = state.moments,
                 start = state.moments.first().id,
