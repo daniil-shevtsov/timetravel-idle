@@ -145,10 +145,10 @@ fun TimelineCanvas(
             AnimationDirection.Start -> 0f
         }
     }
-    LaunchedEffect(time) {
-
+    LaunchedEffect(time.value) {
         if (time.value >= indexDuration) {
             onViewAction(MainViewAction.FinishedAnimation)
+
         }
     }
 
