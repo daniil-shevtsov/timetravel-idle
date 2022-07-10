@@ -33,6 +33,7 @@ import com.daniil.shevtsov.timetravel.core.ui.theme.AppTheme
 import com.daniil.shevtsov.timetravel.feature.main.presentation.MainViewAction
 import com.daniil.shevtsov.timetravel.feature.main.view.distanceTo
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.TimeTravelState
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.TimelineSizes
 import com.daniil.shevtsov.timetravel.feature.timeline.presentation.timelinePresentation
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
@@ -121,12 +122,12 @@ fun TimelineCanvas(
 
     val animationTargetState = remember {
         mutableStateOf(
-            state.lastSelectedMomentId
+            state.state
         )
     }
-    if (state.isAnimating) {
+    if (state.isAnimating && state.state is TimeTravelState.Travelling) {
         LaunchedEffect(key1 = state.isAnimating) {
-            animationTargetState.value = state.lastSelectedMomentId
+            animationTargetState.value = state.state
         }
     }
     val indexDuration = 3000
@@ -140,12 +141,10 @@ fun TimelineCanvas(
             tween(durationMillis = indexDuration, easing = LinearEasing)
         }, label = "traveller position"
     ) { targetState ->
-        if(targetState == state.lastSelectedMomentId) {
-            0f
-        } else {
-            indexDuration.toFloat()
+        when (targetState) {
+            is TimeTravelState.Stationary -> 0f
+            is TimeTravelState.Travelling -> indexDuration.toFloat()
         }
-
     }
     LaunchedEffect(time.value) {
         if (time.value >= indexDuration) {
@@ -233,11 +232,13 @@ fun TimelineCanvas(
             }
         }
 
-        if (state.moments.size >= 2 && state.isAnimating) {
+        if (state.moments.size >= 2 && state.isAnimating && state.state is TimeTravelState.Travelling) {
+            val start = state.state.start
+            val destination = state.state.destination
             val nodePath = formTimelinePath(
                 moments = state.moments,
-                start = state.moments.first().id,
-                destination = state.moments.last().id,
+                start = start,
+                destination = destination,
             )
 
             val momentIndex = calculateIndex(

@@ -16,6 +16,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.StoredResource
 import com.daniil.shevtsov.timetravel.feature.tags.domain.Tag
 import com.daniil.shevtsov.timetravel.feature.tags.domain.TagId
 import com.daniil.shevtsov.timetravel.feature.time.domain.PassedTime
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.TimeTravelState
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import kotlin.time.Duration
@@ -39,6 +40,7 @@ data class GameState(
     val selectorExpandedStates: SelectorExpandedStates,
     val currentMomentId: TimeMomentId? = null,
     val isAnimating: Boolean = false,
+    val timeTravel: TimeTravelState = TimeTravelState.Stationary,
 )
 
 fun gameState(

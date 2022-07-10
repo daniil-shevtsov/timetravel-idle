@@ -7,6 +7,7 @@ import com.daniil.shevtsov.timetravel.feature.resources.domain.ResourceValue
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.ResourceTransferAmount
 import com.daniil.shevtsov.timetravel.feature.resources.presentation.TransferDirection
 import com.daniil.shevtsov.timetravel.feature.tags.domain.Change
+import com.daniil.shevtsov.timetravel.feature.timeline.domain.TimeTravelState
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMoment
 import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 
@@ -45,6 +46,7 @@ fun mainFunctionalCore(
             viewAction = viewAction,
         )
         MainViewAction.FinishedAnimation -> state.copy(
+            timeTravel = TimeTravelState.Stationary,
             isAnimating = false,
         )
     }
@@ -157,11 +159,16 @@ fun selectAction(
 fun travelInTime(state: GameState, viewAction: MainViewAction.TravelBackToMoment): GameState {
     val selectedMoment =
         state.timeMoments.find { moment -> moment.id == viewAction.id } ?: return state
+    val start = state.currentMomentId ?: state.timeMoments.first().id
     return selectedMoment.stateSnapshot.copy(
         timeMoments = state.timeMoments,
         currentMomentId = selectedMoment.id,
         storedResources = state.storedResources,
         isAnimating = true,
+        timeTravel = TimeTravelState.Travelling(
+            start = start,
+            destination = selectedMoment.id,
+        )
     )
 }
 
