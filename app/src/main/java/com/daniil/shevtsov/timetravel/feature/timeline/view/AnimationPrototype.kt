@@ -307,7 +307,22 @@ fun formTimelinePath(
     val destinationMoment = moments.find { it.id == destination }!!
     val startMoment = moments.find { it.id == start }!!
 
-    var currentMoment = destinationMoment
+    val destinationIsChild = areRelatives(
+        child = destinationMoment.id,
+        parent = startMoment.id,
+        moments = moments,
+    )
+    val destinationIsParent = areRelatives(
+        child = startMoment.id,
+        parent = destinationMoment.id,
+        moments = moments,
+    )
+
+    var currentMoment = when {
+        destinationIsChild -> startMoment
+        destinationIsParent -> destinationMoment
+        else -> startMoment
+    }
     val momentIds = mutableListOf<TimeMomentId>()
     repeat(moments.size) {
         if (!momentIds.contains(currentMoment.id)) {
@@ -317,5 +332,35 @@ fun formTimelinePath(
             currentMoment = moments.find { it.id == currentMoment.momentParents.first() }!!
         }
     }
-    return momentIds.reversed()
+    return when {
+        destinationIsChild -> momentIds
+        destinationIsParent -> momentIds.reversed()
+        else -> momentIds.reversed()
+    }
+
+}
+
+private fun areRelatives(
+    child: TimeMomentId,
+    parent: TimeMomentId,
+    moments: List<TimeMomentModel>
+): Boolean {
+    val momentIds = mutableListOf<TimeMomentId>()
+    val oneMoment = moments.find { it.id == child }!!
+    val childMoment = moments.find { it.id == parent }!!
+    var isRelative = false
+    var currentMoment = childMoment
+    repeat(moments.size) {
+        if (!momentIds.contains(currentMoment.id)) {
+            momentIds.add(currentMoment.id)
+        }
+        if (currentMoment.id == oneMoment.id) {
+            isRelative = true
+        }
+        if (currentMoment.momentParents.isNotEmpty()) {
+            currentMoment = moments.find { it.id == currentMoment.momentParents.first() }!!
+        }
+    }
+
+    return isRelative
 }
