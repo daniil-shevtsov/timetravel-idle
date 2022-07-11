@@ -234,6 +234,52 @@ class PrototypeTest {
     }
 
     @Test
+    fun `should form path backwards 2`() {
+        assertThat(
+            formTimelinePath(
+                moments = listOf(
+                    timeMomentModel(
+                        id = TimeMomentId(1L),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(2L),
+                        momentParents = listOf(TimeMomentId(1L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(3L),
+                        momentParents = listOf(TimeMomentId(2L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(4L),
+                        momentParents = listOf(TimeMomentId(3L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(5L),
+                        momentParents = listOf(
+                            TimeMomentId(4),
+                            TimeMomentId(10),
+                        )
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(6L),
+                        momentParents = listOf(TimeMomentId(3L)),
+                    ),
+                    timeMomentModel(
+                        id = TimeMomentId(7L),
+                        timelineParent = TimeMomentId(6L),
+                        momentParents = listOf(TimeMomentId(6L)),
+                    ),
+                ),
+                start = TimeMomentId(7L),
+                destination = TimeMomentId(6L),
+            )
+        ).containsExactly(
+            TimeMomentId(7L),
+            TimeMomentId(6L),
+        )
+    }
+
+    @Test
     @Disabled("This behavior is not needed until there is working timeline pruning")
     fun `should form path for the most compplex case`() {
         assertThat(

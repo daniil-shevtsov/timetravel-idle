@@ -299,11 +299,19 @@ fun calculateSegmentFraction(
     return time / segmentDuration - momentIndex
 }
 
+
+private enum class Direction {
+    Past,
+    Future
+}
+
 fun formTimelinePath(
     moments: List<TimeMomentModel>,
     start: TimeMomentId,
     destination: TimeMomentId,
 ): List<TimeMomentId> {
+
+
     val destinationMoment = moments.find { it.id == destination }!!
     val startMoment = moments.find { it.id == start }!!
 
@@ -318,24 +326,35 @@ fun formTimelinePath(
         moments = moments,
     )
 
-    var currentMoment = when {
-        destinationIsChild -> startMoment
-        destinationIsParent -> destinationMoment
-        else -> startMoment
+    val direction = when {
+        destinationIsChild -> Direction.Future
+        else -> Direction.Past
+    }
+
+    var currentMoment = when (direction) {
+        Direction.Future -> startMoment
+        Direction.Past -> destinationMoment
+    }
+    val finalMoment = when (direction) {
+        Direction.Future -> destinationMoment
+        Direction.Past -> startMoment
     }
     val momentIds = mutableListOf<TimeMomentId>()
-    repeat(moments.size) {
+    var foundFinalMoment = false
+    while (!foundFinalMoment) {
         if (!momentIds.contains(currentMoment.id)) {
             momentIds.add(currentMoment.id)
         }
-        if (currentMoment.momentParents.isNotEmpty()) {
+
+        if (currentMoment.id == finalMoment.id) {
+            foundFinalMoment = true
+        } else if (currentMoment.momentParents.isNotEmpty()) {
             currentMoment = moments.find { it.id == currentMoment.momentParents.first() }!!
         }
     }
-    return when {
-        destinationIsChild -> momentIds
-        destinationIsParent -> momentIds.reversed()
-        else -> momentIds.reversed()
+    return when (direction) {
+        Direction.Past -> momentIds.reversed()
+        Direction.Future -> momentIds
     }
 
 }
