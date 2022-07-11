@@ -1,10 +1,9 @@
 package com.daniil.shevtsov.timetravel.feature.timeline.view
 
 import android.graphics.Typeface
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -40,6 +38,7 @@ import com.daniil.shevtsov.timetravel.feature.timetravel.domain.TimeMomentId
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeMomentModel
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.TimeTravelViewState
 import com.daniil.shevtsov.timetravel.feature.timetravel.presentation.timeMomentModel
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -120,32 +119,46 @@ fun TimelineCanvas(
         else -> furthestMomentX
     }
 
-    val animationTargetState = remember {
-        mutableStateOf(
-            state.state
-        )
-    }
-    if (state.isAnimating && state.state is TimeTravelState.Travelling) {
-        LaunchedEffect(key1 = state.isAnimating) {
-            animationTargetState.value = state.state
-        }
-    }
+//    val animationTargetState = remember {
+//        mutableStateOf(
+//            state.state
+//        )
+//    }
+//    if (state.isAnimating && state.state is TimeTravelState.Travelling) {
+//        LaunchedEffect(key1 = state.isAnimating) {
+//            animationTargetState.value = state.state
+//        }
+//    }
     val indexDuration = 3000
 
-    val transition = updateTransition(
-        targetState = animationTargetState.value, label = "main transition"
-    )
-
-    val time = transition.animateFloat(
-        transitionSpec = {
-            tween(durationMillis = indexDuration, easing = LinearEasing)
-        }, label = "traveller position"
-    ) { targetState ->
-        when (targetState) {
-            is TimeTravelState.Stationary -> 0f
-            is TimeTravelState.Travelling -> indexDuration.toFloat()
+//    val transition = updateTransition(
+//        targetState = animationTargetState.value, label = "main transition"
+//    )
+//
+//    val time = transition.animateFloat(
+//        transitionSpec = {
+//            tween(durationMillis = indexDuration, easing = LinearEasing)
+//        }, label = "traveller position"
+//    ) { targetState ->
+//        when (targetState) {
+//            is TimeTravelState.Stationary -> 0f
+//            is TimeTravelState.Travelling -> indexDuration.toFloat()
+//        }
+//    }
+    val time = remember { Animatable(0f) }
+    LaunchedEffect(state.state) {
+        if (state.isAnimating && state.state is TimeTravelState.Travelling) {
+            launch {
+                time.animateTo(
+                    targetValue = indexDuration.toFloat(),
+                    animationSpec = tween(durationMillis = indexDuration, easing = LinearEasing)
+                )
+            }
+        } else {
+            time.snapTo(0f)
         }
     }
+
     LaunchedEffect(time.value) {
         if (time.value >= indexDuration) {
             onViewAction(MainViewAction.FinishedAnimation)
