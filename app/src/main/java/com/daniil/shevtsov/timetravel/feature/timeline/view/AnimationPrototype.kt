@@ -310,8 +310,6 @@ fun formTimelinePath(
     start: TimeMomentId,
     destination: TimeMomentId,
 ): List<TimeMomentId> {
-
-
     val destinationMoment = moments.find { it.id == destination }!!
     val startMoment = moments.find { it.id == start }!!
 
@@ -320,25 +318,19 @@ fun formTimelinePath(
         parent = startMoment.id,
         moments = moments,
     )
-    val destinationIsParent = areRelatives(
-        child = startMoment.id,
-        parent = destinationMoment.id,
-        moments = moments,
-    )
 
     val direction = when {
         destinationIsChild -> Direction.Future
         else -> Direction.Past
     }
 
-    var currentMoment = when (direction) {
-        Direction.Future -> startMoment
-        Direction.Past -> destinationMoment
+    val (initialMoment, finalMoment) = when (direction) {
+        Direction.Future -> startMoment to destinationMoment
+        Direction.Past -> destinationMoment to startMoment
     }
-    val finalMoment = when (direction) {
-        Direction.Future -> destinationMoment
-        Direction.Past -> startMoment
-    }
+
+    var currentMoment = initialMoment
+    
     val momentIds = mutableListOf<TimeMomentId>()
     var foundFinalMoment = false
     while (!foundFinalMoment) {
