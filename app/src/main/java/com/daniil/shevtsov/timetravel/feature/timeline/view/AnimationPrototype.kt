@@ -331,8 +331,7 @@ fun formTimelinePath(
 
     var currentMoment = initialMoment
 
-    val momentIds = mutableListOf<TimeMomentId>()
-    var foundFinalMoment = false
+
     val parentMap = moments
         .associate { it.id to it.momentParents }
     val childrenMap = moments
@@ -340,6 +339,8 @@ fun formTimelinePath(
             it.id to moments.filter { child -> child.momentParents.contains(it.id) }
         }
 
+    val momentIds = mutableListOf<TimeMomentId>()
+    var foundFinalMoment = false
     while (!foundFinalMoment) {
         if (!momentIds.contains(currentMoment.id)) {
             momentIds.add(currentMoment.id)
